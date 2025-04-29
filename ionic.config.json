@@ -1,0 +1,7 @@
+{
+  "name": "clavitos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
