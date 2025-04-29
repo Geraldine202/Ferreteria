@@ -35,3 +35,26 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+:root {
+    --ion-background-color: #FAE5D3;  /* Fondo claro anaranjado */
+    --ion-text-color: #D35400;  /* Texto en naranja oscuro */
+    
+    --ion-color-primary: #E67E22;
+    --ion-color-primary-rgb: 230, 126, 34;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-shade: #D35400;
+    --ion-color-primary-tint: #F39C12;
+  }
+  
+  ion-toolbar {
+    --background: #E88E4C !important;
+    --color: #ffffff !important;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+ion-title {
+  font-family: 'Bebas Neue', sans-serif !important;
+}
