@@ -1,0 +1,67 @@
+<ion-content id="mainlayout">
+  
+  <!-- Logo -->
+  <div id="logo" class="ion-text-center">
+    <img src="assets/images/logo.png" alt="Logo" class="logo-img">
+  </div>
+
+  <!-- Contenedor de Login -->
+  <div id="loginuser">
+    <ion-card class="center">
+      <ion-card-header class="ion-text-center">
+        <h2 class="card-title">Ingreso de Usuario</h2>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <!-- Campo de correo -->
+        <ion-input 
+          [(ngModel)]="email" 
+          type="email" 
+          label="Correo" 
+          labelPlacement="stacked" 
+          fill="outline" 
+          placeholder="ejemplo@duocuc.cl"
+          class="input-field">
+        </ion-input>
+        
+        <br>
+
+        <!-- Campo de contraseña -->
+        <ion-input 
+          [(ngModel)]="password" 
+          type="password" 
+          label="Contraseña" 
+          labelPlacement="stacked" 
+          fill="outline"
+          class="input-field">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+
+        <ion-text class="ion-text-right">
+          <p><a routerLink="/recuperar" class="link">¿Olvidaste la contraseña?</a></p>
+        </ion-text>
+
+        <br>
+        
+        <!-- Botón de ingreso -->
+        <ion-button 
+        (click)="login()" 
+        size="block" 
+        color="primary" 
+        shape="round" 
+        id="signinbutton" 
+        class="signin-button">
+        INGRESAR
+      </ion-button>
+        
+        <br>
+
+        <!-- Enlace para registrarse -->
+        <ion-text class="ion-text-center">
+          <h2>¿No tienes cuenta? Regístrate <a routerLink="/registro" class="link">Aquí</a></h2>
+        </ion-text>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+</ion-content>
