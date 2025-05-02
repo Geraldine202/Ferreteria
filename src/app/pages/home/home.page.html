@@ -6,5 +6,152 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content >
+<ion-content>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary">
+      <ion-icon name="cart"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <div class="slider-container">
+    <div class="slider" *ngFor="let imagen of imagenes; let i = index">
+      <ion-item>
+        <img [src]="imagen" [class.active]="i === currentIndex" style="width: 100%; height: auto;" />
+      </ion-item>
+    </div>
+  </div>
+
+
+  <ion-button expand="full" fill="solid" color="primary" routerLink="/productos">
+    ¡Compra Ahora!
+  </ion-button>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img src="assets/images/relleno1.png"></ion-img>
+          <ion-card-header>
+            <ion-card-title>Herramientas</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img src="assets/images/relleno1.png"></ion-img>
+          <ion-card-header>
+            <ion-card-title>Pinturas</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+      <!-- Agregar más categorías -->
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img src="assets/images/relleno1.png"></ion-img>
+          <ion-card-header>
+            <ion-card-title>Pinturas</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img src="assets/images/relleno1.png"></ion-img>
+          <ion-card-header>
+            <ion-card-title>Pinturas</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Productos más vendidos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" size-md="3">
+            <ion-card>
+              <ion-img src="assets/images/relleno1.png"></ion-img>
+              <ion-card-header>
+                <ion-card-title>Taladro Eléctrico</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <!-- Agregar más productos -->
+          <ion-col size="6" size-md="3">
+            <ion-card>
+              <ion-img src="assets/images/relleno1.png"></ion-img>
+              <ion-card-header>
+                <ion-card-title>Pinturas</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6" size-md="3">
+            <ion-card>
+              <ion-img src="assets/images/relleno1.png"></ion-img>
+              <ion-card-header>
+                <ion-card-title>Pinturas</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6" size-md="3">
+            <ion-card>
+              <ion-img src="assets/images/relleno1.png"></ion-img>
+              <ion-card-header>
+                <ion-card-title>Pinturas</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-footer>
+    <ion-toolbar>
+      <!-- Redefinir el layout del footer -->
+      <ion-grid>
+        <ion-row>
+          <!-- Columna para Redes Sociales -->
+          <ion-col size="6" size-md="3">
+            <ion-buttons slot="start">
+              <ion-button href="https://www.instagram.com/tuferreteria" target="_blank">
+                <ion-icon name="logo-instagram"></ion-icon>
+              </ion-button>
+              <ion-button href="https://www.facebook.com/tuferreteria" target="_blank">
+                <ion-icon name="logo-facebook"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-col>
+  
+          <!-- Columna para Enlaces Rápidos -->
+          <ion-col size="6" size-md="3">
+            <div class="footer-links">
+              <a href="/terminos">Términos y condiciones</a>
+              <a href="/privacidad">Política de privacidad</a>
+              <a href="/ayuda">Ayuda</a>
+            </div>
+          </ion-col>
+  
+          <!-- Columna para Contacto -->
+          <ion-col size="6" size-md="3">
+            <div class="footer-contact">
+              <p><strong>Contáctanos:</strong></p>
+              <p>Tel: +123 456 789</p>
+              <p>Email: contacto&#64;ferreteria.com</p>
+            </div>
+          </ion-col>
+  
+          <!-- Columna para Derechos de Autor -->
+          <ion-col size="6" size-md="3">
+            <div class="footer-copyright">
+              <p>&copy; 2025 Los Clavitos de Pablito. Todos los derechos reservados.</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-toolbar>
+  </ion-footer>
 </ion-content>

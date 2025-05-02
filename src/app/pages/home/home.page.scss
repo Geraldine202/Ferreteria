@@ -25,3 +25,109 @@
 #container a {
   text-decoration: none;
 }
+
+.slider-container {
+  display: flex;
+  width: 100%;          /* Ocupa todo el ancho disponible */
+  height: 300px;        /* Limitar la altura del carrusel (ajusta según tus necesidades) */
+  overflow: hidden;     /* Ocultar la barra de desplazamiento */
+  position: relative;   /* Necesario para que las imágenes se alineen correctamente */
+  margin: 20px 0;       /* Agregar margen superior e inferior */
+}
+
+/* Estilo de los elementos dentro del carrusel */
+.slider {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;  /* Centra las imágenes verticalmente */
+}
+
+/* Estilo de ion-item para que las imágenes no se estiren */
+ion-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;         /* Asegura que ocupe toda la altura disponible */
+}
+
+/* Estilo de las imágenes dentro de ion-item */
+ion-item img {
+  object-fit: cover;    /* Las imágenes se ajustan al tamaño sin distorsionarse */
+  transition: opacity 1s ease-in-out;
+  opacity: 0;
+  width: 100%;          /* Asegura que la imagen ocupe el 100% del contenedor */
+  height: 100%;         /* Asegura que la imagen ocupe el 100% de la altura */
+}
+
+/* Solo la imagen activa será visible */
+ion-item img.active {
+  opacity: 1;
+}
+
+/* Estilo general para el footer */
+ion-footer {
+  background-color: #f8f8f8;
+  padding: 10px 0;
+}
+
+/* Estilo para los botones de redes sociales */
+ion-buttons {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+ion-button {
+  margin: 0 10px;
+  color: #3b3b3b;
+  font-size: 24px;
+}
+
+/* Estilo para los enlaces rápidos */
+.footer-links a {
+  display: block;
+  color: #3b3b3b;
+  text-decoration: none;
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.footer-links a:hover {
+  color: #ff4d4f;
+}
+
+/* Estilo para la sección de contacto */
+.footer-contact p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.footer-contact strong {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Estilo para el texto de derechos de autor */
+.footer-copyright p {
+  font-size: 12px;
+  text-align: center;
+  color: #8c8c8c;
+}
+
+/* Estilo responsivo */
+@media (max-width: 767px) {
+  ion-col {
+    text-align: center;
+  }
+
+  .footer-contact p,
+  .footer-copyright p {
+    font-size: 12px;
+  }
+
+  .footer-links a {
+    font-size: 12px;
+  }
+}
