@@ -9,12 +9,7 @@ import { Component } from '@angular/core';
 export class HomePage {
 
   constructor() {}
-
-
-
   // Método para iniciar el contador
- 
-
   imagenes: string[] = [
     'assets/images/relleno1.png',
     'assets/images/relleno1.png',
@@ -27,12 +22,11 @@ export class HomePage {
     // Establecer un intervalo para cambiar la imagen cada 3 segundos
     setInterval(() => {
       this.nextImage();
-    }, 3000); // Cambiar imagen cada 3 segundos
+    }, 2000); // Cambiar imagen cada 3 segundos
   }
 
   nextImage() {
     this.currentIndex = (this.currentIndex + 1) % this.imagenes.length; // Incrementar índice y volver al principio al llegar al final
   }
-
 
 }
