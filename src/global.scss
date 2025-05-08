@@ -61,3 +61,34 @@
 ion-title {
   font-family: 'Bebas Neue', sans-serif !important;
 }
+
+/* global.scss o dentro del componente */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+.contact-container {
+  padding: 20px;
+}
+
+.contact-container h2 {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #3b2a1a;
+}
+
+.contact-container p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+ion-button.orange-button {
+  --background: #f57c00;
+  --background-hover: #ef6c00;
+  --border-radius: 30px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  font-size: 16px;
+}
