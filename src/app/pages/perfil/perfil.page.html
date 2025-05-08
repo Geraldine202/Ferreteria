@@ -1,3 +1,164 @@
-<ion-content>
+<ion-split-pane contentId="main-content">
+    <!-- Menú lateral -->
+    <ion-menu menu-id="main-menu" contentId="main-content" class="menuu">
+      <ion-header>
+        <ion-toolbar color="dark">
+          <ion-title style="text-align: center;">
+            <img src="assets/images/logo.png" alt="Logo" style="height: 110px;" />
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
   
-</ion-content>
+      <ion-content>
+        <ion-list>
+          <ion-item routerLink="/perfil" routerDirection="root">
+            <ion-icon name="person" slot="start"></ion-icon>
+            <ion-label>Ver perfil</ion-label>
+          </ion-item>
+          <ion-item routerLink="/inicio" routerDirection="root">
+            <ion-icon name="home" slot="start"></ion-icon>
+            <ion-label>Inicio</ion-label>
+          </ion-item>
+          <ion-item button (click)="mostrarSubcategorias = !mostrarSubcategorias">
+            <ion-icon name="apps" slot="start"></ion-icon>
+            <ion-label>Categoría</ion-label>
+            <ion-icon name="chevron-down-outline" slot="end" [class.rotated]="mostrarSubcategorias"></ion-icon>
+          </ion-item>
+  
+          <!-- Subcategorías desplegables -->
+          <ion-list *ngIf="mostrarSubcategorias" class="subcategoria-lista">
+            <ion-item *ngFor="let sub of subcategorias" (click)="irACategoria(sub)">
+              <ion-icon [name]="obtenerIcono(sub)" slot="start"></ion-icon>
+              <ion-label>{{ sub }}</ion-label>
+            </ion-item>
+          </ion-list>
+  
+          <ion-item routerLink="/carrito" routerDirection="root">
+            <ion-icon name="cart" slot="start"></ion-icon>
+            <ion-label>Ver carrito</ion-label>
+          </ion-item>
+  
+          <ion-item routerLink="/contacto" routerDirection="root">
+            <ion-icon name="call" slot="start"></ion-icon>
+            <ion-label>Contacto</ion-label>
+          </ion-item>
+          <ion-item (click)="cerrarSesion()">
+            <ion-icon name="log-out" slot="start"></ion-icon>
+            <ion-label>Cerrar sesión</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+  
+    <!-- Contenido principal -->
+    <div class="ion-page" id="main-content">
+      <ion-header>
+        <ion-toolbar
+          style="background: linear-gradient(135deg, #5c4033, #3b2a1a); color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.3);"
+        >
+          <ion-buttons slot="start">
+            <ion-menu-button menu="main-menu"></ion-menu-button>
+          </ion-buttons>
+          <ion-title
+            class="animated-title"
+            style="text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 1.5px; text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; gap: 8px;"
+          >
+            Los Clavitos de Pablito 🛠️
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
+  
+      <ion-content class="ion-padding">
+        <!-- Aquí va el contenido del perfil -->
+        <div class="mini-card hover-shadow animate-hover" style="max-width: 400px; margin: auto;">
+          <img src="assets/images/perfil.jpg" alt="Foto de perfil" class="mini-img" style="height: 120px; width: 120px; border-radius: 50%; margin-top: 10px; object-fit: cover;" />
+  
+          <div class="mini-header">
+            <h2 class="mini-title">Juan Pérez</h2>
+            <p class="mini-desc">Estudiante de Ingeniería en Informática</p>
+          </div>
+  
+          <div class="mini-content">
+            <p class="product-description"><strong>Correo:</strong> juan.perez&#64;email.com</p>
+            <p class="product-description"><strong>Teléfono:</strong> +56 9 1234 5678</p>
+            <p class="product-description"><strong>Dirección:</strong> Santiago, Chile</p>
+          </div>
+  
+          <ion-button expand="block" class="mini-btn" color="primary">Editar Perfil</ion-button>
+          <ion-button expand="block" class="mini-btn" color="danger" fill="outline" (click)="cerrarSesion()">Cerrar Sesión</ion-button>
+        </div>
+      </ion-content>
+  
+      <!-- FOOTER FIJO -->
+      <ion-footer>
+        <ion-toolbar color="dark">
+          <ion-grid>
+            <ion-row class="footer-content">
+              <ion-col size="12" size-md="3">
+                <div class="social-icons">
+                  <ion-button href="https://www.instagram.com/tuferreteria" target="_blank" color="secondary">
+                    <ion-icon name="logo-instagram"></ion-icon>
+                  </ion-button>
+                  <ion-button href="https://www.facebook.com/tuferreteria" target="_blank" color="secondary">
+                    <ion-icon name="logo-facebook"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-col>
+  
+              <ion-col size="12" size-md="3">
+                <div class="footer-links">
+                  <a href="/terminos" class="footer-link">Términos y condiciones</a>
+                  <a href="/privacidad" class="footer-link">Política de privacidad</a>
+                  <a href="/ayuda" class="footer-link">Ayuda</a>
+                </div>
+              </ion-col>
+  
+              <ion-col size="12" size-md="3">
+                <div class="footer-contact">
+                  <p><strong>Contáctanos:</strong></p>
+                  <p>Tel: +123 456 789</p>
+                  <p>Email: contacto&#64;ferreteria.com</p>
+                </div>
+              </ion-col>
+  
+              <ion-col size="12" size-md="3">
+                <div class="footer-copyright">
+                  <p>&copy; 2025 Los Clavitos de Pablito. Todos los derechos reservados.</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-toolbar>
+      </ion-footer>
+    </div>
+  </ion-split-pane>
+  
+  <style>
+    .animated-title {
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: slideFadeIn 1.2s ease-out forwards;
+    }
+  
+    @keyframes slideFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  
+    /* Asegura que el contenido principal no tape el footer */
+    ion-page {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+  
+    ion-content {
+      flex: 1;
+    }
+  
+    ion-footer {
+      flex-shrink: 0;
+    }
+  </style>
