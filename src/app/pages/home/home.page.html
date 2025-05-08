@@ -1,7 +1,7 @@
 <ion-app>
-  <ion-split-pane contentId="main-content" >
+  <ion-split-pane contentId="main-content">
     <!-- Menú lateral -->
-    <ion-menu menu-id="main-menu" contentId="main-content">
+    <ion-menu menu-id="main-menu" contentId="main-content" class="menuu">
       <ion-header>
         <ion-toolbar color="dark">
           <ion-title style="text-align: center;">
@@ -20,14 +20,23 @@
             <ion-icon name="home" slot="start"></ion-icon>
             <ion-label>Inicio</ion-label>
           </ion-item>
-          <ion-item routerLink="/productos" routerDirection="root">
-            <ion-icon name="pricetags" slot="start"></ion-icon>
-            <ion-label>Productos</ion-label>
+          <ion-item button (click)="mostrarSubcategorias = !mostrarSubcategorias">
+            <ion-icon name="apps" slot="start"></ion-icon>
+            <ion-label>Categoría</ion-label>
+            <ion-icon name="chevron-down-outline" slot="end" [class.rotated]="mostrarSubcategorias"></ion-icon>
           </ion-item>
-    
-          <ion-item routerLink="/categorias" routerDirection="root">
-            <ion-icon name="grid" slot="start"></ion-icon>
-            <ion-label>Categorías</ion-label>
+          
+          <!-- Subcategorías desplegables -->
+          <ion-list *ngIf="mostrarSubcategorias" class="subcategoria-lista">
+            <ion-item *ngFor="let sub of subcategorias" (click)="seleccionarSubcategoria(sub)" (click)="irACategoria(sub)">
+              <ion-icon [name]="obtenerIcono(sub)" slot="start"></ion-icon>
+              <ion-label>{{ sub }}</ion-label>
+            </ion-item>
+          </ion-list>
+          
+          <ion-item routerLink="/carrito" routerDirection="root">
+            <ion-icon name="cart" slot="start"></ion-icon>
+            <ion-label>Ver carrito</ion-label>
           </ion-item>
     
           <ion-item routerLink="/contacto" routerDirection="root">
@@ -64,8 +73,7 @@
             align-items: center; 
             justify-content: center;
             gap: 8px;
-          ">
-            🔩 Los Clavitos de Pablito 🛠️
+          ">Los Clavitos de Pablito 🛠️
           </ion-title>
         </ion-toolbar>
       </ion-header>
@@ -85,10 +93,6 @@
         }
       </style>
       
-      
-      
-      
-
       <ion-content>
         <ion-fab vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button color="primary">
@@ -99,7 +103,7 @@
         <div class="slider-container">
           <div class="slider" *ngFor="let imagen of imagenes; let i = index">
             <ion-item>
-              <img [src]="imagen" [class.active]="i === currentIndex" style="width: 100%; height: auto;" />
+              <img [src]="imagen" [class.active]="i === imagenIndex" style="width: 100%; height: auto;" />
             </ion-item>
           </div>
         </div>
@@ -107,120 +111,134 @@
         <ion-button expand="full" fill="solid" color="primary" routerLink="/productos">
           ¡Compra Ahora!
         </ion-button>
-
         <ion-grid>
           <ion-row>
             <ion-col size="6" size-md="3">
-              <ion-card>
-                <ion-img src="assets/images/relleno1.png"></ion-img>
-                <ion-card-header>
-                  <ion-card-title>Herramientas</ion-card-title>
+              <ion-card class="mini-card hover-shadow">
+                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
+                <ion-card-header class="mini-header">
+                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
                 </ion-card-header>
+                <ion-card-content class="mini-content">
+                  <p class="mini-desc">Descripción breve</p>
+                  <h3 class="mini-price">$19.99</h3>
+                </ion-card-content>
+                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                  <ion-icon name="cart-outline" slot="start"></ion-icon>
+                  Añadir
+                </ion-button>
               </ion-card>
             </ion-col>
             <ion-col size="6" size-md="3">
-              <ion-card>
-                <ion-img src="assets/images/relleno1.png"></ion-img>
-                <ion-card-header>
-                  <ion-card-title>Pinturas</ion-card-title>
+              <ion-card class="mini-card hover-shadow">
+                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
+                <ion-card-header class="mini-header">
+                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
                 </ion-card-header>
+                <ion-card-content class="mini-content">
+                  <p class="mini-desc">Descripción breve</p>
+                  <h3 class="mini-price">$19.99</h3>
+                </ion-card-content>
+                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                  <ion-icon name="cart-outline" slot="start"></ion-icon>
+                  Añadir
+                </ion-button>
               </ion-card>
             </ion-col>
             <ion-col size="6" size-md="3">
-              <ion-card>
-                <ion-img src="assets/images/relleno1.png"></ion-img>
-                <ion-card-header>
-                  <ion-card-title>Pinturas</ion-card-title>
+              <ion-card class="mini-card hover-shadow">
+                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
+                <ion-card-header class="mini-header">
+                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
                 </ion-card-header>
+                <ion-card-content class="mini-content">
+                  <p class="mini-desc">Descripción breve</p>
+                  <h3 class="mini-price">$19.99</h3>
+                </ion-card-content>
+                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                  <ion-icon name="cart-outline" slot="start"></ion-icon>
+                  Añadir
+                </ion-button>
               </ion-card>
             </ion-col>
             <ion-col size="6" size-md="3">
-              <ion-card>
-                <ion-img src="assets/images/relleno1.png"></ion-img>
-                <ion-card-header>
-                  <ion-card-title>Pinturas</ion-card-title>
+              <ion-card class="mini-card hover-shadow">
+                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
+                <ion-card-header class="mini-header">
+                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
                 </ion-card-header>
+                <ion-card-content class="mini-content">
+                  <p class="mini-desc">Descripción breve</p>
+                  <h3 class="mini-price">$19.99</h3>
+                </ion-card-content>
+                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                  <ion-icon name="cart-outline" slot="start"></ion-icon>
+                  Añadir
+                </ion-button>
+              </ion-card>
+            </ion-col>
+            <ion-col size="6" size-md="3">
+              <ion-card class="mini-card hover-shadow">
+                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
+                <ion-card-header class="mini-header">
+                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
+                </ion-card-header>
+                <ion-card-content class="mini-content">
+                  <p class="mini-desc">Descripción breve</p>
+                  <h3 class="mini-price">$19.99</h3>
+                </ion-card-content>
+                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                  <ion-icon name="cart-outline" slot="start"></ion-icon>
+                  Añadir
+                </ion-button>
+              </ion-card>
+            </ion-col>
+            <ion-col size="6" size-md="3">
+              <ion-card class="mini-card hover-shadow">
+                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
+                <ion-card-header class="mini-header">
+                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
+                </ion-card-header>
+                <ion-card-content class="mini-content">
+                  <p class="mini-desc">Descripción breve</p>
+                  <h3 class="mini-price">$19.99</h3>
+                </ion-card-content>
+                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                  <ion-icon name="cart-outline" slot="start"></ion-icon>
+                  Añadir
+                </ion-button>
               </ion-card>
             </ion-col>
           </ion-row>
         </ion-grid>
-        <ion-card class="mas">
-          <ion-card-header>
-            <ion-card-title>Productos más vendidos</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-grid>
-              <ion-row>
-                <ion-col size="6" size-md="3">
-                  <ion-card>
-                    <ion-img src="assets/images/relleno1.png"></ion-img>
-                    <ion-card-header>
-                      <ion-card-title>Taladro Eléctrico</ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <p>Descripción breve del producto que no se corta ni se sobrepone.</p>
-                    </ion-card-content>
-                    <!-- Botón Agregar al carrito con el icono de Ionic -->
-                    <ion-button color="primary" class="add-to-cart-button">
-                      <ion-icon name="cart" slot="start"></ion-icon> Agregar al carrito
-                    </ion-button>
-                  </ion-card>                
-                </ion-col>
-                <!-- Más productos -->
-                <ion-col size="6" size-md="3">
-                  <ion-card>
-                    <ion-img src="assets/images/relleno1.png"></ion-img>
-                    <ion-card-header>
-                      <ion-card-title>Taladro Eléctrico</ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <p>Descripción breve del producto que no se corta ni se sobrepone.</p>
-                    </ion-card-content>
-                    <!-- Botón Agregar al carrito con el icono de Ionic -->
-                    <ion-button  color="primary" class="add-to-cart-button">
-                      <ion-icon name="cart" slot="start"></ion-icon> Agregar al carrito
-                    </ion-button>
-                  </ion-card>                
-                </ion-col>
-                <ion-col size="6" size-md="3">
-                  <ion-card>
-                    <ion-img src="assets/images/relleno1.png"></ion-img>
-                    <ion-card-header>
-                      <ion-card-title>Taladro Eléctrico</ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <p>Descripción breve del producto que no se corta ni se sobrepone.</p>
-                    </ion-card-content>
-                    <!-- Botón Agregar al carrito con el icono de Ionic -->
-                    <ion-button  color="primary" class="add-to-cart-button">
-                      <ion-icon name="cart" slot="start"></ion-icon> Agregar al carrito
-                    </ion-button>
-                  </ion-card>                 
-                </ion-col>
+
+        <h2 style="text-align: center;">Productos más vendidos</h2>
+        <div class="featured-slider-container">
+          <!-- Flecha de retroceso -->
+          <button class="slider-btn prev" (click)="moveSlider(-1)">&#10094;</button>
         
-                <ion-col size="6" size-md="3">
-                  <ion-card>
-                    <ion-img src="assets/images/relleno1.png"></ion-img>
-                    <ion-card-header>
-                      <ion-card-title>Taladro Eléctrico</ion-card-title>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <p>Descripción breve del producto que no se corta ni se sobrepone.</p>
-                    </ion-card-content>
-                    <!-- Botón Agregar al carrito con el icono de Ionic -->
-                    <ion-button  color="primary" class="add-to-cart-button">
-                      <ion-icon name="cart" slot="start"></ion-icon> Agregar al carrito
-                    </ion-button>
-                  </ion-card>
-                  
-                  
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-card-content>
-        </ion-card>
+          <!-- Contenedor del slider -->
+          <div class="featured-slider">
+            <ion-card *ngFor="let item of getProductosVisibles(); let i = index" class="mini-card hover-shadow"
+                      [ngClass]="{'centered': item.isCentral, 'faded': !item.isCentral}">
+              <img [src]="item.producto.imgSrc" alt="{{item.producto.title}}" class="mini-img" >
+              <ion-card-header>
+                <ion-card-title class="mini-title">{{item.producto.title}}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <p class="product-description">{{item.producto.description}}</p>
+                <p class="product-price">{{item.producto.price}}</p>
+              </ion-card-content> 
+              <ion-button  class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                <ion-icon name="cart-outline" slot="start"></ion-icon>
+                Añadir
+              </ion-button>
+            </ion-card>
+          </div>
         
-      
+          <!-- Flecha de avance -->
+          <button class="slider-btn next" (click)="moveSlider(2)">&#10095;</button>
+        </div>
         
         
         <ion-footer>
