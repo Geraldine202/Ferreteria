@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-perfil',
@@ -12,9 +13,13 @@ import { Router } from '@angular/router';
 })
 export class PerfilPage implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private navController: NavController) { }
 
   ngOnInit() {
+  }
+
+  irAHome() {
+    this.navController.navigateRoot('/home'); // Asegúrate de que "/home" es la ruta correcta de tu página de inicio
   }
 
   mostrarSubcategorias = false;

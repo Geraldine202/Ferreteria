@@ -11,11 +11,11 @@
   
       <ion-content>
         <ion-list>
-          <ion-item routerLink="/perfil" routerDirection="root">
+          <ion-item class="menu-option">
             <ion-icon name="person" slot="start"></ion-icon>
             <ion-label>Ver perfil</ion-label>
           </ion-item>
-          <ion-item routerLink="/inicio" routerDirection="root">
+          <ion-item class="menu-option" (click)="irAHome()">
             <ion-icon name="home" slot="start"></ion-icon>
             <ion-label>Inicio</ion-label>
           </ion-item>
@@ -27,22 +27,22 @@
   
           <!-- Subcategorías desplegables -->
           <ion-list *ngIf="mostrarSubcategorias" class="subcategoria-lista">
-            <ion-item *ngFor="let sub of subcategorias" (click)="irACategoria(sub)">
+            <ion-item *ngFor="let sub of subcategorias" (click)="seleccionarSubcategoria(sub)" (click)="irACategoria(sub)">
               <ion-icon [name]="obtenerIcono(sub)" slot="start"></ion-icon>
               <ion-label>{{ sub }}</ion-label>
             </ion-item>
           </ion-list>
   
-          <ion-item routerLink="/carrito" routerDirection="root">
+          <ion-item class="menu-option">
             <ion-icon name="cart" slot="start"></ion-icon>
             <ion-label>Ver carrito</ion-label>
           </ion-item>
   
-          <ion-item routerLink="/contacto" routerDirection="root">
+          <ion-item class="menu-option">
             <ion-icon name="call" slot="start"></ion-icon>
             <ion-label>Contacto</ion-label>
           </ion-item>
-          <ion-item (click)="cerrarSesion()">
+          <ion-item class="menu-option">
             <ion-icon name="log-out" slot="start"></ion-icon>
             <ion-label>Cerrar sesión</ion-label>
           </ion-item>
@@ -69,96 +69,98 @@
       </ion-header>
   
       <ion-content class="ion-padding">
-        <!-- Aquí va el contenido del perfil -->
-        <div class="mini-card hover-shadow animate-hover" style="max-width: 400px; margin: auto;">
-          <img src="assets/images/perfil.jpg" alt="Foto de perfil" class="mini-img" style="height: 120px; width: 120px; border-radius: 50%; margin-top: 10px; object-fit: cover;" />
+        <!-- Foto de perfil y nombre de usuario -->
+        <div class="ion-text-center" id="foto-perfil">
+          <img src="assets/images/perfil.jpg" alt="Foto de perfil" id="imagen-perfil" />
+          <h1 id="labelNombre">Nombre del Usuario</h1>
+        </div>
   
-          <div class="mini-header">
-            <h2 class="mini-title">Juan Pérez</h2>
-            <p class="mini-desc">Estudiante de Ingeniería en Informática</p>
-          </div>
+        <!-- Detalles del perfil -->
+        <div id="detalles-perfil">
+          <ion-card id="card-detalles-perfil">
+            <ion-card-content>
+              <ion-list>
+                <!-- Sección: Perfil -->
+                <h2 class="labelDetalles">Perfil</h2>
+                <ion-item>
+                  <ion-icon name="person" slot="start"></ion-icon>
+                  <ion-label>Tipo de usuario</ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="shield" slot="start"></ion-icon>
+                  <ion-label>Contraseña y Seguridad</ion-label>
+                </ion-item>
   
-          <div class="mini-content">
-            <p class="product-description"><strong>Correo:</strong> juan.perez&#64;email.com</p>
-            <p class="product-description"><strong>Teléfono:</strong> +56 9 1234 5678</p>
-            <p class="product-description"><strong>Dirección:</strong> Santiago, Chile</p>
-          </div>
+                <!-- Espacio entre secciones -->
+                <div class="spacer"></div>
   
-          <ion-button expand="block" class="mini-btn" color="primary">Editar Perfil</ion-button>
-          <ion-button expand="block" class="mini-btn" color="danger" fill="outline" (click)="cerrarSesion()">Cerrar Sesión</ion-button>
+                <!-- Sección: Información Personal -->
+                <h2 class="labelDetalles">Información Personal</h2>
+                <ion-item>
+                  <ion-icon name="albums" slot="start"></ion-icon>
+                  <ion-label>Datos Personales</ion-label>
+                </ion-item>
+  
+                <!-- Espacio entre secciones -->
+                <div class="spacer"></div>
+  
+                <!-- Sección: MoveGo -->
+                <h2 class="labelDetalles">MoveGo</h2>
+                <ion-item>
+                  <ion-icon name="information-circle" slot="start"></ion-icon>
+                  <ion-label>Legal</ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="log-out-outline" slot="start"></ion-icon>
+                  <ion-label>Cerrar Sesión</ion-label>
+                </ion-item>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
         </div>
       </ion-content>
   
-      <!-- FOOTER FIJO -->
-      <ion-footer>
-        <ion-toolbar color="dark">
-          <ion-grid>
-            <ion-row class="footer-content">
-              <ion-col size="12" size-md="3">
-                <div class="social-icons">
-                  <ion-button href="https://www.instagram.com/tuferreteria" target="_blank" color="secondary">
-                    <ion-icon name="logo-instagram"></ion-icon>
-                  </ion-button>
-                  <ion-button href="https://www.facebook.com/tuferreteria" target="_blank" color="secondary">
-                    <ion-icon name="logo-facebook"></ion-icon>
-                  </ion-button>
-                </div>
-              </ion-col>
-  
-              <ion-col size="12" size-md="3">
-                <div class="footer-links">
-                  <a href="/terminos" class="footer-link">Términos y condiciones</a>
-                  <a href="/privacidad" class="footer-link">Política de privacidad</a>
-                  <a href="/ayuda" class="footer-link">Ayuda</a>
-                </div>
-              </ion-col>
-  
-              <ion-col size="12" size-md="3">
-                <div class="footer-contact">
-                  <p><strong>Contáctanos:</strong></p>
-                  <p>Tel: +123 456 789</p>
-                  <p>Email: contacto&#64;ferreteria.com</p>
-                </div>
-              </ion-col>
-  
-              <ion-col size="12" size-md="3">
-                <div class="footer-copyright">
-                  <p>&copy; 2025 Los Clavitos de Pablito. Todos los derechos reservados.</p>
-                </div>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-toolbar>
-      </ion-footer>
     </div>
   </ion-split-pane>
   
   <style>
-    .animated-title {
-      opacity: 0;
-      transform: translateY(-20px);
-      animation: slideFadeIn 1.2s ease-out forwards;
+    /* Estilos personalizados */
+    .labelDetalles {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
     }
   
-    @keyframes slideFadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .spacer {
+      height: 20px;
     }
   
-    /* Asegura que el contenido principal no tape el footer */
-    ion-page {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+    #foto-perfil img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
     }
   
-    ion-content {
-      flex: 1;
+    #labelNombre {
+      margin-top: 10px;
+      font-size: 22px;
+      font-weight: bold;
     }
   
-    ion-footer {
-      flex-shrink: 0;
+    .menu-option {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      text-align: left;
     }
+  
+    .menu-option ion-icon {
+      font-size: 22px;
+      margin-right: 10px;
+    }
+  
+  
   </style>
+  
