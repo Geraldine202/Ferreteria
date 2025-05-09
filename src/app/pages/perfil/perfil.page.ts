@@ -13,19 +13,25 @@ import { NavController } from '@ionic/angular';
 })
 export class PerfilPage implements OnInit {
 
-  constructor(private router: Router, private navController: NavController) { }
-
-  ngOnInit() {
-  }
-
-  irAHome() {
-    this.navController.navigateRoot('/home'); // Asegúrate de que "/home" es la ruta correcta de tu página de inicio
-  }
-
   mostrarSubcategorias = false;
 
-  subcategorias = ['Herramientas Manuales', 'Materiales Básicos', 'Equipos de seguridad','Tornillos y Anclajes','Fijaciones y Adhesivos','Equipos de Medición'];
-  
+  subcategorias = [
+    'Herramientas Manuales',
+    'Materiales Básicos',
+    'Equipos de seguridad',
+    'Tornillos y Anclajes',
+    'Fijaciones y Adhesivos',
+    'Equipos de Medición'
+  ];
+
+  constructor(private router: Router, private navController: NavController) {}
+
+  ngOnInit() {}
+
+  irAHome() {
+    this.navController.navigateRoot('/home');
+  }
+
   seleccionarSubcategoria(nombre: string) {
     console.log('Seleccionaste:', nombre);
   }
@@ -39,9 +45,9 @@ export class PerfilPage implements OnInit {
       case 'Equipos de seguridad':
         return 'shield-checkmark';
       case 'Tornillos y Anclajes':
-        return 'hardware-chip'; // no hay uno específico, este es representativo
+        return 'hardware-chip';
       case 'Fijaciones y Adhesivos':
-        return 'git-merge'; // algo que represente unión
+        return 'git-merge';
       case 'Equipos de Medición':
         return 'speedometer';
       default:
@@ -50,13 +56,11 @@ export class PerfilPage implements OnInit {
   }
 
   irACategoria(nombre: string) {
-    // Por ejemplo, redirige a /categoria/herramientas-manuales
-    const ruta = nombre.toLowerCase().replace(/\s+/g, '-'); // reemplaza espacios por guiones
+    const ruta = nombre.toLowerCase().replace(/\s+/g, '-');
     this.router.navigate(['/categoria', ruta]);
-  } 
+  }
 
   cerrarSesion() {
-    // Lógica para cerrar sesión, ejemplo:
     this.router.navigate(['/login']);
   }
 }
