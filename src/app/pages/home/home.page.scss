@@ -8,9 +8,6 @@
   transition: max-height 0.3s ease;
 }
 
-.menuu{
-  width:100px;
-}
 
 /* === MINI CARDS === */
 .mini-card {
@@ -95,10 +92,11 @@
   margin: 20px 0;
 }
 .featured-slider-container {
-  position: relative;
+position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  width: 100%;
+  overflow: hidden;
 }
 .featured-slider {
   display: flex;
@@ -124,7 +122,11 @@
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   border-radius: 12px;
 }
-
+.featured-slider-wrapper {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  flex: 1;
+}
 .mini-img {
   display: block;
   margin: 0 auto;
@@ -133,6 +135,8 @@
   object-fit: cover;
   border-radius: 8px; 
 }
+
+
 ion-item {
   display: flex;
   justify-content: center;
@@ -336,10 +340,6 @@ ion-button {
   }
 }
 
-.animated-menu-button {
-  animation: popInRotate 1s ease-out;
-  transform-origin: center;
-}
 
 @keyframes popInRotate {
   0% {

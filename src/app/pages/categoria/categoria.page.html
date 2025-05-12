@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Productos - {{ categoria }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Si no se encuentran productos, muestra un mensaje -->
+  <div *ngIf="productosFiltrados.length === 0">
+    <p>No se encontraron productos para esta categoría.</p>
+  </div>
+  
+  <!-- Itera sobre los productos filtrados y muestra sus detalles -->
+  <div *ngFor="let producto of productosFiltrados">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ producto.nombre }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+        <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+        <ion-button (click)="agregarAlCarrito(producto)">Agregar al carrito</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

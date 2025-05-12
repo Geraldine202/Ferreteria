@@ -24,6 +24,10 @@ export class HomePage {
       this.nextImage();
     }, 2000);
   }
+  ngOnInit() {
+  this.actualizarProductosVisibles();
+  window.addEventListener('resize', () => this.actualizarProductosVisibles());
+}
 
   nextImage() {
     this.imagenIndex = (this.imagenIndex + 1) % this.imagenes.length;
@@ -38,17 +42,19 @@ export class HomePage {
     { imgSrc: 'assets/images/relleno1.png', title: 'Producto 7', description: 'Descripción breve del producto.', price: '$49.99' },
   ];
   
-  mostrarSubcategorias = false;
 
-  subcategorias = ['Herramientas Manuales', 'Materiales Básicos', 'Equipos de seguridad','Tornillos y Anclajes','Fijaciones y Adhesivos','Equipos de Medición'];
-  
-  seleccionarSubcategoria(nombre: string) {
-    console.log('Seleccionaste:', nombre);
-  }
-  
   productosVisibles = 3; // Mostrar 3 productos a la vez
   productoIndex: number = 0; // Índice del carrusel de productos
-  
+  actualizarProductosVisibles() {
+  const anchoPantalla = window.innerWidth;
+
+  if (anchoPantalla < 768) {
+    this.productosVisibles = 1; // En móviles o pantallas pequeñas
+  } else {
+    this.productosVisibles = 3; // En pantallas normales/escritorio
+  }
+}
+
   getProductosVisibles() {
     const visibles = [];
     for (let i = 0; i < this.productosVisibles; i++) {
@@ -58,29 +64,7 @@ export class HomePage {
     }
     return visibles;
   }
-  obtenerIcono(nombre: string): string {
-    switch (nombre) {
-      case 'Herramientas Manuales':
-        return 'construct';
-      case 'Materiales Básicos':
-        return 'cube';
-      case 'Equipos de seguridad':
-        return 'shield-checkmark';
-      case 'Tornillos y Anclajes':
-        return 'hardware-chip'; // no hay uno específico, este es representativo
-      case 'Fijaciones y Adhesivos':
-        return 'git-merge'; // algo que represente unión
-      case 'Equipos de Medición':
-        return 'speedometer';
-      default:
-        return 'pricetag';
-    }
-  }
-  irACategoria(nombre: string) {
-    // Por ejemplo, redirige a /categoria/herramientas-manuales
-    const ruta = nombre.toLowerCase().replace(/\s+/g, '-'); // reemplaza espacios por guiones
-    this.router.navigate(['/categoria', ruta]);
-  }  
+
   // Método para mover el carrusel
   moveSlider(direction: number) {
     const totalProductos = this.productos.length;
