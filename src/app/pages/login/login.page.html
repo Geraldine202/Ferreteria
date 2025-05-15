@@ -38,7 +38,7 @@
         </ion-input>
 
         <ion-text class="ion-text-right">
-          <p><a routerLink="/recuperar" class="link">¿Olvidaste la contraseña?</a></p>
+          <p><a (click)="goToRecuperar()" class="link">¿Olvidaste la contraseña?</a></p>
         </ion-text>
 
         <br>
@@ -58,7 +58,7 @@
 
         <!-- Enlace para registrarse -->
         <ion-text class="ion-text-center">
-          <h2>¿No tienes cuenta? Regístrate <a routerLink="/registro" class="link">Aquí</a></h2>
+          <h2>¿No tienes cuenta? Regístrate <a (click)="goToRegistrarse()" class="link">Aquí</a></h2>
         </ion-text>
       </ion-card-content>
     </ion-card>

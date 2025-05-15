@@ -35,4 +35,10 @@ export class LoginPage implements OnInit {
       console.log('Por favor ingresa un correo y contraseña');
     }
   }
+  goToRecuperar() {
+  this.router.navigate(['/recuperar']);
+}
+  goToRegistrarse() {
+  this.router.navigate(['/registrarse']);
+}
 }

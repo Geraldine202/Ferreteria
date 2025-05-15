@@ -33,6 +33,23 @@ const routes: Routes = [
     path: 'categoria/:nombre', component: CategoriaPage,
     loadChildren: () => import('./pages/categoria/categoria.module').then( m => m.CategoriaPageModule)
   },
+  {
+    path: 'trabajadores',
+    loadChildren: () => import('./pages/trabajadores/trabajadores.module').then( m => m.TrabajadoresPageModule)
+  },
+  {
+    path: 'inventario',
+    loadChildren: () => import('./pages/inventario/inventario.module').then( m => m.InventarioPageModule)
+  },
+  {
+    path: 'registrarse',
+    loadComponent: () => import('./pages/registrarse/registrarse.page').then( m => m.RegistrarsePage)
+  },
+  {
+    path: 'recuperar',
+    loadComponent: () => import('./pages/recuperar/recuperar.page').then( m => m.RecuperarPage)
+  },
+
 
 
 
