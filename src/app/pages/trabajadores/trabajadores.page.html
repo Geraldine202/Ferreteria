@@ -3,7 +3,7 @@
     <ion-card-header>
       <ion-card-title class="card-title">Administrar Trabajadores</ion-card-title>
     </ion-card-header>
-    <form (ngSubmit)="onSubmit()">
+    <form [formGroup]="persona"  (ngSubmit)="onSubmit()">
 
       <ion-item class="form-item">
         <ion-label position="stacked">rut</ion-label>
@@ -33,10 +33,10 @@
       <ion-item class="form-item">
         <ion-label position="stacked">Tipo Usuario</ion-label>
         <ion-select formControlName="tipo_usuario" placeholder="Tipo Usuario">
-          <ion-select-option value="1">administrador</ion-select-option>
-          <ion-select-option value="2">vendedor</ion-select-option>
-          <ion-select-option value="3">bodeguero</ion-select-option>
-          <ion-select-option value="4">contador</ion-select-option>
+          <ion-select-option value="administrador">administrador</ion-select-option>
+          <ion-select-option value="vendedor">vendedor</ion-select-option>
+          <ion-select-option value="bodeguero">bodeguero</ion-select-option>
+          <ion-select-option value="contador">contador</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item>

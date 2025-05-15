@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { UsuariosService } from 'src/app/service/usuarios.service';
 
@@ -8,7 +8,7 @@ import { UsuariosService } from 'src/app/service/usuarios.service';
   selector: 'app-trabajadores',
   templateUrl: './trabajadores.page.html',
   styleUrls: ['./trabajadores.page.scss'],
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule,ReactiveFormsModule],
   standalone: true
 })
 export class TrabajadoresPage implements OnInit {
@@ -24,17 +24,18 @@ export class TrabajadoresPage implements OnInit {
     this.persona = this.fb.group({
       rut: ['', Validators.required],
       nombre: ['', Validators.required],
-      primer_apellido: [''],
+      primer_apellido: ['', Validators.required],
       segundo_apellido: [''],
-      genero: [''],
-      tipo_usuario: [''],
-      correo: [''],
-      direccion: [''], // corregido
-      telefono: [''],
-      fecha_nacimiento: [''],
-      id_sucursal: [''],
-      id_comuna: ['']
+      genero: ['', Validators.required],
+      tipo_usuario: ['', Validators.required],
+      correo: ['', [Validators.required, Validators.email]],
+      direccion: ['', Validators.required],
+      telefono: ['', Validators.required],
+      fecha_nacimiento: ['', Validators.required],
+      id_sucursal: ['', Validators.required],
+      id_comuna: ['', Validators.required]
     });
+
   }
 
   ngOnInit() {
@@ -43,30 +44,39 @@ export class TrabajadoresPage implements OnInit {
 
   cargarUsuarios() {
     this.usuariosService.obtenerUsuarios().subscribe({
-    next: (data: any) => {
-      this.usuarios = Array.isArray(data) ? data : [];
-    },
+      next: (data: any) => {
+        console.log('Usuarios recibidos desde la API:', data);
+        // Asegúrate que data sea un array
+        this.usuarios = Array.isArray(data) ? data : [];
+      },
       error: err => console.error('Error al obtener usuarios', err)
     });
   }
 
-  onSubmit() {
-    if (this.persona.invalid) return;
+onSubmit() {
+  if (this.persona.invalid) return;
 
-    const nuevoUsuario = this.persona.value;
+  const nuevoUsuario = this.persona.value;
+  console.log('Datos a enviar:', nuevoUsuario);
 
-    this.usuariosService.crearUsuario(nuevoUsuario).subscribe({
-      next: () => {
-        this.cargarUsuarios();
-        this.limpiarFormulario();
-      },
-      error: err => console.error('Error al registrar usuario', err)
-    });
+  for (const [clave, valor] of Object.entries(nuevoUsuario)) {
+    console.log(`${clave}: ${valor} (tipo: ${typeof valor})`);
   }
+
+  this.usuariosService.crearUsuario(nuevoUsuario).subscribe({
+    next: () => {
+      this.cargarUsuarios();
+      this.limpiarFormulario();
+    },
+    error: err => console.error('Error al registrar usuario', err)
+  });
+}
+
+
 
   buscar(usuario: any) {
     this.usuariosService.buscarUsuario(usuario.rut).subscribe({
-      next: data => {
+      next: (data: any) => {
         this.persona.patchValue(data);
         this.botonModificar = true;
       },

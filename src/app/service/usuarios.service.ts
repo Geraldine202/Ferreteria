@@ -50,6 +50,7 @@ export class UsuariosService {
     const headers = new HttpHeaders({
       'x-api-key': this.apiKey
     });
-    return this.http.delete(`${this.url}/usuarios/${rut}`, { headers });
+    return this.http.delete(`${this.url}/${rut}`, { headers });
   }
+
 }
