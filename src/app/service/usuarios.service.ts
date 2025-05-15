@@ -1,15 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
-  private url = 'http://localhost:3000/usuarios'; // Cambia por tu IP si usas móvil físico
-  private apiKey = 'gestion_usuarios123.';
+  private url = 'http://localhost:3000/usuarios';
+  private apiKey = environment.apiKey;
   usuarios: any[] = [];
 
-  constructor(private http: HttpClient) {} // ✅ Quitado usuariosService
+  constructor(private http: HttpClient) {} 
 
   // Obtener todos los usuarios
   obtenerUsuarios() {
