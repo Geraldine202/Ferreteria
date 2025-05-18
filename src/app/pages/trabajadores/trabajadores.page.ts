@@ -25,21 +25,26 @@ export class TrabajadoresPage implements OnInit {
       rut: ['', Validators.required],
       nombre: ['', Validators.required],
       primer_apellido: ['', Validators.required],
-      segundo_apellido: [''],
+      segundo_apellido: ['', Validators.required],
+      contrasenia: ['', Validators.required],
+      imagen: [''],
       genero: ['', Validators.required],
-      tipo_usuario: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       direccion: ['', Validators.required],
       telefono: ['', Validators.required],
       fecha_nacimiento: ['', Validators.required],
-      id_sucursal: ['', Validators.required],
-      id_comuna: ['', Validators.required]
+      tipo_usuario: [null, Validators.required],
+      sucursal: [null, Validators.required],
+      comuna: [null, Validators.required]
     });
+
+    
 
   }
 
   ngOnInit() {
     this.cargarUsuarios();
+    console.log(this.persona.value);
   }
 
   cargarUsuarios() {
@@ -54,35 +59,60 @@ export class TrabajadoresPage implements OnInit {
   }
 
 onSubmit() {
-  if (this.persona.invalid) return;
+  if (this.persona.valid) {
+    const data = this.persona.value;
+    const usuarioEnviar = {
+      ...data,
+      tipo_usuario: Number(data.tipo_usuario),
+      sucursal: Number(data.sucursal),
+      comuna: Number(data.comuna),
+      telefono: Number(data.telefono) // si teléfono es numérico en DB
+    };
 
-  const nuevoUsuario = this.persona.value;
-  console.log('Datos a enviar:', nuevoUsuario);
-
-  for (const [clave, valor] of Object.entries(nuevoUsuario)) {
-    console.log(`${clave}: ${valor} (tipo: ${typeof valor})`);
+    this.usuariosService.crearUsuario(usuarioEnviar).subscribe(
+      res => console.log('Usuario creado:', res),
+      err => console.error('Error al crear usuario:', err)
+    );
   }
+}
 
-  this.usuariosService.crearUsuario(nuevoUsuario).subscribe({
-    next: () => {
-      this.cargarUsuarios();
-      this.limpiarFormulario();
-    },
-    error: err => console.error('Error al registrar usuario', err)
+
+
+
+
+buscar(usuario: any) {
+  this.usuariosService.buscarUsuario(usuario.rut).subscribe((data: any) => {
+    let fechaNacimientoISO = '';
+
+    if (data.fecha_nacimiento) {
+      // Extraer solo yyyy-mm-dd para el input date
+      fechaNacimientoISO = data.fecha_nacimiento.substring(0, 10);
+    }
+
+    this.persona.patchValue({
+      rut: data.rut,
+      nombre: data.nombre,
+      primer_apellido: data.primer_apellido,
+      segundo_apellido: data.segundo_apellido,
+      contrasenia: data.contrasenia,
+      imagen: data.imagen,
+      genero: data.genero,
+      correo: data.correo,
+      direccion: data.direccion,
+      telefono: data.telefono,
+      fecha_nacimiento: fechaNacimientoISO,
+      tipo_usuario: data.tipo_usuario,
+      sucursal: data.sucursal,
+      comuna: data.comuna
+    });
+
+    this.botonModificar = true;
   });
 }
 
 
 
-  buscar(usuario: any) {
-    this.usuariosService.buscarUsuario(usuario.rut).subscribe({
-      next: (data: any) => {
-        this.persona.patchValue(data);
-        this.botonModificar = true;
-      },
-      error: err => console.error('Error al buscar usuario', err)
-    });
-  }
+
 
   modificar() {
     if (this.persona.invalid) return;
@@ -111,4 +141,14 @@ onSubmit() {
     this.persona.reset();
     this.botonModificar = false;
   }
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const nombreArchivo = file.name;
+      const ruta = `assets/images/${nombreArchivo}`;
+      this.persona.get('imagen')?.setValue(ruta);
+    }
+  }
+
+
 }

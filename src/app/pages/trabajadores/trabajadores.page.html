@@ -9,7 +9,6 @@
         <ion-label position="stacked">rut</ion-label>
         <ion-input formControlName="rut" type="text"></ion-input>
       </ion-item>
-
       <ion-item class="form-item">
         <ion-label position="stacked">Nombre</ion-label>
         <ion-input formControlName="nombre" type="text"></ion-input>
@@ -23,23 +22,26 @@
         <ion-input formControlName="segundo_apellido" type="text"></ion-input>
       </ion-item>
       <ion-item class="form-item">
-        <ion-label position="stacked">Género</ion-label>
-        <ion-select formControlName="genero" placeholder="Género">
-          <ion-select-option value="masculino">Masculino</ion-select-option>
-          <ion-select-option value="femenino">Femenino</ion-select-option>
-          <ion-select-option value="otro">Otro</ion-select-option>
-        </ion-select>
+        <ion-label position="stacked">Contraseña Temporal</ion-label>
+        <ion-input formControlName="contrasenia" type="text" ></ion-input>
       </ion-item>
       <ion-item class="form-item">
-        <ion-label position="stacked">Tipo Usuario</ion-label>
-        <ion-select formControlName="tipo_usuario" placeholder="Tipo Usuario">
-          <ion-select-option value="administrador">administrador</ion-select-option>
-          <ion-select-option value="vendedor">vendedor</ion-select-option>
-          <ion-select-option value="bodeguero">bodeguero</ion-select-option>
-          <ion-select-option value="contador">contador</ion-select-option>
+        <ion-label position="stacked">Seleccionar Imagen</ion-label>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)">
+      </ion-item>
+      <ion-item class="form-item">
+        <ion-label position="stacked">Ruta de la Imagen</ion-label>
+        <ion-input formControlName="imagen" type="text" readonly></ion-input>
+      </ion-item>
+      <ion-item class="form-item">
+        <ion-label position="stacked">Género</ion-label>
+        <ion-select formControlName="genero" placeholder="Género">
+          <ion-select-option value="Masculino">Masculino</ion-select-option>
+          <ion-select-option value="Femenino">Femenino</ion-select-option>
+          <ion-select-option value="Otro">Otro</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item>
+        <ion-item>
         <ion-label position="stacked">Correo</ion-label>
         <ion-input formControlName="correo" type="email" labelPlacement="stacked">
         </ion-input>
@@ -50,21 +52,34 @@
       </ion-item>
       <ion-item class="form-item">
         <ion-label position="stacked">Telefono</ion-label>
-        <ion-input formControlName="telefono" type="text"></ion-input>
+        <ion-input formControlName="telefono" type="number"></ion-input>
       </ion-item>
       <ion-item class="form-item">
         <ion-label position="stacked">Fecha Nacimiento</ion-label>
         <ion-input formControlName="fecha_nacimiento" type="date"></ion-input>
       </ion-item>
       <ion-item class="form-item">
+        <ion-label position="stacked">Tipo Usuario</ion-label>
+        <ion-select formControlName="tipo_usuario" placeholder="Tipo Usuario">
+          <ion-select-option [value]="1">Administrador</ion-select-option>
+          <ion-select-option [value]="2">Bodeguero</ion-select-option>
+          <ion-select-option [value]="3">Contador</ion-select-option>
+          <ion-select-option [value]="5">Vendedor</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item class="form-item">
         <ion-label position="stacked">Sucursal</ion-label>
-        <ion-input formControlName="id_sucursal" type="text"></ion-input>
+        <ion-select formControlName="sucursal" placeholder="Sucursal">
+          <ion-select-option [value]="1">Los clavitos de Pablito</ion-select-option>
+        </ion-select>
       </ion-item>
-    <ion-item class="form-item">
+      <ion-item class="form-item">
         <ion-label position="stacked">Comuna</ion-label>
-        <ion-input formControlName="id_comuna" type="text"></ion-input>
+        <ion-select formControlName="comuna" placeholder="Comuna">
+          <ion-select-option [value]="10">Puente Alto</ion-select-option>
+          <ion-select-option [value]="20">La Florida</ion-select-option>
+        </ion-select>
       </ion-item>
-
       <ion-button [disabled]="persona.invalid" type="submit" size="block" color="warning">Registrar</ion-button>
       <ion-button [disabled]="!botonModificar || !persona.valid" (click)="modificar()" size="block" color="dark">Modificar</ion-button>
       <ion-button type="reset" size="block" color="secondary">Limpiar</ion-button>
@@ -76,7 +91,7 @@
       <ion-item-sliding *ngFor="let usuario of usuarios">
         <ion-item>
           <ion-avatar slot="start">
-            <img src="../../../assets/images/perfil.png" alt="Avatar de Usuario">
+            <img [src]="'src/assets/images/' + usuario.imagen" alt="Avatar de Usuario" />
           </ion-avatar>
           <ion-label>
             <h2>{{usuario.rut}}</h2>

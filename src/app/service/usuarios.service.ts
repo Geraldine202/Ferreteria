@@ -11,6 +11,7 @@ export class UsuariosService {
   usuarios: any[] = [];
 
   constructor(private http: HttpClient) {} 
+  
 
   // Obtener todos los usuarios
   obtenerUsuarios() {
@@ -28,13 +29,13 @@ export class UsuariosService {
   }
 
   // Buscar usuario
-  buscarUsuario(rut: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'x-api-key': this.apiKey
-    });
-    return this.http.get(`${this.url}/${rut}`, { headers });
-  }
+    buscarUsuario(rut: any) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey
+      });
+      return this.http.get(`${this.url}/${rut}`, { headers });
+    }
 
   // Actualizar usuario
   actualizarUsuario(rut: number, usuario: any) {
