@@ -1,11 +1,63 @@
-
 <ion-header>
-  <ion-toolbar>
-    <ion-title></ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Aprobar Pedidos</ion-title>
   </ion-toolbar>
 </ion-header>
-<br>
-<br>
-<ion-content>
-<div>vista bodeguero, cambiar estado de pedido a enviado</div>
+
+<ion-content class="ion-padding">
+
+  <ion-button expand="block" color="medium" (click)="agregarPedidoDePrueba()">
+    Agregar pedido de prueba
+  </ion-button>
+
+  <!-- Lista pedidos pendientes -->
+  <ion-list *ngIf="pedidosPendientes.length > 0">
+    <ion-item *ngFor="let pedido of pedidosPendientes">
+      <ion-label>
+        <h2>{{ pedido.cliente }}</h2>
+        <p>{{ pedido.producto }} - Cantidad: {{ pedido.cantidad }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button color="success" (click)="aprobar(pedido.id)">
+          <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button color="danger" (click)="rechazar(pedido.id)">
+          <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ion-text *ngIf="pedidosPendientes.length === 0">
+    <p class="texto-centrado">No hay pedidos pendientes.</p>
+  </ion-text>
+
+  <hr><hr/>
+
+  <ion-text>
+    <h2 class="ion-padding-top">Historial de Pedidos</h2>
+  </ion-text>
+
+  <ion-list *ngIf="pedidos.length > 0">
+    <ion-item *ngFor="let pedido of pedidos">
+      <ion-label>
+        <h3>{{ pedido.cliente }}</h3>
+        <p>{{ pedido.producto }} - Cantidad: {{ pedido.cantidad }}</p>
+      </ion-label>
+      <ion-badge
+        [color]="
+          pedido.estado === 'aprobado' ? 'success' :
+          pedido.estado === 'rechazado' ? 'danger' :
+          'medium'
+        "
+      >
+        {{ pedido.estado | titlecase }}
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ion-text *ngIf="pedidos.length === 0">
+    <p class="texto-centrado">No hay pedidos registrados.</p>
+  </ion-text>
+
 </ion-content>
