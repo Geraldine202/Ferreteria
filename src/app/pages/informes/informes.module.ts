@@ -13,7 +13,8 @@ import { InformesPage } from './informes.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    InformesPageRoutingModule
+    InformesPageRoutingModule,
+    InformesPage 
   ],
 })
 export class InformesPageModule {}

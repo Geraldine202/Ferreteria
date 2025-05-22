@@ -1,10 +1,39 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title></ion-title>
-  </ion-toolbar>
-</ion-header>
-<br>
-<br>
-<ion-content>
-<div>3 diferentes informes</div>
+<ion-content class="ion-padding">
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Informe de Pagos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Genera un informe detallado de todos los pagos realizados.
+    </ion-card-content>
+    <ion-button expand="block" class="btn-naranjo-1" (click)="exportarPagosExcel()">
+      Descargar Informe Pagos Excel
+    </ion-button>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Informe de Pedidos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Visualiza el estado y detalles de los pedidos recibidos.
+    </ion-card-content>
+    <ion-button expand="block" class="btn-naranjo-2" (click)="exportarPedidosExcel()">
+      Descargar Informe Pedidos Excel
+    </ion-button>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Informe de Inventario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Consulta el estado actual del inventario en bodega.
+    </ion-card-content>
+    <ion-button expand="block" class="btn-naranjo-3" (click)="exportarInventarioExcel()">
+      Descargar Informe Inventario Excel
+    </ion-button>
+  </ion-card>
+
 </ion-content>
