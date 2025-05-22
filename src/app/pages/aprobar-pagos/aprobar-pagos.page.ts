@@ -29,7 +29,6 @@ export class AprobarPagosPage implements OnInit {
     { id: 2, vendedor: 'Ana Soto', monto: 18000, estado: 'pendiente' },
   ];
   this.filtrarPagos();
-    await this.cargarPagos();
   }
 
   pago: any[] = [];
