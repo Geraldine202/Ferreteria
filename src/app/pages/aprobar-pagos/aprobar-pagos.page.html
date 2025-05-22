@@ -29,8 +29,38 @@
     </ion-item>
   </ion-list>
 
-  <!-- Mensaje si no hay pagos pendientes -->
   <ion-text *ngIf="pagosPendientes.length === 0">
     <p class="texto-centrado">No hay pagos pendientes.</p>
   </ion-text>
+
+  <!-- Divisor para separar secciones -->
+  <hr><hr/>
+
+  <!-- Sección historial de pagos -->
+  <ion-text>
+    <h2 class="ion-padding-top">Historial de Pagos</h2>
+  </ion-text>
+
+  <ion-list *ngIf="pagos.length > 0">
+    <ion-item *ngFor="let pago of pagos">
+      <ion-label>
+        <h3>{{ pago.vendedor }}</h3>
+        <p>Monto: ${{ pago.monto | number:'1.0-0' }}</p>
+      </ion-label>
+      <ion-badge
+        [color]="
+          pago.estado === 'aprobado' ? 'success' :
+          pago.estado === 'rechazado' ? 'danger' :
+          'medium'
+        "
+      >
+        {{ pago.estado | titlecase }}
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ion-text *ngIf="pagos.length === 0">
+    <p class="texto-centrado">No hay pagos registrados.</p>
+  </ion-text>
+
 </ion-content>
