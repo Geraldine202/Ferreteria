@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { ProductosService } from 'src/app/service/productos.service';
 
 @Component({
   selector: 'app-home',
@@ -9,8 +10,8 @@ import { Router } from '@angular/router';
 })
 export class HomePage {
 
-  constructor(private router: Router) {}
-  
+  constructor(private router: Router, private productosService: ProductosService) {}
+  producto: any[] = [];
   imagenes: string[] = [
     'assets/images/relleno1.png',
     'assets/images/relleno1.png',
@@ -25,6 +26,7 @@ export class HomePage {
     }, 2000);
   }
   ngOnInit() {
+  this.cargarProductos()
   this.actualizarProductosVisibles();
   window.addEventListener('resize', () => this.actualizarProductosVisibles());
 }
@@ -42,7 +44,14 @@ export class HomePage {
     { imgSrc: 'assets/images/relleno1.png', title: 'Producto 7', description: 'Descripción breve del producto.', price: '$49.99' },
   ];
   
-
+  async cargarProductos() {
+    try {
+      this.producto = await this.productosService.obtenerProductos();
+    } catch (error) {
+      console.error('Error cargando productos:', error);
+      // Mostrar mensaje de error al usuario
+    }
+  }
   productosVisibles = 3; // Mostrar 3 productos a la vez
   productoIndex: number = 0; // Índice del carrusel de productos
   actualizarProductosVisibles() {

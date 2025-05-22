@@ -23,95 +23,16 @@
         </ion-button>
         <ion-grid>
           <ion-row>
-            <ion-col size="6" size-md="3">
+            <ion-col size="6" size-md="3" *ngFor="let prod of producto">
               <ion-card class="mini-card hover-shadow">
-                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
+                <ion-img [src]="'http://localhost:8080' + prod.imagen" 
+                alt="Imagen Producto" class="mini-img"></ion-img>
                 <ion-card-header class="mini-header">
-                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
+                  <ion-card-title class="mini-title">{{prod.nombre}}</ion-card-title>
                 </ion-card-header>
                 <ion-card-content class="mini-content">
-                  <p class="mini-desc">Descripción breve</p>
-                  <h3 class="mini-price">$19.99</h3>
-                </ion-card-content>
-                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
-                  <ion-icon name="cart-outline" slot="start"></ion-icon>
-                  Añadir
-                </ion-button>
-              </ion-card>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <ion-card class="mini-card hover-shadow">
-                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
-                <ion-card-header class="mini-header">
-                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
-                </ion-card-header>
-                <ion-card-content class="mini-content">
-                  <p class="mini-desc">Descripción breve</p>
-                  <h3 class="mini-price">$19.99</h3>
-                </ion-card-content>
-                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
-                  <ion-icon name="cart-outline" slot="start"></ion-icon>
-                  Añadir
-                </ion-button>
-              </ion-card>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <ion-card class="mini-card hover-shadow">
-                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
-                <ion-card-header class="mini-header">
-                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
-                </ion-card-header>
-                <ion-card-content class="mini-content">
-                  <p class="mini-desc">Descripción breve</p>
-                  <h3 class="mini-price">$19.99</h3>
-                </ion-card-content>
-                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
-                  <ion-icon name="cart-outline" slot="start"></ion-icon>
-                  Añadir
-                </ion-button>
-              </ion-card>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <ion-card class="mini-card hover-shadow">
-                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
-                <ion-card-header class="mini-header">
-                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
-                </ion-card-header>
-                <ion-card-content class="mini-content">
-                  <p class="mini-desc">Descripción breve</p>
-                  <h3 class="mini-price">$19.99</h3>
-                </ion-card-content>
-                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
-                  <ion-icon name="cart-outline" slot="start"></ion-icon>
-                  Añadir
-                </ion-button>
-              </ion-card>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <ion-card class="mini-card hover-shadow">
-                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
-                <ion-card-header class="mini-header">
-                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
-                </ion-card-header>
-                <ion-card-content class="mini-content">
-                  <p class="mini-desc">Descripción breve</p>
-                  <h3 class="mini-price">$19.99</h3>
-                </ion-card-content>
-                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
-                  <ion-icon name="cart-outline" slot="start"></ion-icon>
-                  Añadir
-                </ion-button>
-              </ion-card>
-            </ion-col>
-            <ion-col size="6" size-md="3">
-              <ion-card class="mini-card hover-shadow">
-                <ion-img src="assets/images/relleno1.png" class="mini-img"></ion-img>
-                <ion-card-header class="mini-header">
-                  <ion-card-title class="mini-title">Herramientas</ion-card-title>
-                </ion-card-header>
-                <ion-card-content class="mini-content">
-                  <p class="mini-desc">Descripción breve</p>
-                  <h3 class="mini-price">$19.99</h3>
+                  <p class="mini-desc">{{prod.descripcion}}</p>
+                  <h3 class="mini-price">{{prod.precio}}</h3>
                 </ion-card-content>
                 <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
                   <ion-icon name="cart-outline" slot="start"></ion-icon>

@@ -48,7 +48,27 @@ const routes: Routes = [
   {
     path: 'recuperar',
     loadComponent: () => import('./pages/recuperar/recuperar.page').then( m => m.RecuperarPage)
+  },  {
+    path: 'generar-pedido',
+    loadChildren: () => import('./pages/generar-pedido/generar-pedido.module').then( m => m.GenerarPedidoPageModule)
   },
+  {
+    path: 'aprobar-pagos',
+    loadChildren: () => import('./pages/aprobar-pagos/aprobar-pagos.module').then( m => m.AprobarPagosPageModule)
+  },
+  {
+    path: 'aprobar-pedido',
+    loadChildren: () => import('./pages/aprobar-pedido/aprobar-pedido.module').then( m => m.AprobarPedidoPageModule)
+  },
+  {
+    path: 'realizar-pago',
+    loadChildren: () => import('./pages/realizar-pago/realizar-pago.module').then( m => m.RealizarPagoPageModule)
+  },
+  {
+    path: 'informes',
+    loadChildren: () => import('./pages/informes/informes.module').then( m => m.InformesPageModule)
+  },
+
 
 
 

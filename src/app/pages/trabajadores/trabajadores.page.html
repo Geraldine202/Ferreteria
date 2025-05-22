@@ -69,17 +69,20 @@
       </ion-item>
       <ion-item class="form-item">
         <ion-label position="stacked">Sucursal</ion-label>
-        <ion-select formControlName="sucursal" placeholder="Sucursal">
-          <ion-select-option [value]="1">Los clavitos de Pablito</ion-select-option>
+        <ion-select formControlName="sucursal" placeholder="Seleccione una Sucursal">
+      <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.id_sucursal">
+        {{sucursal.nombre_sucursal}} ({{getNombreComuna(sucursal.id_comuna)}})
+      </ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item class="form-item">
-        <ion-label position="stacked">Comuna</ion-label>
-        <ion-select formControlName="comuna" placeholder="Comuna">
-          <ion-select-option [value]="10">Puente Alto</ion-select-option>
-          <ion-select-option [value]="20">La Florida</ion-select-option>
-        </ion-select>
-      </ion-item>
+    <ion-item class="form-item">
+      <ion-label position="stacked">Comuna</ion-label>
+      <ion-select formControlName="comuna" placeholder="Seleccione comuna">
+        <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.id_comuna">
+          {{comuna.nombre_comuna}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
       <ion-button [disabled]="persona.invalid" type="submit" size="block" color="warning">Registrar</ion-button>
       <ion-button [disabled]="!botonModificar || !persona.valid" (click)="modificar()" size="block" color="dark">Modificar</ion-button>
       <ion-button type="reset" size="block" color="secondary">Limpiar</ion-button>
@@ -91,11 +94,12 @@
       <ion-item-sliding *ngFor="let usuario of usuarios">
         <ion-item>
           <ion-avatar slot="start">
-            <img [src]="'src/assets/images/' + usuario.imagen" alt="Avatar de Usuario" />
+            <img [src]="usuario.imagen" alt="Avatar de Usuario" (error)="handleImageError($event, usuario)" />
           </ion-avatar>
           <ion-label>
             <h2>{{usuario.rut}}</h2>
-            <p>{{usuario.nombre}}</p>
+            <p>{{usuario.nombre}} {{usuario.primer_apellido}}</p>
+            <p style="color: lightslategray  ; text-align: start;">{{usuario.tipo_usuario}}</p>
           </ion-label>
         </ion-item>
         <ion-item-options side="start">
