@@ -48,7 +48,8 @@ const routes: Routes = [
   {
     path: 'recuperar',
     loadComponent: () => import('./pages/recuperar/recuperar.page').then( m => m.RecuperarPage)
-  },  {
+  },
+  {
     path: 'generar-pedido',
     loadChildren: () => import('./pages/generar-pedido/generar-pedido.module').then( m => m.GenerarPedidoPageModule)
   },

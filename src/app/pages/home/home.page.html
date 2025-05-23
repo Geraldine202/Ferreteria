@@ -1,15 +1,16 @@
 <ion-app>
   <ion-split-pane contentId="main-content" style="margin-top: 40px;">
-    <!-- Menú lateral -->
-    <!-- Contenido principal -->
     <div class="ion-page" id="main-content">
       <ion-content>
+
+        <!-- Botón carrito flotante -->
         <ion-fab vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button color="primary" routerLink="/carrito">
             <ion-icon name="cart"></ion-icon>
           </ion-fab-button>
         </ion-fab>
-      
+
+        <!-- Carrusel de imágenes -->
         <div class="slider-container">
           <div class="slider" *ngFor="let imagen of imagenes; let i = index">
             <ion-item>
@@ -17,24 +18,31 @@
             </ion-item>
           </div>
         </div>
-        
+
+        <!-- Botón para ver productos -->
         <ion-button expand="full" fill="solid" color="primary" routerLink="/productos">
           ¡Compra Ahora!
         </ion-button>
+
+        <!-- Productos del backend -->
         <ion-grid>
           <ion-row>
             <ion-col size="6" size-md="3" *ngFor="let prod of producto">
               <ion-card class="mini-card hover-shadow">
-                <ion-img [src]="'http://localhost:8080' + prod.imagen" 
-                alt="Imagen Producto" class="mini-img"></ion-img>
+                <ion-img [src]="'http://localhost:8080' + prod.imagen" alt="Imagen Producto" class="mini-img"></ion-img>
                 <ion-card-header class="mini-header">
-                  <ion-card-title class="mini-title">{{prod.nombre}}</ion-card-title>
+                  <ion-card-title class="mini-title">{{ prod.nombre }}</ion-card-title>
                 </ion-card-header>
                 <ion-card-content class="mini-content">
-                  <p class="mini-desc">{{prod.descripcion}}</p>
-                  <h3 class="mini-price">{{prod.precio}}</h3>
+                  <p class="mini-desc">{{ prod.descripcion }}</p>
+                  <h3 class="mini-price">
+                    {{ prod.precio | number:'1.0-0' }} CLP
+                    <span *ngIf="dolar">
+                      (USD {{ (prod.precio / dolar) | number:'1.2-2' }})
+                    </span>
+                  </h3>
                 </ion-card-content>
-                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito(prod)">
                   <ion-icon name="cart-outline" slot="start"></ion-icon>
                   Añadir
                 </ion-button>
@@ -43,35 +51,34 @@
           </ion-row>
         </ion-grid>
 
+        <!-- Productos más vendidos -->
         <h2 style="text-align: center;">Productos más vendidos</h2>
         <div class="featured-slider-container">
-          <!-- Flecha de retroceso -->
           <button class="slider-btn prev" (click)="moveSlider(-1)">&#10094;</button>
-        
-          <!-- Contenedor del slider -->
+
           <div class="featured-slider">
-            <ion-card *ngFor="let item of getProductosVisibles(); let i = index" class="mini-card hover-shadow"
+            <ion-card *ngFor="let item of getProductosVisibles(); let i = index" 
+                      class="mini-card hover-shadow"
                       [ngClass]="{'centered': item.isCentral, 'faded': !item.isCentral}">
-              <img [src]="item.producto.imgSrc" alt="{{item.producto.title}}" class="mini-img" >
+              <img [src]="item.producto.imgSrc" alt="{{ item.producto.title }}" class="mini-img" />
               <ion-card-header>
-                <ion-card-title class="mini-title">{{item.producto.title}}</ion-card-title>
+                <ion-card-title class="mini-title">{{ item.producto.title }}</ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <p class="product-description">{{item.producto.description}}</p>
-                <p class="product-price">{{item.producto.price}}</p>
-              </ion-card-content> 
-              <ion-button  class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito()">
+                <p class="product-description">{{ item.producto.description }}</p>
+                <p class="product-price">{{ item.priceDisplay }}</p>
+              </ion-card-content>
+              <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito(item.producto)">
                 <ion-icon name="cart-outline" slot="start"></ion-icon>
                 Añadir
               </ion-button>
             </ion-card>
           </div>
-        
-          <!-- Flecha de avance -->
-          <button class="slider-btn next" (click)="moveSlider(2)">&#10095;</button>
+
+          <button class="slider-btn next" (click)="moveSlider(1)">&#10095;</button>
         </div>
-        
-        
+
+        <!-- Footer -->
         <ion-footer>
           <ion-toolbar color="dark">
             <ion-grid>
@@ -87,8 +94,8 @@
                     </ion-button>
                   </div>
                 </ion-col>
-        
-                <!-- Enlaces importantes -->
+
+                <!-- Enlaces -->
                 <ion-col size="12" size-md="3">
                   <div class="footer-links">
                     <a href="/terminos" class="footer-link">Términos y condiciones</a>
@@ -96,8 +103,8 @@
                     <a href="/ayuda" class="footer-link">Ayuda</a>
                   </div>
                 </ion-col>
-        
-                <!-- Información de contacto -->
+
+                <!-- Contacto -->
                 <ion-col size="12" size-md="3">
                   <div class="footer-contact">
                     <p><strong>Contáctanos:</strong></p>
@@ -105,8 +112,8 @@
                     <p>Email: contacto&#64;ferreteria.com</p>
                   </div>
                 </ion-col>
-        
-                <!-- Derechos reservados -->
+
+                <!-- Derechos -->
                 <ion-col size="12" size-md="3">
                   <div class="footer-copyright">
                     <p>&copy; 2025 Los Clavitos de Pablito. Todos los derechos reservados.</p>
@@ -116,6 +123,7 @@
             </ion-grid>
           </ion-toolbar>
         </ion-footer>
+
       </ion-content>
     </div>
   </ion-split-pane>
