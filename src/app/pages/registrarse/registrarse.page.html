@@ -1,178 +1,203 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title class="ion-text-center" style="font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: 1.2px; color: #ffffff;">
-      Registro Usuario
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/home" text="Volver"></ion-back-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content class="ion-padding" style="background: #f9f9fb;">
+  <ion-content class="ion-padding" id="mainlayout">
+    <!-- Logo centrado arriba -->
+    <div style="text-align: center; margin: 1.5rem 0;">
+      <img src="../../../assets/images/logo.png" alt="Logo de la página" style="max-width: 220px; height: auto;">
+    </div>
 
-  <form (ngSubmit)="onSubmit()" #registroForm="ngForm" style="max-width: 480px; margin: 0 auto;">
+    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" style="max-width: 600px; margin: 0 auto;">
+      <ion-card style="border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 2rem 0;">
+        <ion-card-header style="padding-bottom: 0;">
+          <ion-card-title
+            style="
+              font-family: 'Poppins', sans-serif;
+              font-weight: 700;
+              color: #2c3e50;
+              letter-spacing: 0.1em;
+              font-size: 1.75rem;
+              text-align: center;
+              text-transform: uppercase;
+              margin-bottom: 0.4rem;
+              border-bottom: 2px solid #2c3e50;
+              padding-bottom: 0.5rem;
+            ">
+            Registro de Clientes
+          </ion-card-title>
+        </ion-card-header>
 
-    <ion-card style="border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-      <ion-card-content style="padding: 2rem;">
+        <ion-card-content style="padding: 1rem;">
 
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="floating" class="custom-label">RUT Usuario</ion-label>
-          <ion-input
-            type="text"
-            name="rut_usuario"
-            [(ngModel)]="usuario.rut_usuario"
-            required
-          ></ion-input>
-        </ion-item>
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="floating" class="custom-label">RUT Usuario</ion-label>
+            <ion-input type="text" formControlName="rut_usuario"></ion-input>
+          </ion-item>
 
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="floating" class="custom-label">Nombre</ion-label>
-          <ion-input
-            type="text"
-            name="nombre"
-            [(ngModel)]="usuario.nombre"
-            required
-          ></ion-input>
-        </ion-item>
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="floating" class="custom-label">Nombre</ion-label>
+            <ion-input type="text" formControlName="nombre"></ion-input>
+          </ion-item>
 
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="floating" class="custom-label">Primer Apellido</ion-label>
-          <ion-input
-            type="text"
-            name="primer_apellido"
-            [(ngModel)]="usuario.primer_apellido"
-            required
-          ></ion-input>
-        </ion-item>
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="floating" class="custom-label">Primer Apellido</ion-label>
+            <ion-input type="text" formControlName="primer_apellido"></ion-input>
+          </ion-item>
 
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="floating" class="custom-label">Segundo Apellido</ion-label>
-          <ion-input
-            type="text"
-            name="segundo_apellido"
-            [(ngModel)]="usuario.segundo_apellido"
-            required
-          ></ion-input>
-        </ion-item>
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="floating" class="custom-label">Segundo Apellido</ion-label>
+            <ion-input type="text" formControlName="segundo_apellido"></ion-input>
+          </ion-item>
 
-        <ion-item fill="outline" class="custom-item">
-          <ion-label class="custom-label">Género</ion-label>
+          <ion-item fill="outline" class="custom-item" [class.ion-invalid]="registroForm.hasError('noMatch') && registroForm.touched">
+            <ion-label position="floating" class="custom-label">Contraseña</ion-label>
+            <ion-input type="password" formControlName="contrasenia"></ion-input>
+          </ion-item>
+
+          <ion-item fill="outline" class="custom-item" [class.ion-invalid]="registroForm.hasError('noMatch') && registroForm.touched">
+            <ion-label position="floating" class="custom-label">Confirmar Contraseña</ion-label>
+            <ion-input type="password" formControlName="confirmar_contrasenia"></ion-input>
+          </ion-item>
+
+          <div *ngIf="registroForm.hasError('noMatch') && (registroForm.get('confirmar_contrasenia')?.touched || registroForm.get('confirmar_contrasenia')?.dirty)" style="color: red; font-size: 0.8rem; margin-top: -1rem; margin-bottom: 1rem;">
+            Las contraseñas no coinciden.
+          </div>
+
+          <ion-item fill="outline" class="custom-item">
+            <ion-label class="custom-label">Imagen</ion-label>
+            <input
+              type="file"
+              (change)="onFileChange($event)"
+              style="padding: 0.5rem; width: 100%; border-radius: 10px; border: 1px solid #ccc;"
+            />
+          </ion-item>
+
+          <ion-item fill="outline" class="custom-item select-item">
+            <ion-label position="floating" class="custom-label">Género</ion-label>
+            <ion-select
+              formControlName="genero"
+              interface="alert"
+              placeholder="Selecciona género">
+              <ion-select-option value="Masculino">Masculino</ion-select-option>
+              <ion-select-option value="Femenino">Femenino</ion-select-option>
+              <ion-select-option value="Otro">Otro</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="floating" class="custom-label">Correo</ion-label>
+            <ion-input type="email" formControlName="correo"></ion-input>
+          </ion-item>
+
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="floating" class="custom-label">Dirección</ion-label>
+            <ion-input type="text" formControlName="direccion"></ion-input>
+          </ion-item>
+
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="floating" class="custom-label">Teléfono</ion-label>
+            <ion-input type="number" formControlName="telefono"></ion-input>
+          </ion-item>
+
+          <ion-item fill="outline" class="custom-item">
+            <ion-label position="stacked" class="custom-label" style="margin-bottom: 0.3rem;">Fecha de Nacimiento</ion-label>
+            <ion-input
+              type="date"
+              formControlName="fecha_nacimiento"
+              placeholder="Selecciona fecha"
+              style="font-size: 1rem; color: #9f6239c1;"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item fill="outline" class="custom-item select-item">
+            <ion-label position="floating" class="custom-label">Sucursal</ion-label>
+            <ion-select
+              formControlName="sucursal"
+              interface="alert"
+              placeholder="Selecciona sucursal más cercana">
+              <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.id_sucursal">
+                {{sucursal.nombre_sucursal}} ({{getNombreComuna(sucursal.id_comuna)}})
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+         <ion-item fill="outline" class="custom-item select-item">
+          <ion-label position="floating" class="custom-label">Comuna</ion-label>
           <ion-select
-            name="genero"
-            [(ngModel)]="usuario.genero"
-            placeholder="Selecciona género"
-            interface="popover"
-            required
-          >
-            <ion-select-option value="Masculino">Masculino</ion-select-option>
-            <ion-select-option value="Femenino">Femenino</ion-select-option>
-            <ion-select-option value="Otro">Otro</ion-select-option>
+            formControlName="comuna"
+            interface="alert"
+            placeholder="Selecciona comuna">
+            <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.id_comuna">
+              {{comuna.nombre_comuna}}
+            </ion-select-option>
           </ion-select>
         </ion-item>
-
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="floating" class="custom-label">Correo</ion-label>
-          <ion-input
-            type="email"
-            name="correo"
-            [(ngModel)]="usuario.correo"
-            required
-          ></ion-input>
-        </ion-item>
-
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="floating" class="custom-label">Dirección</ion-label>
-          <ion-input
-            type="text"
-            name="direccion"
-            [(ngModel)]="usuario.direccion"
-            required
-          ></ion-input>
-        </ion-item>
-
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="floating" class="custom-label">Teléfono</ion-label>
-          <ion-input
-            type="tel"
-            name="telefono"
-            [(ngModel)]="usuario.telefono"
-            required
-          ></ion-input>
-        </ion-item>
-
-        <ion-item fill="outline" class="custom-item">
-          <ion-label position="stacked" class="custom-label" style="margin-bottom: 0.3rem;">Fecha de Nacimiento</ion-label>
-          <ion-input
-            type="date"
-            name="fecha_nacimiento"
-            [(ngModel)]="usuario.fecha_nacimiento"
-            required
-            placeholder="Selecciona fecha"
-            style="font-size: 1rem; color: #9f6239c1;"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item fill="outline" class="custom-item">
-          <ion-label class="custom-label">Comuna</ion-label>
-          <ion-select
-            name="id_comuna"
-            [(ngModel)]="usuario.id_comuna"
-            placeholder="Selecciona comuna"
-            interface="popover"
-            required
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="registroForm.invalid"
+            style="margin-top: 2rem; margin-bottom: 2.5rem; font-weight: 600; letter-spacing: 1.1px;"
+            color="warning"
           >
-            <ion-select-option value="1">Comuna 1</ion-select-option>
-            <ion-select-option value="2">Comuna 2</ion-select-option>
-            <ion-select-option value="3">Comuna 3</ion-select-option>
-          </ion-select>
-        </ion-item>
+            Registrarse
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </form>
 
-        <ion-button
-          expand="block"
-          type="submit"
-          [disabled]="!registroForm.valid"
-          style="margin-top: 2rem; font-weight: 600; letter-spacing: 1.1px;"
-          color="warning"
-        >
-          Registrarse
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-  </form>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+      ion-select {
+        width: 100%;
+        height: 100%;
+        --padding-start: 0;
+        --padding-end: 0;
+        --min-height: 56px;
+        display: block;
+        pointer-events: auto;
+      }
+      #mainlayout {
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        min-height: 100vh;
+        padding-bottom: 3rem; /* espacio extra abajo */
+      }
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+      .custom-label {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        color: #9f6239c1;
+        letter-spacing: 0.05em;
+      }
 
-    .custom-label {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      color: #9f6239c1;
-      letter-spacing: 0.05em;
-    }
+      .custom-item {
+        margin-bottom: 1.3rem;
+        --background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        --border-color-focused: #9f6239c1;
+      }
 
-    .custom-item {
-      margin-bottom: 1.3rem;
-      --background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      --border-color-focused: #9f6239c1;
-    }
+      ion-input, ion-select {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        font-size: 1rem;
+        color: #9f6239c1;
+      }
 
-    ion-input, ion-select {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      font-size: 1rem;
-      color: #9f6239c1;
-    }
+      ion-button[color="secondary"] {
+        --background: #9f6239c1;
+        --box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4);
+        --border-radius: 12px;
+        transition: background-color 0.3s ease;
+      }
 
-    ion-button[color="secondary"] {
-      --background: #9f6239c1;
-      --box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4);
-      --border-radius: 12px;
-      transition: background-color 0.3s ease;
-    }
-
-    ion-button[color="secondary"]:hover {
-      --background: #9f6239c1;
-    }
-  </style>
-
-</ion-content>
+      ion-button[color="secondary"]:hover {
+        --background: #9f6239c1;
+      }
+    </style>
+  </ion-content>

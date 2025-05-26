@@ -1,62 +1,42 @@
-/* === FOOTER === */
+#foto-perfil {
+  margin-bottom: 20px;
   
-  ion-buttons {
-    display: flex;
-    justify-content: start;
-    align-items: center;
+  #imagen-perfil {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--ion-color-primary);
   }
-  
-  ion-button {
-    margin: 0 10px;
-    color: #cccccc;
-    font-size: 22px;
-    margin-top: 10px;
-  }
-  
-  .footer-content {
-    text-align: center;
-  }
-  
-  .social-icons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-  
-  .footer-links a {
-    display: block;
-    color: #e08611;
-    margin: 5px 0;
-    text-decoration: none;
-  }
-  
-  .footer-links a:hover {
-    color: #ddd;
-  }
-  
-  .footer-contact p,
-  .footer-copyright p {
-    color: #fff;
-    margin: 5px 0;
-  }
-  
-  .footer-copyright {
-    text-align: center;
-    font-size: 12px;
-    color: #ccc;
-  }
+}
 
-  ion-page {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
+#detalles-perfil {
+  padding: 0 16px;
   
-  ion-content {
-    flex: 1;
-    overflow-y: auto;
+  #card-detalles-perfil {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
-  
-  ion-footer {
-    flex-shrink: 0;
-  }
+}
+.password-toggle-icon {
+  font-size: 1.3rem;
+  color: var(--ion-color-medium);
+  cursor: pointer;
+}
+.labelDetalles {
+  color: var(--ion-color-primary);
+  font-weight: bold;
+  margin-left: 16px;
+  margin-bottom: 8px;
+}
+
+.spacer {
+  height: 1px;
+  background-color: #eee;
+  margin: 15px 0;
+}
+
+ion-item {
+  --padding-start: 10px;
+  --inner-padding-end: 10px;
+}

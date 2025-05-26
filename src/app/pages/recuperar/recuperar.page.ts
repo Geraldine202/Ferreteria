@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { RouterModule, Router } from '@angular/router';
+import { IonicModule, AlertController } from '@ionic/angular';
+import { UsuariosService } from 'src/app/service/usuarios.service';
 
 @Component({
   selector: 'app-recuperar',
@@ -15,27 +16,38 @@ export class RecuperarPage {
   @ViewChild('recoverForm') recoverForm!: NgForm;
   email: string = '';
 
-  constructor(private toastController: ToastController) {}
+  constructor(
+    private alertController: AlertController,
+    private usuariosService: UsuariosService,
+    private router: Router // <-- inyectamos Router
+  ) {}
 
-  async onRecover() {
-    if (this.recoverForm?.valid) {
-      // Simula envío
-      console.log('Enviando instrucciones a:', this.email);
+  async presentAlert(titulo: string, mensaje: string, redirectOnOk: boolean = false) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: mensaje,
+      buttons: [
+        {
+          text: 'Aceptar',
+          handler: () => {
+            if (redirectOnOk) {
+              this.router.navigate(['/login']); // Redirige a login
+            }
+          }
+        }
+      ],
+    });
+    await alert.present();
+  }
 
-      // Limpia el formulario
-      this.recoverForm.resetForm();
-      this.email = '';
-
-      // Muestra Toast
-      const toast = await this.toastController.create({
-        message: 'Instrucciones enviadas al correo electrónico.',
-        duration: 3000,
-        color: 'success',
-        position: 'top',
-        animated: true,
-      });
-
-      await toast.present();
-    }
+  onRecover() {
+    this.usuariosService.solicitarRecuperacion(this.email).subscribe({
+      next: () => {
+        this.presentAlert('Correo enviado', 'Revisa tu bandeja de entrada.', true); // true para redirigir
+      },
+      error: () => {
+        this.presentAlert('Error', 'No se pudo enviar el correo. Inténtalo más tarde.');
+      }
+    });
   }
 }

@@ -48,7 +48,7 @@ export class TrabajadoresPage implements OnInit {
   ngOnInit() {
     this.cargarUsuarios();
     this.cargarComuna();
-    this.cargarSucursales()
+    this.cargarSucursales();
     console.log(this.persona.value);
   }
 
@@ -185,7 +185,7 @@ subirImagen() {
   });
 }
 
-  async buscar(usuario: any) {
+async buscar(usuario: any) {
 
     this.usuariosService.buscarUsuario(usuario.rut).subscribe((data: any) => {
       let fechaNacimientoISO = '';
@@ -215,7 +215,6 @@ subirImagen() {
       this.botonModificar = true;
     });
   }
-
 
 
 

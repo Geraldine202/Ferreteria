@@ -1,7 +1,8 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { MenuController } from '@ionic/angular';
+import { AlertController, MenuController } from '@ionic/angular';
+import { UsuariosService } from './service/usuarios.service';
 
 @Component({
   selector: 'app-root',
@@ -14,21 +15,33 @@ export class AppComponent {
   isLoginPage = false; 
   isMobileView = false;
   // Lista de rutas donde el menú no debe mostrarse
-  noMenuPages = ['/login', '/recuperar', '/registrarse'];
+  noMenuPages = ['/login', '/recuperar', '/registrarse','/contrasenia','/cambio-contrasenia-forzado'];
 
-  constructor(private router: Router, private menuCtrl: MenuController) {
+  constructor(private router: Router, private menuCtrl: MenuController ,private alertCtrl: AlertController,private usuariosService: UsuariosService ) {
+  this.router.events.pipe(
+    filter(event => event instanceof NavigationEnd)
+  ).subscribe((event: NavigationEnd) => {
+    // Buscar si la ruta comienza con alguna de las rutas definidas
+    this.isLoginPage = this.noMenuPages.some(page => event.urlAfterRedirects.startsWith(page));
+
+    // Activa o desactiva el menú según corresponda
+    this.menuCtrl.enable(!this.isLoginPage);
+  });}
+ngOnInit() {
+}
+   private checkViewportSize() {
+    this.isMobileView = window.innerWidth < 768;
+    window.addEventListener('resize', () => {
+      this.isMobileView = window.innerWidth < 768;
+    });
+  }
+
+  private setupRouterEvents() {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // Verifica si la ruta actual está en la lista de páginas sin menú
       this.isLoginPage = this.noMenuPages.includes(event.urlAfterRedirects);
-      
-      // Si estamos en una de esas páginas, cerramos el menú (si está abierto)
-      if (this.isLoginPage) {
-        this.menuCtrl.enable(false); // Desactiva el menú en esas páginas
-      } else {
-        this.menuCtrl.enable(true);  // Habilita el menú en otras páginas
-      }
+      this.menuCtrl.enable(!this.isLoginPage);
     });
   }
 
@@ -79,5 +92,27 @@ export class AppComponent {
   
   seleccionarSubcategoria(nombre: string) {
     console.log('Seleccionaste:', nombre);
+  }
+async logout() {
+    const alert = await this.alertCtrl.create({
+      header: 'Cerrar sesión',
+      message: '¿Estás seguro que deseas salir?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Salir',
+          handler: () => {
+            this.usuariosService.logout();
+            this.menuCtrl.close('main-menu');
+            this.router.navigate(['/login']);
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
   }
 }

@@ -12,10 +12,10 @@
         <h2 class="card-title">Ingreso de Usuario</h2>
       </ion-card-header>
       
-      <ion-card-content>
+      <ion-card-content [formGroup]="loginForm">
         <!-- Campo de correo -->
         <ion-input 
-          [(ngModel)]="email" 
+          formControlName="email"
           type="email" 
           label="Correo" 
           labelPlacement="stacked" 
@@ -28,7 +28,7 @@
 
         <!-- Campo de contraseña -->
         <ion-input 
-          [(ngModel)]="password" 
+          formControlName="password"
           type="password" 
           label="Contraseña" 
           labelPlacement="stacked" 
@@ -45,14 +45,15 @@
         
         <!-- Botón de ingreso -->
         <ion-button 
-        (click)="login()" 
-        size="block" 
-        color="primary" 
-        shape="round" 
-        id="signinbutton" 
-        class="signin-button">
-        INGRESAR
-      </ion-button>
+          (click)="login()" 
+          size="block" 
+          color="primary" 
+          shape="round" 
+          id="signinbutton" 
+          class="signin-button"
+          [disabled]="loginForm.invalid">
+          INGRESAR
+        </ion-button>
         
         <br>
 
@@ -63,17 +64,17 @@
       </ion-card-content>
     </ion-card>
   </div>
-      <!-- FOOTER FIJO -->
-    <ion-footer>
-      <ion-toolbar color="dark">
-        <ion-grid>
-          <ion-row class="footer-content">
-            <ion-col size="12" size-md="6" class="ion-text-center">
-              <p>&copy; 2025 Los Clavitos de Pablito. Todos los derechos reservados.</p>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-toolbar>
-    </ion-footer>
-
+  
+  <!-- FOOTER FIJO -->
+  <ion-footer>
+    <ion-toolbar color="dark">
+      <ion-grid>
+        <ion-row class="footer-content">
+          <ion-col size="12" size-md="6" class="ion-text-center">
+            <p>&copy; 2025 Los Clavitos de Pablito. Todos los derechos reservados.</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-toolbar>
+  </ion-footer>
 </ion-content>

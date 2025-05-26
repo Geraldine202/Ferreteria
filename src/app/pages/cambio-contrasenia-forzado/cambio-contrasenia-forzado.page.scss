@@ -1,0 +1,32 @@
+.welcome-message {
+  text-align: center;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  color: #666;
+}
+.logo-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center;     /* Centra verticalmente */
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.logo-card {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+}

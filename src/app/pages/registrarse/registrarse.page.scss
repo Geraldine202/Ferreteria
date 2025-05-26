@@ -1,4 +1,41 @@
 .form-wrapper {
-  max-width: 480px;
+  max-width: 2000px;
   margin: 40px auto;
 }
+
+.select-item ion-select {
+  width: 100%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --min-height: 56px;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+}
+.select-item ion-label {
+  margin-bottom: 0 !important;
+}
+ion-content {
+    --background: linear-gradient(#bb5c0e, #f7f0fd);
+  
+  }
+  
+  #loginuser{
+    height: 75%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+  }
+  
+  #logo{
+    position: relative;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    max-width: 230px;
+  }
+
+  .link {
+  cursor: pointer;
+}
+
