@@ -26,3 +26,5 @@ Se propone el desarrollo de un sistema de eCommerce para la Ferretería **"Los C
 
 ### 🖥️ Backend
 - Node.js
+
+### 🧠 APIs Internas
