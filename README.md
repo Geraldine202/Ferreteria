@@ -75,3 +75,5 @@ npm install
 ```bash
 ionic serve
 ```
+
+Esto abrirá automáticamente la aplicación en [http://localhost:8100](http://localhost:8100).
