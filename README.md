@@ -28,3 +28,5 @@ Se propone el desarrollo de un sistema de eCommerce para la Ferretería **"Los C
 - Node.js
 
 ### 🧠 APIs Internas
+- **API de usuarios**: desarrollada con **Express.js**.
+- **API de productos**: implementada con **FastAPI (Python)**.
