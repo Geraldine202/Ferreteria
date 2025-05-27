@@ -30,3 +30,7 @@ Se propone el desarrollo de un sistema de eCommerce para la Ferretería **"Los C
 ### 🧠 APIs Internas
 - **API de usuarios**: desarrollada con **Express.js**.
 - **API de productos**: implementada con **FastAPI (Python)**.
+
+### 🌐 APIs Externas
+- **API de PayPal**: integración para pagos seguros en línea.
+- **API de MiIndicador.cl**: para consulta del valor actualizado del dólar y conversión automática de precios.
