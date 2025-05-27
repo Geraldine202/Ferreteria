@@ -77,3 +77,25 @@ ionic serve
 ```
 
 Esto abrirá automáticamente la aplicación en [http://localhost:8100](http://localhost:8100).
+---
+
+### 🌐 4. Levantar API de Express (Node.js)
+
+```bash
+cd ../api-express
+npm install
+node index.js
+```
+
+- Asegúrate de tener instalado **Node.js**.
+- El servidor se levantará en [http://localhost:3000](http://localhost:3000) (o el puerto definido en tu archivo de configuración).
+
+---
+
+### 🐍 5. Levantar API de FastAPI (Python)
+
+```bash
+cd ../api-fastapi
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
