@@ -114,3 +114,28 @@ venv\\Scripts\\activate   # En Windows
 ```
 
 ---
+
+## 📈 Conclusión
+
+**"Los Clavitos de Pablito"** representa una solución completa de transformación digital para una empresa Ferretera. El proyecto no solo mejora la experiencia del cliente, sino que también optimiza los procesos internos, incrementa la eficiencia operativa y abre nuevas oportunidades de expansión comercial. La integración de tecnologías modernas y APIs externas proporciona una base sólida para el crecimiento futuro del negocio.
+
+---
+
+**Desarrollado como parte de la evaluación académica del módulo ASY5131 - Integración de Plataformas.**
+
+---
+
+## 👨‍💻 Desarrollado por
+
+Este proyecto fue creado por el equipo de desarrollo, conformado por:
+
+- 👩‍💻 Daphne Cuadra  
+- 👩‍💻 Geraldine Inostroza  
+- 👨‍💻 Cristóbal Rivero  
+
+---
+
+<p align="center">
+  <b>Los Clavitos de Pablito</b> © 2025<br>
+  <i>"Transformando la ferretería tradicional en una experiencia digital de alto nivel"</i>
+</p>
