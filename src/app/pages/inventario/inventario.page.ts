@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, IonList, ToastController } from '@ionic/angular';
+import { AlertController, IonicModule, IonList, ToastController } from '@ionic/angular';
 import { ProductosService } from 'src/app/service/productos.service';
 
 @Component({
@@ -29,7 +29,8 @@ export class InventarioPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private productosService: ProductosService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private alertController: AlertController
   ) { 
     this.productoForm = this.fb.group({
       id: [''],
@@ -38,9 +39,9 @@ export class InventarioPage implements OnInit {
       imagen: [''],
       precio: [0, [Validators.required, Validators.min(0), Validators.max(100000)]],
       stock: [0, [Validators.required, Validators.min(0), Validators.max(10000)]],
-      marca: ['', Validators.required], // Usado para marca
-      inventario: [''],
-      categoria: ['', Validators.required]
+      marca: [null, Validators.required], 
+      inventario: [null, Validators.required],
+      categoria: [null, Validators.required]
     });
   }
 
@@ -107,27 +108,35 @@ private getNextId(): number {
   const maxId = Math.max(...this.productos.map(p => p.id_producto));
   return maxId + 1;
 }
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      
-      // Validar archivo
-      if (!this.ALLOWED_TYPES.includes(file.type)) {
-        alert('Solo se permiten imágenes JPEG, PNG o GIF');
-        return;
-      }
-      
-      if (file.size > this.MAX_FILE_SIZE) {
-        alert('El archivo es demasiado grande (máx 5MB)');
-        return;
-      }
-      
-      this.selectedFile = file;
-      this.uploadImage();
+async onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
+    
+    // Validar archivo
+    if (!this.ALLOWED_TYPES.includes(file.type)) {
+      await this.mostrarAlerta('Tipo inválido', 'Solo se permiten imágenes JPEG, PNG o GIF');
+      return;
     }
+    
+    if (file.size > this.MAX_FILE_SIZE) {
+      await this.mostrarAlerta('Archivo muy grande', 'El archivo es demasiado grande (máx 5MB)');
+      return;
+    }
+    
+    this.selectedFile = file;
+    this.uploadImage();
   }
+}
 
+private async mostrarAlerta(header: string, message: string) {
+  const alert = await this.alertController.create({
+    header,
+    message,
+    buttons: ['OK']
+  });
+  await alert.present();
+}
   async uploadImage() {
     if (!this.selectedFile) return;
 
@@ -150,9 +159,9 @@ private getNextId(): number {
     imagen: producto.imagen,
     precio: producto.precio,
     stock: producto.stock,
-    marca: producto.id_marca,
-    inventario: producto.id_inventario,
-    categoria: producto.id_categoria
+    marca: Number(producto.id_marca),  
+    inventario: Number(producto.id_inventario),
+    categoria: Number(producto.id_categoria)
   });
   this.ionList?.closeSlidingItems();
 }
@@ -162,7 +171,7 @@ async modificar() {
 
   const formData = this.productoForm.value;
   const id = Number(formData.id);
-  
+
   const updateData = {
     nombre: formData.nombre,
     descripcion: formData.descripcion,
@@ -170,19 +179,32 @@ async modificar() {
     precio: Number(formData.precio),
     stock: Number(formData.stock),
     id_marca: Number(formData.marca),
-    id_categoria: Number(formData.categoria)
-    // id_inventario puede omitirse o manejarse según tu lógica
+    id_categoria: Number(formData.categoria),
+    id_inventario: Number(formData.inventario)
   };
+
+  console.log('Datos para actualizar producto:', { id, updateData });
 
   try {
     await this.productosService.actualizarProducto(id, updateData);
     await this.cargarProductos();
     this.limpiarFormulario();
-    // Manejo de éxito...
+
+    const toast = await this.toastController.create({
+      message: 'Producto modificado correctamente',
+      duration: 2000,
+      color: 'success'
+    });
+    await toast.present();
+
   } catch (error) {
-    // Manejo de errores...
+    console.error('Error al actualizar producto:', error);
+    await this.mostrarError('No se pudo actualizar el producto');
   }
 }
+
+
+
 // Añade este método para mostrar errores
 private async mostrarError(mensaje: string) {
   const toast = await this.toastController.create({
@@ -279,34 +301,47 @@ limpiarFormulario(): void {
   }
 
 async eliminar(id: number) {
-  if (!confirm('¿Estás seguro de eliminar este producto?')) {
-    this.ionList?.closeSlidingItems();
-    return;
-  }
+  const alert = await this.alertController.create({
+    header: 'Confirmar eliminación',
+    message: '¿Estás seguro de eliminar este producto?',
+    buttons: [
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+        handler: () => {
+          this.ionList?.closeSlidingItems();
+        }
+      },
+      {
+        text: 'Eliminar',
+        role: 'destructive',
+        handler: async () => {
+          try {
+            const producto = this.productos.find(p => p.id_producto === id);
+            if (!producto) throw new Error('Producto no encontrado');
 
-  try {
-    const producto = this.productos.find(p => p.id_producto === id);
-    if (!producto) throw new Error('Producto no encontrado');
+            await this.productosService.eliminarProducto(id);
+            this.limpiarFormulario();
+            await this.cargarProductos();
 
-    // 1. Eliminar el producto
-    const resultado = await this.productosService.eliminarProducto(id);
-    this.limpiarFormulario();
+            const toast = await this.toastController.create({
+              message: 'Producto eliminado correctamente',
+              duration: 2000,
+              color: 'success'
+            });
+            await toast.present();
 
+          } catch (error) {
+            console.error('Error eliminando producto:', error);
+            await this.handleError(error, 'Error al eliminar el producto');
+          }
+          this.ionList?.closeSlidingItems();
+        }
+      }
+    ]
+  });
 
-    // 3. Recargar lista y mostrar mensaje
-    await this.cargarProductos();
-    const toast = await this.toastController.create({
-      message: 'Producto eliminado correctamente',
-      duration: 2000,
-      color: 'success'
-    });
-    await toast.present();
-
-  } catch (error) {
-    console.error('Error eliminando producto:', error);
-    await this.handleError(error, 'Error al eliminar el producto');
-  }
-
-  this.ionList?.closeSlidingItems();
+  await alert.present();
 }
+
 }

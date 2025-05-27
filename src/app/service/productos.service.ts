@@ -155,45 +155,27 @@ async guardarProducto(producto: any) {
   }
 }
   // Actualizar un producto completo (PUT)
-async actualizarProducto(id: number, producto: any): Promise<Producto> {
-  if (!id) {
-    throw new Error('ID de producto no proporcionado');
-  }
-
-  // Asegurar que los nombres de campos coincidan con la API
-  const productoData = {
-    id_producto: id,  // Nombre exacto que espera el backend
-    nombre: producto.nombre,
-    descripcion: producto.descripcion,
-    imagen: producto.imagen,
-    precio: Number(producto.precio),
-    stock: Number(producto.stock),
-    id_marca: Number(producto.marca),
-    id_inventario: Number(producto.inventario),
-    id_categoria: Number(producto.categoria)
-  };
-
-  try {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
+  async actualizarProducto(id: number, data: any): Promise<void> {
+    const url = `${this.baseUrl}/${id}`;
+    const headers = { 'Content-Type': 'application/json' };
+    const options: RequestInit = {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(productoData)
-    });
+      headers,
+      body: JSON.stringify(data),
+    };
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error del backend:', errorData);
-      throw new Error(errorData.detail || 'Error al actualizar producto');
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.detail || `Error ${response.status}: ${response.statusText}`;
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      console.error('Error en actualizarProducto:', error);
+      throw error;
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error al actualizar:', error);
-    throw error;
   }
-}
 
   // Actualización parcial (PATCH)
   async actualizarParcialProducto(
