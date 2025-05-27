@@ -61,3 +61,10 @@ El sistema está compuesto por una arquitectura modular y escalable:
 git clone https://github.com/Geraldine202/Ferreteria.git
 cd Ferreteria/
 ```
+---
+
+### ⚙️ 2. Instalación de dependencias del frontend (Angular + Ionic)
+
+```bash
+npm install
+```
