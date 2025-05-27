@@ -6,6 +6,7 @@
 
 <ion-content class="ion-padding">
 
+  <!-- Monto Total -->
   <ion-card>
     <ion-card-header>
       <ion-card-title>Monto Total</ion-card-title>
@@ -15,20 +16,21 @@
     </ion-card-content>
   </ion-card>
 
+  <!-- Formulario de Pago -->
   <form [formGroup]="pagoForm" (ngSubmit)="confirmarPago()">
     <ion-item>
       <ion-label position="floating">Nombre completo</ion-label>
-      <ion-input formControlName="nombre" required></ion-input>
+      <ion-input formControlName="nombre" required type="text" autocomplete="name"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="floating">RUT</ion-label>
-      <ion-input formControlName="rut" required></ion-input>
+      <ion-input formControlName="rut" required type="text" inputmode="numeric"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label>Tipo de Pago</ion-label>
-      <ion-select formControlName="tipoPago" interface="popover">
+      <ion-select formControlName="tipoPago" interface="popover" placeholder="Selecciona una opción">
         <ion-select-option value="debito">Débito</ion-select-option>
         <ion-select-option value="credito">Crédito</ion-select-option>
         <ion-select-option value="transferencia">Transferencia</ion-select-option>
@@ -37,7 +39,7 @@
 
     <ion-item>
       <ion-label>Tipo de Entrega</ion-label>
-      <ion-select formControlName="tipoEntrega" interface="popover">
+      <ion-select formControlName="tipoEntrega" interface="popover" placeholder="Selecciona una opción">
         <ion-select-option value="retiro">Retiro en tienda</ion-select-option>
         <ion-select-option value="despacho">Despacho a domicilio</ion-select-option>
       </ion-select>
@@ -47,23 +49,34 @@
       Confirmar y Generar Boleta
     </ion-button>
   </form>
+
+  <!-- Botón PayPal: aparece tras confirmar formulario -->
+  <div
+    id="paypal-button-container"
+    *ngIf="datosBoleta && !boletaGenerada"
+    class="ion-margin-top"
+  ></div>
+
+  <!-- Boleta Electrónica -->
   <ion-card *ngIf="boletaGenerada" class="ion-margin-top">
-  <ion-card-header>
-    <ion-card-title>Boleta Electrónica</ion-card-title>
-    <ion-card-subtitle>{{ datosBoleta.fecha | date:'fullDate' }} - {{ datosBoleta.fecha | date:'shortTime' }}</ion-card-subtitle>
-  </ion-card-header>
+    <ion-card-header>
+      <ion-card-title>Boleta Electrónica</ion-card-title>
+      <ion-card-subtitle>
+        {{ datosBoleta.fecha | date:'fullDate' }} - {{ datosBoleta.fecha | date:'shortTime' }}
+      </ion-card-subtitle>
+    </ion-card-header>
 
-  <ion-card-content>
-    <p><strong>Cliente:</strong> {{ datosBoleta.nombre }}</p>
-    <p><strong>RUT:</strong> {{ datosBoleta.rut }}</p>
-    <p><strong>Tipo de Pago:</strong> {{ datosBoleta.tipoPago | titlecase }}</p>
-    <p><strong>Tipo de Entrega:</strong> {{ datosBoleta.tipoEntrega | titlecase }}</p>
-    <p><strong>Total:</strong> ${{ datosBoleta.total | number }}</p>
+    <ion-card-content>
+      <p><strong>Cliente:</strong> {{ datosBoleta.nombre }}</p>
+      <p><strong>RUT:</strong> {{ datosBoleta.rut }}</p>
+      <p><strong>Tipo de Pago:</strong> {{ datosBoleta.tipoPago | titlecase }}</p>
+      <p><strong>Tipo de Entrega:</strong> {{ datosBoleta.tipoEntrega | titlecase }}</p>
+      <p><strong>Total:</strong> ${{ datosBoleta.total | number }}</p>
 
-    <ion-button expand="block" fill="outline" color="primary" (click)="boletaGenerada = false">
-      Ocultar Boleta
-    </ion-button>
-  </ion-card-content>
-</ion-card>
+      <ion-button expand="block" fill="outline" color="primary" (click)="boletaGenerada = false">
+        Ocultar Boleta
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>
