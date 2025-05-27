@@ -3,14 +3,14 @@
     <div class="ion-page" id="main-content">
       <ion-content>
 
-        <!-- Botón carrito flotante -->
+
         <ion-fab vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button color="primary" routerLink="/carrito">
             <ion-icon name="cart"></ion-icon>
           </ion-fab-button>
         </ion-fab>
 
-        <!-- Carrusel de imágenes -->
+
         <div class="slider-container">
           <div class="slider" *ngFor="let imagen of imagenes; let i = index">
             <ion-item>
@@ -19,12 +19,12 @@
           </div>
         </div>
 
-        <!-- Botón para ver productos -->
+
         <ion-button expand="full" fill="solid" color="primary" routerLink="/productos">
           ¡Compra Ahora!
         </ion-button>
 
-        <!-- Productos del backend -->
+
         <ion-grid>
           <ion-row>
             <ion-col size="6" size-md="3" *ngFor="let prod of producto">
@@ -51,7 +51,7 @@
           </ion-row>
         </ion-grid>
 
-        <!-- Productos más vendidos -->
+
         <h2 style="text-align: center;">Productos más vendidos</h2>
         <div class="featured-slider-container">
           <button class="slider-btn prev" (click)="moveSlider(-1)">&#10094;</button>
@@ -77,13 +77,10 @@
 
           <button class="slider-btn next" (click)="moveSlider(1)">&#10095;</button>
         </div>
-
-        <!-- Footer -->
         <ion-footer>
           <ion-toolbar color="dark">
             <ion-grid>
               <ion-row class="footer-content">
-                <!-- Redes sociales -->
                 <ion-col size="12" size-md="3">
                   <div class="social-icons">
                     <ion-button href="https://www.instagram.com/tuferreteria" target="_blank" color="secondary">
@@ -95,7 +92,7 @@
                   </div>
                 </ion-col>
 
-                <!-- Enlaces -->
+
                 <ion-col size="12" size-md="3">
                   <div class="footer-links">
                     <a href="/terminos" class="footer-link">Términos y condiciones</a>
@@ -104,7 +101,7 @@
                   </div>
                 </ion-col>
 
-                <!-- Contacto -->
+
                 <ion-col size="12" size-md="3">
                   <div class="footer-contact">
                     <p><strong>Contáctanos:</strong></p>
@@ -113,7 +110,7 @@
                   </div>
                 </ion-col>
 
-                <!-- Derechos -->
+
                 <ion-col size="12" size-md="3">
                   <div class="footer-copyright">
                     <p>&copy; 2025 Los Clavitos de Pablito. Todos los derechos reservados.</p>
