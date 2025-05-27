@@ -77,6 +77,7 @@ ionic serve
 ```
 
 Esto abrirá automáticamente la aplicación en [http://localhost:8100](http://localhost:8100).
+
 ---
 
 ### 🌐 4. Levantar API de Express (Node.js)
@@ -99,3 +100,17 @@ cd ../api-fastapi
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+
+- Asegúrate de tener **Python 3.8+** y `pip` instalado.
+- Por defecto, la API estará disponible en [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) (Swagger UI).
+
+Si usas entornos virtuales en Python:
+
+```bash
+python -m venv venv
+source venv/bin/activate  # En Linux/Mac
+venv\\Scripts\\activate   # En Windows
+`venv\Scripts\activate`   # Tambien Tienes esta Opción que funciona de la misma forma para Windows    
+```
+
+---
