@@ -19,3 +19,10 @@ Se propone el desarrollo de un sistema de eCommerce para la Ferretería **"Los C
 - Arquitectura basada en microservicios con APIs propias y externas.
 
 ## 🔌 Tecnologías y APIs utilizadas
+
+### 🖥️ Frontend
+- Angular 19
+- Ionic Framework
+
+### 🖥️ Backend
+- Node.js
