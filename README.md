@@ -6,4 +6,6 @@ Este proyecto nace como respuesta al caso propuesto por la asignatura **ASY5131 
 
 ## 🧩 El problema
 
-A raíz de la pandemia del COVID-19 y las restricciones de movilidad, LOS CLAVITOS DE PABLITO enfrentó una caída significativa en sus ventas debido a la falta de un canal de venta online. La empresa operaba exclusivamente de forma presencial, lo que evidenció una necesidad urgente de modernizar sus procesos mediante la implementación de una **plataforma de comercio electrónico integrada**.
+A raíz de la pandemia del COVID-19 y las restricciones de movilidad, LOS CLAVITOS DE PABLITO enfrentó una caída significativa en sus ventas debido a la falta de un canal de venta online. La empresa operaba exclusivamente de forma presencial, lo que evidenció una necesidad urgente de modernizar sus procesos mediante la implementación de una **Plataforma de Comercio Electrónico Integrada**.
+
+## ✅ La solución
