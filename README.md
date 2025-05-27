@@ -44,3 +44,11 @@ Se propone el desarrollo de un sistema de eCommerce para la Ferretería **"Los C
 | **Bodeguero**     | Preparación de pedidos, entrega a vendedores. |
 | **Contador**      | Verificación de pagos, registro de entregas. |
 | **Administrador** | Gestión de cuentas de usuarios, informes de desempeño y estrategias de venta. |
+
+## 🗂️ Arquitectura general
+
+El sistema está compuesto por una arquitectura modular y escalable:
+- Frontend para distribución web.
+- Dos APIs desarrolladas de forma desacoplada.
+- Integración de servicios externos REST.
+- Comunicación entre servicios vía HTTP (RESTful).
