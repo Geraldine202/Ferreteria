@@ -68,3 +68,10 @@ cd Ferreteria/
 ```bash
 npm install
 ```
+---
+
+### 🖥️ 3. Apertura del Sitio Web
+
+```bash
+ionic serve
+```
