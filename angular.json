@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -32,7 +33,10 @@
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
-            "scripts": []
+            "scripts": ["node_modules/process/browser.js"
+      ],
+      "allowedCommonJsDependencies": [
+        "exceljs"]
           },
           "configurations": {
             "production": {
