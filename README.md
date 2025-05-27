@@ -9,3 +9,11 @@ Este proyecto nace como respuesta al caso propuesto por la asignatura **ASY5131 
 A raíz de la pandemia del COVID-19 y las restricciones de movilidad, LOS CLAVITOS DE PABLITO enfrentó una caída significativa en sus ventas debido a la falta de un canal de venta online. La empresa operaba exclusivamente de forma presencial, lo que evidenció una necesidad urgente de modernizar sus procesos mediante la implementación de una **Plataforma de Comercio Electrónico Integrada**.
 
 ## ✅ La solución
+
+Se propone el desarrollo de un sistema de eCommerce para la Ferretería **"Los Clavitos de Pablito"**, que responde a la necesidad de digitalizar los procesos operacionales de esta. La solución considera:
+
+- Implementación de un **Sistema Web** desarrollada en **Angular + Ionic**.
+- Integración de múltiples roles de usuarios: Clientes, Administradores, Vendedores, Bodegueros y Contadores.
+- Automatización de procesos de compra, gestión de inventario, pagos y despachos.
+- Diseño de flujos de negocio a través de diagramas BPMN.
+- Arquitectura basada en microservicios con APIs propias y externas.
