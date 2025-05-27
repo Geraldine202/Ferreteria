@@ -52,3 +52,12 @@ El sistema está compuesto por una arquitectura modular y escalable:
 - Dos APIs desarrolladas de forma desacoplada.
 - Integración de servicios externos REST.
 - Comunicación entre servicios vía HTTP (RESTful).
+
+## 📥 Instalación y ejecución del proyecto
+
+### 🔁 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/Geraldine202/Ferreteria.git
+cd Ferreteria/
+```
