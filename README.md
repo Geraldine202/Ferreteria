@@ -34,3 +34,13 @@ Se propone el desarrollo de un sistema de eCommerce para la Ferretería **"Los C
 ### 🌐 APIs Externas
 - **API de PayPal**: integración para pagos seguros en línea.
 - **API de MiIndicador.cl**: para consulta del valor actualizado del dólar y conversión automática de precios.
+
+## 🔐 Funcionalidades principales por rol
+
+| Rol          | Funcionalidades clave |
+|--------------|------------------------|
+| **Cliente**       | Registro, navegación de catálogo, carrito de compras, elección de retiro o despacho, múltiples medios de pago. |
+| **Vendedor**      | Gestión de pedidos, aprobación y envío de órdenes a bodega, coordinación de despachos. |
+| **Bodeguero**     | Preparación de pedidos, entrega a vendedores. |
+| **Contador**      | Verificación de pagos, registro de entregas. |
+| **Administrador** | Gestión de cuentas de usuarios, informes de desempeño y estrategias de venta. |
