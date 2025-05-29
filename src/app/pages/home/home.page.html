@@ -3,12 +3,12 @@
     <div class="ion-page" id="main-content">
       <ion-content>
 
-
-        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button color="primary" routerLink="/carrito">
-            <ion-icon name="cart"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
+      <ion-fab-button color="primary" class="btn-carrito" (click)="irAlCarrito()">
+        <ion-icon name="cart"></ion-icon>
+        <ion-badge *ngIf="contadorCarrito > 0" color="danger" style="position: absolute; top: 5px; right: 5px;">
+          {{ contadorCarrito }}
+        </ion-badge>
+      </ion-fab-button>
 
 
         <div class="slider-container">
@@ -20,7 +20,7 @@
         </div>
 
 
-        <ion-button expand="full" fill="solid" color="primary" routerLink="/productos">
+        <ion-button expand="full" fill="solid" color="primary" routerLink="/home">
           ¡Compra Ahora!
         </ion-button>
 

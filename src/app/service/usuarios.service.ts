@@ -10,6 +10,9 @@ import { environment } from 'src/environments/environment.prod';
 export class UsuariosService {
   private url = 'http://localhost:3000/usuarios';
   private log = 'http://localhost:3000/login';
+  private pedidos = 'http://localhost:3000/pedidos';
+  private pagos = 'http://localhost:3000/pagos';
+  private productos = 'http://localhost:3000/productos_inventario';
   private comuna = 'http://localhost:3000/comuna';
   private sucursal = 'http://localhost:3000/sucursal';
   private apiKey = environment.apiKey;
@@ -51,6 +54,51 @@ export class UsuariosService {
     const headers = new HttpHeaders().set('x-api-key', this.apiKey);
     return this.http.get(this.sucursal, { headers });
   }
+obtenerTodosLosPagos(): Observable<any[]> {
+  const headers = this.headers;
+  // Endpoint corregido - verifica el nombre exacto en tu backend
+  return this.http.get<any[]>(`${this.pagos}`, { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener pagos:', error);
+      return throwError(() => this.manejarErrorPagos(error));
+    })
+  );
+}
+obtenerTodosLosProductos(): Observable<any[]> {
+  const headers = this.headers;
+  // Endpoint corregido - verifica el nombre exacto en tu backend
+  return this.http.get<any[]>(`${this.productos}`, { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener productos:', error);
+      return throwError(() => this.manejarErrorPagos(error));
+    })
+  );
+}
+
+obtenerTodosLosPedidos(): Observable<any[]> {
+  const headers = this.headers;
+  // Endpoint corregido - verifica el nombre exacto en tu backend
+  return this.http.get<any[]>(`${this.pedidos}`, { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener pedidos:', error);
+      return throwError(() => this.manejarErrorPedidos(error));
+    })
+  );
+}
+private manejarErrorPagos(error: any): Error {
+  if (error.status === 404) {
+    return new Error('El endpoint de pagos no existe. Verifica la configuración del backend.');
+  }
+  return new Error(error.message || 'Error al obtener pagos');
+}
+
+private manejarErrorPedidos(error: any): Error {
+  if (error.status === 404) {
+    return new Error('El endpoint de pedidos no existe. Verifica la configuración del backend.');
+  }
+  return new Error(error.message || 'Error al obtener pedidos');
+}
+
 
   // Agrega estos métodos al servicio
   getSucursalPorId(idSucursal: number): Observable<any> {
@@ -76,7 +124,20 @@ crearUsuario(usuario: any) {
 
   return this.http.post(this.url, usuario, { headers });
 }
+// Método para registrar pedido completo (pedido + pago + detalle)
+registrarPedidoCompleto(pedidoData: any): Observable<any> {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'x-api-key': this.apiKey
+  });
 
+  return this.http.post('http://localhost:3000/pedido-completo', pedidoData, { headers }).pipe(
+    catchError(error => {
+      console.error('Error al registrar el pedido completo:', error);
+      return throwError(() => new Error('Error al registrar el pedido.'));
+    }) 
+  );
+}
 
   subirImagen(file: File) {
     const formData = new FormData();
@@ -214,6 +275,7 @@ crearUsuario(usuario: any) {
     this.loggedIn.next(false);
     this.requiereCambioClave.next(false);
   }
+  
 getUsuarioActual(): Observable<any> {
   const token = localStorage.getItem('token');
   

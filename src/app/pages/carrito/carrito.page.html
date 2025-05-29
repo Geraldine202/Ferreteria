@@ -1,32 +1,140 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Mi Carrito de Herramientas</ion-title>
+    <ion-title>Carrito de Compras</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list *ngIf="carrito.length > 0; else carritoVacio">
-    <ion-item *ngFor="let item of carrito">
-      <ion-label>
-        <h2>{{ item.nombre }}</h2>
-        <p>{{ item.descripcion }}</p>
-        <p>Cantidad: {{ item.cantidad }}</p>
-        <p>Precio unitario: ${{ item.precio }}</p>
-        <p>Subtotal: ${{ item.precio * item.cantidad }}</p>
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>
-        <h2>Total: ${{ calcularTotal() }}</h2>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+
+  <div *ngIf="carritoDetalles.length > 0; else carritoVacio">
+
+    <ion-list>
+      <ion-item *ngFor="let item of carritoDetalles; let i = index" lines="none" style="margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <ion-thumbnail slot="start" style="border-radius: 10px; overflow: hidden; width: 80px; height: 80px;">
+          <img [src]="'http://localhost:8080' + item.imagen" style="object-fit: cover; width: 100%; height: 100%;" />
+        </ion-thumbnail>
+
+        <ion-label style="padding-left: 10px; max-width: 55%;">
+          <h2 style="margin: 0 0 6px 0; font-weight: 600; font-size: 18px;">{{ item.nombre }}</h2>
+          <p style="margin: 0; font-size: 14px; color: #666;">
+            Precio unitario: <strong>{{ item.precio | number:'1.0-0' }} CLP</strong>
+          </p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #444;">
+            Subtotal: <strong>{{ item.subtotal | number:'1.0-0' }} CLP</strong>
+          </p>
+        </ion-label>
+
+        <ion-input
+          type="number"
+          min="1"
+          [value]="item.cantidad"
+          (ionChange)="cambiarCantidad(i, $event)"
+          style="width: 60px; margin-right: 10px; --padding-start: 10px;"
+          debounce="300"
+        ></ion-input>
+
+        <ion-button color="danger" fill="clear" (click)="eliminarProducto(i)" aria-label="Eliminar producto" style="min-width: 40px;">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Total a Pagar</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <h2>{{ calcularTotal() | number:'1.0-0' }} CLP</h2>
+      </ion-card-content>
+    </ion-card>
+
+<form [formGroup]="pagoForm" (submit)="subirImagenYConfirmar($event)">
+
+  <ion-item>
+    <ion-label position="floating">Nombre completo</ion-label>
+    <ion-input formControlName="nombre" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">RUT</ion-label>
+    <ion-input formControlName="rut" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Tipo de Pago</ion-label>
+    <ion-select formControlName="id_tipo_pago" placeholder="Seleccione Tipo de Pago" (ionChange)="onCambioTipoPago($event)">
+      <ion-select-option *ngFor="let pago of tipo_pagos" [value]="pago.id_tipo_pago">
+        {{ pago.descripcion }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+  <!-- Imagen comprobante, solo si es transferencia -->
+  <ion-item *ngIf="mostrarCampoImagen">
+    <ion-label position="stacked">Comprobante Transferencia</ion-label>
+    <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+  </ion-item>
+  <div *ngIf="imagenSeleccionadaBase64" class="image-preview">
+    <img [src]="imagenSeleccionadaBase64" alt="Previsualización del comprobante">
+  </div>
+  <ion-item>
+    <ion-label position="stacked">Tipo de Entrega</ion-label>
+    <ion-select formControlName="id_entrega" placeholder="Seleccione Tipo de Entrega" (ionChange)="onCambioTipoEntrega($event)">
+      <ion-select-option *ngFor="let e of entregas" [value]="e.id_entrega">
+        {{ e.descripcion }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Selección de sucursal solo si es retiro en tienda -->
+<ion-item *ngIf="mostrarSeleccionSucursal">
+  <ion-label position="stacked">Sucursal</ion-label>
+  <ion-select formControlName="sucursal" placeholder="Seleccione Sucursal" (ionChange)="onSucursalSeleccionada($event)">
+    <ion-select-option *ngFor="let s of sucursales" [value]="s.id_sucursal">
+      {{ s.nombre_sucursal }} ({{getNombreComuna(s.id_comuna)}})
+    </ion-select-option>
+  </ion-select>
+</ion-item>
+
+  <!-- Campo para ingresar dirección solo si es despacho a domicilio (id_entrega === 2) -->
+<ion-item *ngIf="mostrarCampoDireccion">
+  <ion-label position="floating">Dirección de despacho</ion-label>
+  <ion-input type="text" formControlName="direccion"  placeholder="Ingrese su dirección" (ionChange)="onDireccionEscrita($event)"></ion-input>
+</ion-item>
+
+  <ion-button expand="block" color="primary" type="submit" class="ion-margin-top" [disabled]="pagoForm.invalid">
+    Confirmar y Generar Boleta
+  </ion-button>
+
+</form>
+
+
+<ion-card *ngIf="boletaGenerada" class="ion-margin-top">
+  <ion-card-header>
+    <ion-card-title>Boleta Electrónica</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <p><strong>Cliente:</strong> {{ datosBoleta.nombre }}</p>
+    <p><strong>RUT:</strong> {{ datosBoleta.rut }}</p>
+    <p><strong>Tipo de Pago:</strong> {{ datosBoleta.tipoPago }}</p>
+    <p><strong>Tipo de Entrega:</strong> {{ datosBoleta.tipoEntrega }}</p>
+    <ng-container *ngIf="datosBoleta.tipoEntrega === 'Retiro en Tienda'">
+      <p><strong>Sucursal:</strong> {{ datosBoleta.sucursal }}</p>
+    </ng-container>
+    <ng-container *ngIf="datosBoleta.tipoEntrega === 'Despacho a Domicilio'">
+      <p><strong>Dirección:</strong> {{ datosBoleta.direccion }}</p>
+    </ng-container>
+    <p><strong>Total:</strong> ${{ datosBoleta.total | number }}</p>
+  </ion-card-content>
+</ion-card>
+
+
+  </div>
 
   <ng-template #carritoVacio>
-    <p style="text-align:center; margin-top: 2rem;">Tu carrito está vacío.</p>
+    <div style="text-align: center; margin-top: 200px; color: #999;">
+      <ion-icon name="cart-outline" size="large"></ion-icon>
+      <p style="margin-top: 10px; font-size: 18px;">Tu carrito está vacío.</p>
+    </div>
   </ng-template>
 
-  <ion-button expand="block" color="primary" (click)="finalizarCompra()" [disabled]="carrito.length === 0">
-    Finalizar Compra
-  </ion-button>
 </ion-content>

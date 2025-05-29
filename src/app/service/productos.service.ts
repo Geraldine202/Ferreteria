@@ -31,7 +31,22 @@ export interface Inventario {
   descripcion:string;
   id_sucursal:number;
 }
-
+export interface Estado_pedido {
+  id_estado_pedido: number;
+  descripcion:string;
+}
+export interface Tipo_entrega {
+  id_entrega: number;
+  descripcion:string;
+}
+export interface Estado_pago {
+  id_estado_pago: number;
+  descripcion:string;
+}
+export interface Tipo_pago {
+  id_tipo_pago: number;
+  descripcion:string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -40,6 +55,10 @@ export class ProductosService {
   private marcas = '/marcas';
   private categorias = '/categorias';
   private inventario = '/inventario';
+  private estado_pedido = '/estado_pedido';
+  private tipo_entrega = '/tipo_entrega';
+  private estado_pago = '/estado_pago';
+  private tipo_pago = '/tipo_pago';
 
   constructor() {}
 
@@ -110,6 +129,18 @@ async obtenerMarcas(): Promise<Marca[]> {
 }
 async obtenerCategorias(): Promise<Categoria[]> {
   return this.handleRequest<Categoria[]>(this.categorias, 'GET');
+
+}async obtener_estados_pedidos(): Promise<Estado_pedido[]> {
+  return this.handleRequest<Estado_pedido[]>(this.estado_pedido, 'GET');
+}
+async obtener_tipo_entregas(): Promise<Tipo_entrega[]> {
+  return this.handleRequest<Tipo_entrega[]>(this.tipo_entrega, 'GET');
+}
+async obtener_estados_pagos(): Promise<Estado_pago[]> {
+  return this.handleRequest<Estado_pago[]>(this.estado_pago, 'GET');
+}
+async obtener_tipo_pagos(): Promise<Tipo_pago[]> {
+  return this.handleRequest<Tipo_pago[]>(this.tipo_pago, 'GET');
 }
 
   // Obtener un producto por ID

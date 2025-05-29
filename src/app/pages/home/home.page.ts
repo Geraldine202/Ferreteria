@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ProductosService } from 'src/app/service/productos.service';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { CarritoService } from 'src/app/service/carrito.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -24,7 +26,8 @@ export class HomePage {
   ];
   imagenIndex: number = 0;
   dolar: number = 0;
-
+  contadorCarrito = 0;
+  private carritoSubscription!: Subscription;
   productos = [
     { imgSrc: 'assets/images/relleno1.png', title: 'Producto 1', description: 'Descripción breve del producto.', priceCLP: 19990 },
     { imgSrc: 'assets/images/relleno1.png', title: 'Producto 2', description: 'Descripción breve del producto.', priceCLP: 29990 },
@@ -34,20 +37,35 @@ export class HomePage {
 
   productosVisibles = 3;
   productoIndex: number = 0;
-
+  carrito: Array<{ producto: any, cantidad: number }> = [];
   constructor(
     private router: Router,
     private productosService: ProductosService,
-    private http: HttpClient
+    private http: HttpClient,
+    private carritoService: CarritoService,
+    private toastController: ToastController,
   ) {}
 
   ngOnInit() {
+    this.actualizarContador();
     this.cargarProductos();
     this.obtenerValorDolar();
     this.actualizarProductosVisibles();
     window.addEventListener('resize', () => this.actualizarProductosVisibles());
+        this.carritoSubscription = this.carritoService.contador$.subscribe(
+      cantidad => {
+        this.contadorCarrito = cantidad;
+        console.log('Contador actualizado:', cantidad); // Para depuración
+      }
+    );
   }
-
+ ngOnDestroy() {
+    // Limpiar la suscripción al destruir el componente
+    if (this.carritoSubscription) {
+      this.carritoSubscription.unsubscribe();
+    }
+    window.removeEventListener('resize', () => this.actualizarProductosVisibles());
+  }
   ngAfterViewInit() {
     setInterval(() => this.nextImage(), 2000);
   }
@@ -58,6 +76,9 @@ export class HomePage {
     } catch (error) {
       console.error('Error cargando productos:', error);
     }
+  }
+    irAlCarrito() {
+    this.router.navigate(['/carrito']);
   }
 
   obtenerValorDolar() {
@@ -103,9 +124,23 @@ export class HomePage {
     const totalProductos = this.productos.length;
     this.productoIndex = (this.productoIndex + direction + totalProductos) % totalProductos;
   }
-
-  agregarAlCarrito(producto: any) {
-    console.log('Producto agregado:', producto);
-    // Aquí agregar la lógica real para agregar al carrito
-  }
+  actualizarContador() {
+      const carrito = this.carritoService.obtenerCarrito();
+      this.contadorCarrito = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+    }
+    agregarAlCarrito(prod: any) {
+      this.carritoService.agregarAlCarrito(prod.id_producto, 1);
+      this.actualizarContador();
+      this.presentToast(`${prod.nombre} agregado al carrito`);
+      console.log('Producto añadido al carrito:', prod.id_producto); // debug
+    }
+    async presentToast(mensaje: string) {
+      const toast = await this.toastController.create({
+        message: mensaje,
+        duration: 1500,
+        position: 'bottom',
+        color: 'success',
+      });
+      toast.present();
+    }
 }

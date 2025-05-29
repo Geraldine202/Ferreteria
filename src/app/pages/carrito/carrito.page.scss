@@ -1,0 +1,66 @@
+.item-carrito {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  align-items: center;
+}
+.thumb-carrito {
+  border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.label-carrito h2 {
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-size: 1.1rem;
+}
+
+.precio-unitario, .subtotal {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.precio-unitario strong, .subtotal strong {
+  color: #222;
+}
+
+.input-cantidad {
+  width: 60px;
+  margin-right: 8px;
+  --padding-start: 5px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+ion-button[fill="clear"] {
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.carrito-vacio {
+  margin-top: 50px;
+  text-align: center;
+  color: #888;
+}
+
+.carrito-vacio ion-icon {
+  margin-bottom: 10px;
+  color: #bbb;
+}
+
+.footer-carrito {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.total-carrito {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #222;
+}

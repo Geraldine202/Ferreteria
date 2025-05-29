@@ -7,7 +7,27 @@
   padding-left: 20px;
   transition: max-height 0.3s ease;
 }
-
+.btn-carrito {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #3880ff; /* azul Ionic por defecto */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 28px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.btn-carrito:hover {
+  background-color: #3171e0;
+}
 
 /* === MINI CARDS === */
 .mini-card {
