@@ -69,7 +69,7 @@
     </ion-select>
   </ion-item>
   <!-- Imagen comprobante, solo si es transferencia -->
-  <ion-item *ngIf="mostrarCampoImagen">
+  <ion-item *ngIf="mostrarCampoImagen1">
     <ion-label position="stacked">Comprobante Transferencia</ion-label>
     <input type="file" accept="image/*" (change)="onFileSelected($event)" />
   </ion-item>
@@ -102,8 +102,9 @@
 </ion-item>
 
   <ion-button expand="block" color="primary" type="submit" class="ion-margin-top" [disabled]="pagoForm.invalid">
-    Confirmar y Generar Boleta
+    Confirmar 
   </ion-button>
+  <div *ngIf="esPayPal" id="paypal-button-container" class="ion-margin-top"></div>
 
 </form>
 

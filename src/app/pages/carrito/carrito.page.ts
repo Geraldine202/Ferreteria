@@ -10,6 +10,8 @@ import { UsuariosService } from 'src/app/service/usuarios.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
+declare const paypal: any;
+
 @Component({
   selector: 'app-carrito',
   templateUrl: './carrito.page.html',
@@ -280,6 +282,100 @@ async confirmarPago() {
     return;
   }
 
+  if (this.carritoDetalles.length === 0) {
+    await this.mostrarError('No hay productos en el carrito.');
+    return;
+  }
+
+  const tipoPagoSeleccionado = this.pagoForm.value.id_tipo_pago;
+
+  // 1 y 2: Tarjeta débito/crédito vía PayPal
+  const esPayPal = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 2;
+  const esTransferencia = tipoPagoSeleccionado === 3;
+
+  if (esTransferencia && !this.imagenSeleccionadaBase64) {
+    const alert = await this.alertCtrl.create({
+      header: 'Comprobante faltante',
+      message: 'Por favor, sube una imagen del comprobante de transferencia.',
+      buttons: ['Aceptar']
+    });
+    await alert.present();
+    return;
+  }
+
+  const pedidoParaGuardar = this.generarPedidoCompleto();
+
+  if (esPayPal) {
+    // Mostrar botón PayPal dinámicamente en contenedor
+    const paypalContainer = document.getElementById('paypal-button-container');
+    if (paypalContainer) {
+      paypalContainer.innerHTML = ''; // Limpiar si ya hay un botón renderizado
+
+      paypal.Buttons({
+        createOrder: (data:any, actions:any) => {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: (pedidoParaGuardar.total_a_pagar / 1000).toFixed(2) // ajusta según tu moneda
+              }
+            }]
+          });
+        },
+        onApprove: async (data:any, actions:any) => {
+          const details = await actions.order.capture();
+          console.log('Pago aprobado por PayPal:', details);
+
+          // Cambiar estado a pagado
+          pedidoParaGuardar.id_estado_pago = 1;
+
+          this.usuarioService.registrarPedidoCompleto(pedidoParaGuardar).subscribe({
+            next: async () => {
+              await this.mostrarExito('Pedido pagado y guardado con éxito');
+              this.carritoService.limpiarCarrito();
+              this.router.navigate(['/home']);
+            },
+            error: async (err) => {
+              console.error('Error al guardar el pedido:', err);
+              await this.mostrarError('El pago fue exitoso, pero no se pudo guardar el pedido. Contáctanos.');
+            }
+          });
+        },
+        onError: async (err:any) => {
+          console.error('Error en PayPal:', err);
+          await this.mostrarError('Error al procesar el pago con PayPal.');
+        }
+      }).render('#paypal-button-container');
+    } else {
+      console.error('No se encontró el contenedor PayPal.');
+      await this.mostrarError('No se pudo inicializar el pago con PayPal.');
+    }
+
+    return; // salir del flujo para esperar PayPal
+  }
+
+  // Transferencia u otro método
+  this.usuarioService.registrarPedidoCompleto(pedidoParaGuardar).subscribe({
+    next: async () => {
+      await this.mostrarExito('Pedido guardado con éxito');
+      this.carritoService.limpiarCarrito();
+      this.router.navigate(['/home']);
+    },
+    error: async (err) => {
+      console.error('Error al guardar el pedido:', err);
+      await this.mostrarError('No se pudo guardar el pedido. Intenta nuevamente.');
+    }
+  });
+}async confirmarPago1() {
+  if (this.pagoForm.invalid) {
+    const alert = await this.alertCtrl.create({
+      header: 'Formulario Incompleto',
+      message: 'Por favor, completa todos los campos correctamente.',
+      buttons: ['Aceptar']
+    });
+    await alert.present();
+    return;
+  }
+
   const datosFormulario = this.pagoForm.value;
   const total = this.calcularTotal();
   const cantidadProductos = this.carritoDetalles.reduce((acc, item) => acc + item.cantidad, 0);
@@ -324,9 +420,6 @@ async confirmarPago() {
   });
 }
 
-
-
-
 generarIdUnico(): number {
   return Date.now(); // O cualquier lógica que quieras para generar IDs únicos
 }
@@ -339,8 +432,8 @@ private generarPedidoCompleto() {
 
   const tipoPagoSeleccionado = this.pagoForm.value.id_tipo_pago;
   const tipoEntregaSeleccionado = this.pagoForm.value.id_entrega;
-  const esTransferencia = tipoPagoSeleccionado === 3; // supongamos que 3 = transferencia
-  const esDebitoCredito = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 2;
+  const esTransferencia = tipoPagoSeleccionado === 2; // supongamos que 3 = transferencia
+  const esDebitoCredito = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 3;
 
   const pedido = {
     id_pedido: idPedido,
@@ -393,10 +486,43 @@ onSucursalSeleccionada(event: any) {
 onDireccionEscrita(event: any) {
   this.direccionTemporal = event.detail.value;
 }
+
+esPayPal = false; // inicial
+
+mostrarCampoImagen1 = false;
+
 onCambioTipoPago(event: any) {
   const tipoPago = event.detail.value;
-  console.log('Tipo de pago seleccionado:', tipoPago);
-  this.mostrarCampoImagen = Number(tipoPago) === 2;
+   this.mostrarCampoImagen1 = tipoPago === 2;
+
+  // Controlar si se debe usar PayPal
+  this.esPayPal = (tipoPago === 1 || tipoPago === 3);
+
+  if (this.esPayPal) {
+    this.renderizarBotonPayPal();
+  }
+}
+
+renderizarBotonPayPal() {
+  paypal.Buttons({
+    createOrder: (data: any, actions: any) => {
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: this.calcularTotal().toString()
+          }
+        }]
+      });
+    },
+    onApprove: async (data: any, actions: any) => {
+      const details = await actions.order.capture();
+      console.log('Pago aprobado:', details);
+      // Tu lógica después del pago exitoso
+    },
+    onError: async (err: any) => {
+      console.error('Error PayPal:', err);
+    }
+  }).render('#paypal-button-container');
 }
 
 mostrarCampoDireccion = false;

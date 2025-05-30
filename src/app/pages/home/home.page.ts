@@ -20,7 +20,7 @@ import { Subscription } from 'rxjs';
 export class HomePage {
   producto: any[] = [];
   imagenes: string[] = [
-    'assets/images/relleno1.png',
+    'assets/images/relleno1.pngz',
     'assets/images/relleno1.png',
     'assets/images/relleno1.png',
   ];
