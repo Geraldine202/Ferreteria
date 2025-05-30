@@ -273,15 +273,15 @@ private async cargarCarrito() {
 
 async confirmarPago() {
   if (this.pagoForm.invalid) {
+    // Mostrar mensaje de error
     const alert = await this.alertCtrl.create({
       header: 'Formulario Incompleto',
-      message: 'Por favor, completa todos los campos correctamente.',
+      message: 'Por favor, completa todos los campos obligatorios.',
       buttons: ['Aceptar']
     });
     await alert.present();
     return;
   }
-
   if (this.carritoDetalles.length === 0) {
     await this.mostrarError('No hay productos en el carrito.');
     return;
@@ -289,9 +289,9 @@ async confirmarPago() {
 
   const tipoPagoSeleccionado = this.pagoForm.value.id_tipo_pago;
 
-  // 1 y 2: Tarjeta débito/crédito vía PayPal
-  const esPayPal = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 2;
-  const esTransferencia = tipoPagoSeleccionado === 3;
+  // 1 y 3: Tarjeta débito/crédito vía PayPal
+  const esPayPal = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 3;
+  const esTransferencia = tipoPagoSeleccionado === 2;
 
   if (esTransferencia && !this.imagenSeleccionadaBase64) {
     const alert = await this.alertCtrl.create({
@@ -466,34 +466,39 @@ onCambioTipoEntrega(event: any) {
     this.mostrarCampoDireccion = true;
     this.mostrarSeleccionSucursal = false;
     this.pagoForm.get('direccion')?.setValidators([Validators.required]);
-    this.pagoForm.get('sucursal')?.clearValidators();
-  } else {
+    this.pagoForm.get('id_sucursal')?.clearValidators();
+    this.pagoForm.get('id_sucursal')?.setValue(null); // limpiar valor
+  } else { // retiro en sucursal
     this.mostrarCampoDireccion = false;
     this.mostrarSeleccionSucursal = true;
+
     this.pagoForm.get('direccion')?.clearValidators();
-    this.pagoForm.get('sucursal')?.setValidators([Validators.required]);
+    this.pagoForm.get('direccion')?.setValue('');
+    this.pagoForm.get('direccion')?.updateValueAndValidity();
+
+    this.pagoForm.get('id_sucursal')?.setValidators([Validators.required]);
+    this.pagoForm.get('id_sucursal')?.updateValueAndValidity();
   }
-
-  this.pagoForm.get('direccion')?.updateValueAndValidity();
-  this.pagoForm.get('sucursal')?.updateValueAndValidity();
 }
-
 
 onSucursalSeleccionada(event: any) {
   const id = event.detail.value;
   this.sucursalSeleccionada = this.sucursales.find(s => s.id_sucursal === id);
+  this.pagoForm.get('id_sucursal')?.setValue(id);
 }
+
 onDireccionEscrita(event: any) {
-  this.direccionTemporal = event.detail.value;
+  const direccion = event.detail.value;
+  this.direccionTemporal = direccion;
+  this.pagoForm.get('direccion')?.setValue(direccion);
 }
 
 esPayPal = false; // inicial
-
 mostrarCampoImagen1 = false;
 
 onCambioTipoPago(event: any) {
   const tipoPago = event.detail.value;
-   this.mostrarCampoImagen1 = tipoPago === 2;
+  this.mostrarCampoImagen1 = tipoPago === 2;
 
   // Controlar si se debe usar PayPal
   this.esPayPal = (tipoPago === 1 || tipoPago === 3);
