@@ -57,6 +57,9 @@
           <ion-item fill="outline" class="custom-item" [class.ion-invalid]="registroForm.hasError('noMatch') && registroForm.touched">
             <ion-label position="floating" class="custom-label">Contraseña</ion-label>
             <ion-input type="password" formControlName="contrasenia"></ion-input>
+            <div *ngIf="registroForm.get('contrasenia')?.hasError('passwordInsegura') && registroForm.get('contrasenia')?.touched">
+              La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un caracter especial.
+            </div>
           </ion-item>
 
           <ion-item fill="outline" class="custom-item" [class.ion-invalid]="registroForm.hasError('noMatch') && registroForm.touched">
@@ -112,6 +115,9 @@
               placeholder="Selecciona fecha"
               style="font-size: 1rem; color: #9f6239c1;"
             ></ion-input>
+            <ion-text color="danger" *ngIf="registroForm.get('fecha_nacimiento')?.hasError('menorDe15') && registroForm.get('fecha_nacimiento')?.touched">
+              Debes tener al menos 15 años.
+            </ion-text>
           </ion-item>
 
           <ion-item fill="outline" class="custom-item select-item">

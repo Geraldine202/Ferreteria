@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { IonicModule, LoadingController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UsuariosService } from 'src/app/service/usuarios.service';
@@ -26,21 +26,21 @@ export class RegistrarsePage implements OnInit {
     private router: Router
   ) {
     this.registroForm = this.fb.group({
-      rut_usuario: ['', [Validators.required]],
+      rut_usuario: ['', [Validators.required, rutValido()]],
       nombre: ['', [Validators.required]],
       primer_apellido: ['', [Validators.required]],
       segundo_apellido: ['', [Validators.required]],
       genero: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
       direccion: ['', [Validators.required]],
-      telefono: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
-      fecha_nacimiento: ['', [Validators.required]],
+      telefono: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      fecha_nacimiento: ['', [Validators.required, mayorDe15Anios()]], // <-- aquí el validador de edad
       comuna: [null, [Validators.required]],
       tipo_usuario: [4], // fijo
       sucursal: [null, [Validators.required]],
       imagen: [''],
-      contrasenia: ['', [Validators.required]],
-      confirmar_contrasenia: ['', [Validators.required]] // Agregado para validar
+      contrasenia: ['', [Validators.required, passwordSegura()]], // <-- validador de seguridad de contraseña
+      confirmar_contrasenia: ['', [Validators.required]]
     }, { validators: this.passwordsMatch });
   }
 
@@ -49,16 +49,18 @@ export class RegistrarsePage implements OnInit {
     this.cargarSucursales();
   }
 
-  // Validador personalizado para que coincidan las contraseñas
   passwordsMatch(group: AbstractControl) {
     const pass = group.get('contrasenia')?.value;
     const confirm = group.get('confirmar_contrasenia')?.value;
+    if (!pass || !confirm) return null;
     return pass === confirm ? null : { noMatch: true };
   }
 
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       this.imagenFile = event.target.files[0];
+    } else {
+      this.imagenFile = null;
     }
   }
 
@@ -96,51 +98,52 @@ export class RegistrarsePage implements OnInit {
     return comuna ? comuna.nombre_comuna : 'Comuna no encontrada';
   }
 
- async onSubmit() {
-  if (this.registroForm.invalid) {
-    await this.mostrarError('Por favor, completa correctamente el formulario');
-    return;
-  }
-
-  const loading = await this.mostrarLoading('Registrando usuario...');
-
-  try {
-    const formValue = { ...this.registroForm.value };
-    delete formValue.confirmar_contrasenia; // eliminar confirmación
-
-    // Mapear campos a lo que espera el backend
-    const usuarioData = {
-      rut: formValue.rut_usuario,             
-      nombre: formValue.nombre,
-      primer_apellido: formValue.primer_apellido,
-      segundo_apellido: formValue.segundo_apellido,
-      contrasenia: formValue.contrasenia,
-      imagen: '',                            
-      genero: formValue.genero,
-      correo: formValue.correo,
-      direccion: formValue.direccion,
-      telefono: Number(formValue.telefono),
-      fecha_nacimiento: formValue.fecha_nacimiento,
-      tipo_usuario: formValue.tipo_usuario, 
-      sucursal: formValue.sucursal,           
-      comuna: formValue.comuna                
-    };
-
-    if (this.imagenFile) {
-      const respuestaImagen: any = await this.usuariosService.subirImagen(this.imagenFile).toPromise();
-      usuarioData.imagen = respuestaImagen.imagen || '';
+  async onSubmit() {
+    if (this.registroForm.invalid) {
+      this.registroForm.markAllAsTouched();
+      await this.mostrarError('Por favor, completa correctamente el formulario');
+      return;
     }
 
-    await this.usuariosService.crearUsuario(usuarioData).toPromise();
+    const loading = await this.mostrarLoading('Registrando usuario...');
 
-    loading.dismiss();
-    await this.mostrarToast('Usuario creado con éxito', 'success');
-    this.router.navigate(['/login']);
-  } catch (error) {
-    loading.dismiss();
-    await this.mostrarError('Error al crear usuario');
+    try {
+      const formValue = { ...this.registroForm.value };
+      delete formValue.confirmar_contrasenia;
+
+      const usuarioData = {
+        rut: formValue.rut_usuario,
+        nombre: formValue.nombre,
+        primer_apellido: formValue.primer_apellido,
+        segundo_apellido: formValue.segundo_apellido,
+        contrasenia: formValue.contrasenia,
+        imagen: '',
+        genero: formValue.genero,
+        correo: formValue.correo,
+        direccion: formValue.direccion,
+        telefono: Number(formValue.telefono),
+        fecha_nacimiento: formValue.fecha_nacimiento,
+        tipo_usuario: formValue.tipo_usuario,
+        sucursal: formValue.sucursal,
+        comuna: formValue.comuna
+      };
+
+      if (this.imagenFile) {
+        const respuestaImagen: any = await this.usuariosService.subirImagen(this.imagenFile).toPromise();
+        usuarioData.imagen = respuestaImagen.imagen || '';
+      }
+
+      await this.usuariosService.crearUsuario(usuarioData).toPromise();
+
+      loading.dismiss();
+      await this.mostrarToast('Usuario creado con éxito', 'success');
+      this.router.navigate(['/login']);
+    } catch (error) {
+      loading.dismiss();
+      await this.mostrarError('Error al crear usuario');
+    }
   }
-}
+
   private async mostrarError(mensaje: string): Promise<void> {
     await this.mostrarToast(mensaje, 'danger');
   }
@@ -163,4 +166,61 @@ export class RegistrarsePage implements OnInit {
     await loading.present();
     return loading;
   }
+}
+
+// ✅ Validador personalizado para RUT chileno
+function rutValido(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const rut = control.value;
+    if (!rut) return null;
+
+    const valor = rut.replace(/\./g, '').toUpperCase();
+
+    if (!/^\d{7,8}-[0-9K]$/.test(valor)) {
+      return { rutInvalido: 'Formato inválido' };
+    }
+
+    const [cuerpo, dv] = valor.split('-');
+    let suma = 0;
+    let multiplo = 2;
+
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
+      multiplo = multiplo === 7 ? 2 : multiplo + 1;
+    }
+
+    const resultado = 11 - (suma % 11);
+    let dvEsperado = '';
+    if (resultado === 11) dvEsperado = '0';
+    else if (resultado === 10) dvEsperado = 'K';
+    else dvEsperado = resultado.toString();
+
+    return dv === dvEsperado ? null : { rutInvalido: 'Dígito verificador incorrecto' };
+  };
+}
+
+// ✅ Validador para contraseña segura
+function passwordSegura(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const pass = control.value;
+    if (!pass) return null;
+
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>\/?]).{8,}$/;
+
+    return regex.test(pass) ? null : { passwordInsegura: true };
+  };
+}
+
+// ✅ Validador para edad mínima de 15 años
+function mayorDe15Anios(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const fecha = control.value;
+    if (!fecha) return null;
+
+    const fechaNacimiento = new Date(fecha);
+    const hoy = new Date();
+    const edadMinima = new Date(hoy.getFullYear() - 15, hoy.getMonth(), hoy.getDate());
+
+    return fechaNacimiento <= edadMinima ? null : { menorDe15: true };
+  };
 }
