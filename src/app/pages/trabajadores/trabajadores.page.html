@@ -3,37 +3,69 @@
     <ion-card-header>
       <ion-card-title class="card-title">Administrar Trabajadores</ion-card-title>
     </ion-card-header>
-    <form [formGroup]="persona"  (ngSubmit)="onSubmit()">
 
-      <ion-item class="form-item">
-        <ion-label position="stacked">rut</ion-label>
-        <ion-input formControlName="rut" type="text"></ion-input>
+    <form [formGroup]="persona" (ngSubmit)="onSubmit()">
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('rut', 'required') || tieneError('rut', 'pattern')">
+        <ion-label position="stacked">RUT</ion-label>
+        <ion-input formControlName="rut" type="text" maxlength="10"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('rut', 'required') || tieneError('rut', 'pattern')">
+        <small *ngIf="tieneError('rut', 'required')">El RUT es obligatorio.</small>
+        <small *ngIf="tieneError('rut', 'pattern')">Formato de RUT inválido. Ej: 12345678-9</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('nombre', 'required') || tieneError('nombre', 'pattern') || tieneError('nombre', 'minlength')">
         <ion-label position="stacked">Nombre</ion-label>
         <ion-input formControlName="nombre" type="text"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('nombre', 'required') || tieneError('nombre', 'pattern') || tieneError('nombre', 'minlength')">
+        <small *ngIf="tieneError('nombre', 'required')">El nombre es obligatorio.</small>
+        <small *ngIf="tieneError('nombre', 'pattern')">Solo letras y espacios permitidos.</small>
+        <small *ngIf="tieneError('nombre', 'minlength')">El nombre debe tener mínimo 3 letras.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('primer_apellido', 'required') || tieneError('primer_apellido', 'pattern') || tieneError('primer_apellido', 'minlength')">
         <ion-label position="stacked">Primer Apellido</ion-label>
         <ion-input formControlName="primer_apellido" type="text"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('primer_apellido', 'required') || tieneError('primer_apellido', 'pattern') || tieneError('primer_apellido', 'minlength')">
+        <small *ngIf="tieneError('primer_apellido', 'required')">El primer apellido es obligatorio.</small>
+        <small *ngIf="tieneError('primer_apellido', 'pattern')">Solo letras y espacios permitidos.</small>
+        <small *ngIf="tieneError('primer_apellido', 'minlength')">El primer apellido debe tener mínimo 3 letras.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('segundo_apellido', 'required') || tieneError('segundo_apellido', 'pattern')">
         <ion-label position="stacked">Segundo Apellido</ion-label>
         <ion-input formControlName="segundo_apellido" type="text"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('segundo_apellido', 'required') || tieneError('segundo_apellido', 'pattern')">
+        <small *ngIf="tieneError('segundo_apellido', 'required')">El segundo apellido es obligatorio.</small>
+        <small *ngIf="tieneError('segundo_apellido', 'pattern')">Solo letras y espacios permitidos.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('contrasenia', 'required') || tieneError('contrasenia', 'minlength') || tieneError('contrasenia', 'pattern')">
         <ion-label position="stacked">Contraseña Temporal</ion-label>
-        <ion-input formControlName="contrasenia" type="text" ></ion-input>
+        <ion-input formControlName="contrasenia" type="text"></ion-input>
       </ion-item>
+      <ion-text color="danger" *ngIf="tieneError('contrasenia', 'required') || tieneError('contrasenia', 'minlength') || tieneError('contrasenia', 'pattern')">
+        <small *ngIf="tieneError('contrasenia', 'required')">La contraseña es obligatoria.</small>
+        <small *ngIf="tieneError('contrasenia', 'minlength')">La contraseña debe tener al menos 6 caracteres.</small>
+        <small *ngIf="tieneError('contrasenia', 'minlength')">La contraseña debe tener mínimo 8 caracteres.</small>
+        <small *ngIf="tieneError('contrasenia', 'pattern')">La contraseña debe contener al menos 1 mayúscula, 1 número y 1 carácter especial.</small>
+      </ion-text>
+
       <ion-item class="form-item">
         <ion-label position="stacked">Seleccionar Imagen</ion-label>
         <input type="file" accept="image/*" (change)="onFileSelected($event)">
       </ion-item>
+
       <ion-item class="form-item">
         <ion-label position="stacked">Ruta de la Imagen</ion-label>
         <ion-input formControlName="imagen" type="text" readonly></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('genero', 'required')">
         <ion-label position="stacked">Género</ion-label>
         <ion-select formControlName="genero" placeholder="Género">
           <ion-select-option value="Masculino">Masculino</ion-select-option>
@@ -41,24 +73,45 @@
           <ion-select-option value="Otro">Otro</ion-select-option>
         </ion-select>
       </ion-item>
-        <ion-item>
+      <ion-text color="danger" *ngIf="tieneError('genero', 'required')">
+        <small>Debe seleccionar un género.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('correo', 'required') || tieneError('correo', 'email')">
         <ion-label position="stacked">Correo</ion-label>
-        <ion-input formControlName="correo" type="email" labelPlacement="stacked">
-        </ion-input>
+        <ion-input formControlName="correo" type="email"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('correo', 'required') || tieneError('correo', 'email')">
+        <small *ngIf="tieneError('correo', 'required')">El correo es obligatorio.</small>
+        <small *ngIf="tieneError('correo', 'email')">Correo no válido.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('direccion', 'required')">
         <ion-label position="stacked">Dirección</ion-label>
         <ion-input formControlName="direccion" type="text"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
-        <ion-label position="stacked">Telefono</ion-label>
+      <ion-text color="danger" *ngIf="tieneError('direccion', 'required')">
+        <small>La dirección es obligatoria.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('telefono', 'required') || tieneError('telefono', 'pattern')">
+        <ion-label position="stacked">Teléfono</ion-label>
         <ion-input formControlName="telefono" type="number"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('telefono', 'required') || tieneError('telefono', 'pattern')">
+        <small *ngIf="tieneError('telefono', 'required')">El teléfono es obligatorio.</small>
+        <small *ngIf="tieneError('telefono', 'pattern')">Debe ingresar 9 dígitos.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('fecha_nacimiento', 'required')">
         <ion-label position="stacked">Fecha Nacimiento</ion-label>
         <ion-input formControlName="fecha_nacimiento" type="date"></ion-input>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('fecha_nacimiento', 'required')">
+        <small>La fecha de nacimiento es obligatoria.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('tipo_usuario', 'required')">
         <ion-label position="stacked">Tipo Usuario</ion-label>
         <ion-select formControlName="tipo_usuario" placeholder="Tipo Usuario">
           <ion-select-option [value]="1">Administrador</ion-select-option>
@@ -67,52 +120,63 @@
           <ion-select-option [value]="5">Vendedor</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item class="form-item">
+      <ion-text color="danger" *ngIf="tieneError('tipo_usuario', 'required')">
+        <small>Debe seleccionar un tipo de usuario.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('sucursal', 'required')">
         <ion-label position="stacked">Sucursal</ion-label>
         <ion-select formControlName="sucursal" placeholder="Seleccione una Sucursal">
-      <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.id_sucursal">
-        {{sucursal.nombre_sucursal}} ({{getNombreComuna(sucursal.id_comuna)}})
-      </ion-select-option>
+          <ion-select-option *ngFor="let sucursal of sucursales" [value]="sucursal.id_sucursal">
+            {{ sucursal.nombre_sucursal }} ({{ getNombreComuna(sucursal.id_comuna) }})
+          </ion-select-option>
         </ion-select>
       </ion-item>
-    <ion-item class="form-item">
-      <ion-label position="stacked">Comuna</ion-label>
-      <ion-select formControlName="comuna" placeholder="Seleccione comuna">
-        <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.id_comuna">
-          {{comuna.nombre_comuna}}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
+      <ion-text color="danger" *ngIf="tieneError('sucursal', 'required')">
+        <small>Debe seleccionar una sucursal.</small>
+      </ion-text>
+
+      <ion-item class="form-item" [class.ion-invalid]="tieneError('comuna', 'required')">
+        <ion-label position="stacked">Comuna</ion-label>
+        <ion-select formControlName="comuna" placeholder="Seleccione comuna">
+          <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.id_comuna">
+            {{ comuna.nombre_comuna }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-text color="danger" *ngIf="tieneError('comuna', 'required')">
+        <small>Debe seleccionar una comuna.</small>
+      </ion-text>
+
       <ion-button [disabled]="persona.invalid" type="submit" size="block" color="warning">Registrar</ion-button>
-      <ion-button [disabled]="!botonModificar || !persona.valid" (click)="modificar()" size="block" color="dark">Modificar</ion-button>
-      <ion-button type="reset" size="block" color="secondary">Limpiar</ion-button>
-    
+      <ion-button [disabled]="!botonModificar || persona.invalid" (click)="modificar()" size="block" color="dark">Modificar</ion-button>
+      <ion-button type="reset" size="block" color="secondary" (click)="limpiarFormulario()">Limpiar</ion-button>
+
     </form>
   </ion-card>
-  <div>
-    <ion-list>
-      <ion-item-sliding *ngFor="let usuario of usuarios">
-        <ion-item>
-          <ion-avatar slot="start">
-            <img [src]="usuario.imagen" alt="Avatar de Usuario" (error)="handleImageError($event, usuario)" />
-          </ion-avatar>
-          <ion-label>
-            <h2>{{usuario.rut}}</h2>
-            <p>{{usuario.nombre}} {{usuario.primer_apellido}}</p>
-            <p style="color: lightslategray  ; text-align: start;">{{usuario.tipo_usuario}}</p>
-          </ion-label>
-        </ion-item>
-        <ion-item-options side="start">
-          <ion-item-option (click)="buscar(usuario)" color="warning">Buscar</ion-item-option>
-        </ion-item-options>
-        <ion-item-options side="end">
-          <ion-item-option (click)="eliminar(usuario.rut)" color="danger">Eliminar</ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ion-list>
-  </div>
 
-  <ng-template #noHayUsuarios>
-    <img src="../../../assets/images/logo.png" alt="No hay registros existentes">
-  </ng-template>
+    <ion-list>
+    <ion-item-sliding *ngFor="let usuario of usuarios">
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="usuario.imagen" alt="Avatar de Usuario" (error)="handleImageError($event)" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ usuario.rut }}</h2>
+          <p>{{ usuario.nombre }} {{ usuario.primer_apellido }}</p>
+          <p style="color: lightslategray; text-align: start;">{{ usuario.tipo_usuario }}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="eliminar(usuario.id_usuario)">Eliminar</ion-item-option>
+        <ion-item-option color="warning" (click)="mostrarParaModificar(usuario)">Modificar</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
 </ion-content>
+
+
+
+
+

@@ -1,131 +1,167 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { IonicModule, LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { UsuariosService } from 'src/app/service/usuarios.service';
-import { LoadingController, ToastController, AlertController } from '@ionic/angular';
+import { Observable, of } from 'rxjs';
+import { debounceTime, switchMap, map, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-trabajadores',
   templateUrl: './trabajadores.page.html',
   styleUrls: ['./trabajadores.page.scss'],
-  imports: [IonicModule, CommonModule,ReactiveFormsModule],
+  imports: [IonicModule, CommonModule, ReactiveFormsModule],
   standalone: true
 })
+
 export class TrabajadoresPage implements OnInit {
 
   persona: FormGroup;
   usuarios: any[] = [];
-  botonModificar: boolean = false;
-  comunas: any[] = []; 
-  sucursales: any[] = []; 
+  botonModificar = false;
+  comunas: any[] = [];
+  sucursales: any[] = [];
+  selectedFile: File | null = null;
+  comunasMap: Map<number, string> = new Map();
 
   constructor(
     private fb: FormBuilder,
-    private usuariosService: UsuariosService, private loadingController: LoadingController, private toastController: ToastController,private alertController: AlertController
+    private usuariosService: UsuariosService,
+    private loadingController: LoadingController,
+    private toastController: ToastController,
+    private alertController: AlertController
   ) {
     this.persona = this.fb.group({
-      rut: ['', Validators.required],
-      nombre: ['', Validators.required],
-      primer_apellido: ['', Validators.required],
-      segundo_apellido: ['', Validators.required],
-      contrasenia: ['', Validators.required],
+      rut: ['', [Validators.required, this.rutChilenoValidator]],
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
+      primer_apellido: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
+      segundo_apellido: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
+      contrasenia: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/)
+      ]],
       imagen: [''],
       genero: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       direccion: ['', Validators.required],
-      telefono: ['', Validators.required],
-      fecha_nacimiento: ['', Validators.required],
+      telefono: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      fecha_nacimiento: ['', [Validators.required, mayorDeEdadValidator(18)]],  // <-- validación personalizada aquí
       tipo_usuario: [null, Validators.required],
       sucursal: [null, Validators.required],
       comuna: [null, Validators.required]
     });
-
-    
-
   }
 
   ngOnInit() {
     this.cargarUsuarios();
     this.cargarComuna();
     this.cargarSucursales();
-    console.log(this.persona.value);
+  }
+
+  // Validador personalizado para RUT chileno
+  rutChilenoValidator(control: AbstractControl): ValidationErrors | null {
+    const rut = control.value;
+    if (!rut) return null;
+
+    const rutLimpio = rut.replace(/\./g, '').replace('-', '').toUpperCase();
+    const cuerpo = rutLimpio.slice(0, -1);
+    const dv = rutLimpio.slice(-1);
+
+    if (!/^\d+$/.test(cuerpo)) return { rutInvalido: true };
+
+    let suma = 0;
+    let multiplo = 2;
+
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo.charAt(i)) * multiplo;
+      multiplo = multiplo < 7 ? multiplo + 1 : 2;
+    }
+
+    const dvEsperado = 11 - (suma % 11);
+    let dvReal = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
+
+    return dvReal === dv ? null : { rutInvalido: true };
+  }
+
+
+  // Validador personalizado para validar mayor de edad
+  mayorDeEdadValidator(minEdad: number = 18): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null; // No valida si no hay valor
+
+      const fechaNacimiento = new Date(control.value);
+      const hoy = new Date();
+
+      let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        edad--;
+      }
+
+      return edad >= minEdad ? null : { menorEdad: true };
+    };
+  }
+
+  getNombreComuna(idComuna: number): string {
+    return this.comunasMap.get(idComuna) || 'Comuna desconocida';
+  }
+
+  hasError(controlName: string, errorName: string): boolean {
+    const control = this.persona.get(controlName);
+    return control && control.errors ? control.errors[errorName] && control.touched : false;
   }
 
   async cargarUsuarios() {
     const loading = await this.mostrarLoading('Cargando usuarios...');
-    try {
-      this.usuariosService.obtenerUsuarios().subscribe({
-        next: (data: any) => {
-          this.usuarios = Array.isArray(data) ? data : [];
-          loading.dismiss();
-        },
-        error: async err => {
-          console.error('Error al obtener usuarios', err);
-          loading.dismiss();
-          await this.mostrarError('Error al cargar usuarios');
-        }
-      });
-    } catch (error) {
-      loading.dismiss();
-      await this.mostrarError('Error al cargar usuarios');
-    }
-  }
-async cargarComuna() {
-  const loading = await this.mostrarLoading('Cargando comunas...');
-  try {
-    this.usuariosService.obtenerComuna().subscribe({
+    this.usuariosService.obtenerUsuarios().subscribe({
       next: (data: any) => {
-        this.comunas = Array.isArray(data) ? data : []; // Asigna a this.comunas
-        console.log('Comunas cargadas:', this.comunas); // Para depuración
+        this.usuarios = Array.isArray(data) ? data : [];
         loading.dismiss();
       },
-      error: async err => {
-        console.error('Error al obtener comunas', err);
+      error: async () => {
+        loading.dismiss();
+        await this.mostrarError('Error al cargar usuarios');
+      }
+    });
+  }
+
+  async cargarComuna() {
+    const loading = await this.mostrarLoading('Cargando comunas...');
+    this.usuariosService.obtenerComuna().subscribe({
+      next: (data: any) => {
+        this.comunas = Array.isArray(data) ? data : [];
+        loading.dismiss();
+      },
+      error: async () => {
         loading.dismiss();
         await this.mostrarError('Error al cargar comunas');
       }
     });
-  } catch (error) {
-    loading.dismiss();
-    await this.mostrarError('Error al cargar comunas');
   }
-}
-getNombreComuna(idComuna: number): string {
-  if (!this.comunas || !idComuna) return 'Sin comuna';
-  const comuna = this.comunas.find(c => c.id_comuna === idComuna);
-  return comuna ? comuna.nombre_comuna : 'Comuna no encontrada';
-}
-async cargarSucursales() {
-  const loading = await this.mostrarLoading('Cargando sucursales...');
-  try {
+
+  async cargarSucursales() {
+    const loading = await this.mostrarLoading('Cargando sucursales...');
     this.usuariosService.obtenerSucursal().subscribe({
       next: (data: any) => {
-        this.sucursales = Array.isArray(data) ? data : []; // Asigna a this.comunas
-        console.log('Sucursales cargadas:', this.sucursales); // Para depuración
+        this.sucursales = Array.isArray(data) ? data : [];
         loading.dismiss();
       },
-      error: async err => {
-        console.error('Error al obtener Sucursales', err);
+      error: async () => {
         loading.dismiss();
-        await this.mostrarError('Error al cargar Sucursales');
+        await this.mostrarError('Error al cargar sucursales');
       }
     });
-  } catch (error) {
-    loading.dismiss();
-    await this.mostrarError('Error al cargar Sucursales');
   }
-}
-
 
   async onSubmit() {
     if (this.persona.invalid) {
-      await this.mostrarError('Por favor complete todos los campos requeridos');
+      this.persona.markAllAsTouched();
+      await this.mostrarError('Por favor complete todos los campos correctamente.');
       return;
     }
 
     const loading = await this.mostrarLoading('Registrando usuario...');
-    
     try {
       if (this.selectedFile) {
         const imagenResponse = await this.usuariosService.subirImagen(this.selectedFile).toPromise();
@@ -142,58 +178,24 @@ async cargarSucursales() {
       };
 
       await this.usuariosService.crearUsuario(usuarioEnviar).toPromise();
-      
       this.cargarUsuarios();
       this.limpiarFormulario();
       await this.mostrarExito('Usuario registrado exitosamente');
-    } catch (error) {
-      console.error('Error al crear usuario:', error);
+    } catch {
       await this.mostrarError('Error al registrar el usuario');
     } finally {
       loading.dismiss();
     }
   }
-selectedFile: File | null = null;
 
-onFileSelected(event: any) {
-  const file: File = event.target.files[0];
-  if (file) {
-    this.selectedFile = file;
-    console.log('Archivo seleccionado:', this.selectedFile);
-  }
-}
-
-subirImagen() {
-  if (!this.selectedFile) {
-    alert('Por favor, selecciona una imagen primero');
-    return;
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) this.selectedFile = file;
   }
 
-  this.usuariosService.subirImagen(this.selectedFile).subscribe({
-    next: (response) => {
-      console.log('Respuesta al subir imagen:', response);
-      if (response.imagen) {
-        this.persona.patchValue({ imagen: response.imagen });
-        console.log('Campo imagen actualizado en el formulario:', this.persona.value.imagen);
-      } else {
-        console.warn('La respuesta no contiene la propiedad imagen');
-      }
-    },
-    error: (error) => {
-      console.error('Error al subir imagen:', error);
-    }
-  });
-}
-
-async buscar(usuario: any) {
-
+  async buscar(usuario: any) {
     this.usuariosService.buscarUsuario(usuario.rut).subscribe((data: any) => {
-      let fechaNacimientoISO = '';
-
-      if (data.fecha_nacimiento) {
-        // Extraer solo yyyy-mm-dd para el input date
-        fechaNacimientoISO = data.fecha_nacimiento.substring(0, 10);
-      }
+      const fechaNacimientoISO = data.fecha_nacimiento?.substring(0, 10) || '';
 
       this.persona.patchValue({
         rut: data.rut,
@@ -216,61 +218,53 @@ async buscar(usuario: any) {
     });
   }
 
+  mostrarParaModificar(usuario: any) {
+    this.buscar(usuario);
+  }
 
-
-
-async modificar() {
+  async modificar() {
     if (this.persona.invalid) {
-      await this.mostrarError('Por favor complete todos los campos requeridos');
+      this.persona.markAllAsTouched();
+      await this.mostrarError('Por favor complete todos los campos correctamente.');
       return;
     }
 
-  const loading = await this.mostrarLoading('Actualizando usuario...');
-  
-  try {
-    if (this.selectedFile) {
-      const imagenResponse = await this.usuariosService.subirImagen(this.selectedFile).toPromise();
-      this.persona.patchValue({ imagen: imagenResponse.imagen });
+    const loading = await this.mostrarLoading('Actualizando usuario...');
+    try {
+      if (this.selectedFile) {
+        const imagenResponse = await this.usuariosService.subirImagen(this.selectedFile).toPromise();
+        this.persona.patchValue({ imagen: imagenResponse.imagen });
+      }
+
+      const usuarioModificado = {
+        ...this.persona.value,
+        tipo_usuario: Number(this.persona.value.tipo_usuario),
+        sucursal: Number(this.persona.value.sucursal),
+        comuna: Number(this.persona.value.comuna),
+        telefono: Number(this.persona.value.telefono)
+      };
+
+      const rut = this.persona.value.rut;
+      await this.usuariosService.actualizarUsuario(rut, usuarioModificado).toPromise();
+
+      this.cargarUsuarios();
+      this.limpiarFormulario();
+      this.botonModificar = false;
+
+      await this.mostrarExito('Usuario actualizado correctamente');
+    } catch {
+      await this.mostrarError('Error al actualizar el usuario');
+    } finally {
+      loading.dismiss();
     }
-
-    const usuarioModificado = {
-      ...this.persona.value,
-      tipo_usuario: Number(this.persona.value.tipo_usuario),
-      sucursal: Number(this.persona.value.sucursal),
-      comuna: Number(this.persona.value.comuna),
-      telefono: Number(this.persona.value.telefono)
-    };
-
-    const rut = this.persona.value.rut;
-
-    await this.usuariosService.actualizarUsuario(rut, usuarioModificado).toPromise();
-    
-    this.cargarUsuarios();
-    this.limpiarFormulario();
-    this.botonModificar = false;
-    
-    await this.mostrarExito('Usuario actualizado correctamente');
-  } catch (error) {
-    console.error('Error al modificar usuario:', error);
-    this.mostrarError('Error al actualizar el usuario');
-  } finally {
-    loading.dismiss();
   }
-}
 
-
-async eliminar(rut: string) {
+  async eliminar(rut: string) {
     const alert = await this.alertController.create({
       header: 'Confirmar eliminación',
       message: '¿Estás seguro de que deseas eliminar este usuario?',
       buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          handler: () => {
-            console.log('Eliminación cancelada');
-          }
-        },
+        { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Eliminar',
           handler: async () => {
@@ -279,8 +273,7 @@ async eliminar(rut: string) {
               await this.usuariosService.eliminarUsuario(rut).toPromise();
               this.cargarUsuarios();
               await this.mostrarExito('Usuario eliminado correctamente');
-            } catch (error) {
-              console.error('Error al eliminar usuario', error);
+            } catch {
               await this.mostrarError('Error al eliminar el usuario');
             } finally {
               loading.dismiss();
@@ -298,36 +291,60 @@ async eliminar(rut: string) {
     this.botonModificar = false;
     this.selectedFile = null;
   }
-  handleImageError(event: any, usuario: any) {
+
+  handleImageError(event: any) {
     event.target.src = 'assets/images/perfil.png';
   }
-private async mostrarLoading(mensaje: string): Promise<HTMLIonLoadingElement> {
-  const loading = await this.loadingController.create({
-    message: mensaje,
-    spinner: 'crescent'
-  });
-  await loading.present();
-  return loading;
+
+  private async mostrarLoading(mensaje: string): Promise<HTMLIonLoadingElement> {
+    const loading = await this.loadingController.create({
+      message: mensaje,
+      spinner: 'crescent'
+    });
+    await loading.present();
+    return loading;
+  }
+
+  private async mostrarExito(mensaje: string): Promise<void> {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 3000,
+      color: 'success',
+      position: 'top'
+    });
+    await toast.present();
+  }
+
+  private async mostrarError(mensaje: string): Promise<void> {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 3000,
+      color: 'danger',
+      position: 'top'
+    });
+    await toast.present();
+  }
+
+  tieneError(campo: string, error: string): boolean {
+    const control = this.persona.get(campo);
+    return control && control.errors ? !!control.errors[error] && control.touched : false;
+  }
 }
 
-private async mostrarExito(mensaje: string): Promise<void> {
-  const toast = await this.toastController.create({
-    message: mensaje,
-    duration: 3000,
-    color: 'success',
-    position: 'top'
-  });
-  await toast.present();
-}
+// Función validadora externa para mejor claridad, si quieres puedes moverla fuera de la clase también.
+export function mayorDeEdadValidator(minEdad: number = 18): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
 
-private async mostrarError(mensaje: string): Promise<void> {
-  const toast = await this.toastController.create({
-    message: mensaje,
-    duration: 3000,
-    color: 'danger',
-    position: 'top'
-  });
-  await toast.present();
-}
-}
+    const fechaNacimiento = new Date(control.value);
+    const hoy = new Date();
 
+    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+    const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+      edad--;
+    }
+
+    return edad >= minEdad ? null : { menorEdad: true };
+  };
+}
