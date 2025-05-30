@@ -5,15 +5,31 @@
     </ion-card-header>
     <form [formGroup]="productoForm" (ngSubmit)="onSubmit()">
 
+      <!-- Nombre -->
       <ion-item class="form-item">
         <ion-label position="stacked">Nombre</ion-label>
         <ion-input formControlName="nombre" type="text"></ion-input>
       </ion-item>
+      <ion-note color="danger" *ngIf="productoForm.get('nombre')?.touched && productoForm.get('nombre')?.hasError('required')">
+        El nombre es obligatorio.
+      </ion-note>
+      <ion-note color="danger" *ngIf="productoForm.get('nombre')?.touched && productoForm.get('nombre')?.hasError('pattern')">
+        El nombre no puede estar vacío o solo contener espacios.
+      </ion-note>
+      <ion-note color="danger" *ngIf="productoForm.get('nombre')?.touched && productoForm.get('nombre')?.hasError('maxlength')">
+        Máximo 100 caracteres.
+      </ion-note>
+
+      <!-- Descripcion -->
       <ion-item class="form-item">
-        <ion-label position="stacked">Descripcion</ion-label>
+        <ion-label position="stacked">Descripción</ion-label>
         <ion-input formControlName="descripcion" type="text"></ion-input>
       </ion-item>
-      
+      <ion-note color="danger" *ngIf="productoForm.get('descripcion')?.touched && productoForm.get('descripcion')?.hasError('maxlength')">
+        Máximo 500 caracteres.
+      </ion-note>
+
+      <!-- Imagen -->
       <ion-item class="form-item">
         <ion-label position="stacked">Seleccionar Imagen</ion-label>
         <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)">
@@ -28,34 +44,67 @@
         <ion-label>Vista previa:</ion-label>
         <ion-img [src]="productoForm.value.imagen" style="max-width: 100px;"></ion-img>
       </ion-item>
-      
+
+      <!-- Precio -->
       <ion-item class="form-item">
         <ion-label position="stacked">Precio</ion-label>
         <ion-input formControlName="precio" type="number"></ion-input>
       </ion-item>
+      <ion-note color="danger" *ngIf="productoForm.get('precio')?.touched && productoForm.get('precio')?.hasError('required')">
+        El precio es obligatorio.
+      </ion-note>
+      <ion-note color="danger" *ngIf="productoForm.get('precio')?.touched && productoForm.get('precio')?.hasError('min')">
+        El precio debe ser mayor que 0.
+      </ion-note>
+      <ion-note color="danger" *ngIf="productoForm.get('precio')?.touched && productoForm.get('precio')?.hasError('max')">
+        El precio no puede exceder 100000.
+      </ion-note>
+
+      <!-- Stock -->
       <ion-item class="form-item">
         <ion-label position="stacked">Stock</ion-label>
         <ion-input formControlName="stock" type="number"></ion-input>
       </ion-item>
+      <ion-note color="danger" *ngIf="productoForm.get('stock')?.touched && productoForm.get('stock')?.hasError('required')">
+        El stock es obligatorio.
+      </ion-note>
+      <ion-note color="danger" *ngIf="productoForm.get('stock')?.touched && productoForm.get('stock')?.hasError('min')">
+        El stock no puede ser negativo.
+      </ion-note>
+      <ion-note color="danger" *ngIf="productoForm.get('stock')?.touched && productoForm.get('stock')?.hasError('max')">
+        El stock no puede exceder 10000 unidades.
+      </ion-note>
+
+      <!-- Marca -->
       <ion-item class="form-item">
         <ion-label position="stacked">Marca</ion-label>
         <ion-select formControlName="marca" placeholder="Seleccione una marca">
           <ion-select-option *ngFor="let marca of marcas" [value]="marca.id_marca">
-            {{marca.descripcion}}
+            {{ marca.descripcion }}
           </ion-select-option>
         </ion-select>
       </ion-item>
+      <ion-note color="danger" *ngIf="productoForm.get('marca')?.touched && productoForm.get('marca')?.hasError('required')">
+        Debe seleccionar una marca.
+      </ion-note>
+
+      <!-- Inventario -->
       <ion-item class="form-item">
         <ion-label position="stacked">Inventario</ion-label>
         <ion-select formControlName="inventario" placeholder="Seleccione un Inventario">
           <ion-select-option *ngFor="let inv of inventario" [value]="inv.id_inventario">
-            {{inv.descripcion}}
+            {{ inv.descripcion }}
           </ion-select-option>
         </ion-select>
       </ion-item>
+      <ion-note color="danger" *ngIf="productoForm.get('inventario')?.touched && productoForm.get('inventario')?.hasError('required')">
+        Debe seleccionar un inventario.
+      </ion-note>
+
+      <!-- Categoría -->
       <ion-item class="form-item">
-        <ion-label position="stacked">Categoria</ion-label>
-        <ion-select formControlName="categoria" placeholder="Categoria">
+        <ion-label position="stacked">Categoría</ion-label>
+        <ion-select formControlName="categoria" placeholder="Categoría">
           <ion-select-option [value]="1">Herramientas manuales</ion-select-option>
           <ion-select-option [value]="2">Materiales básicos</ion-select-option>
           <ion-select-option [value]="3">Equipos de seguridad</ion-select-option>
@@ -64,27 +113,31 @@
           <ion-select-option [value]="6">Equipos de medición</ion-select-option>
         </ion-select>
       </ion-item>
-      
+      <ion-note color="danger" *ngIf="productoForm.get('categoria')?.touched && productoForm.get('categoria')?.hasError('required')">
+        Debe seleccionar una categoría.
+      </ion-note>
+
+      <!-- Botones -->
       <ion-button [disabled]="productoForm.invalid" type="submit" size="block" color="warning">Registrar</ion-button>
       <ion-button [disabled]="!botonModificar || !productoForm.valid" (click)="modificar()" size="block" color="dark">Modificar</ion-button>
-      <ion-button type="reset" size="block" color="secondary">Limpiar</ion-button>
+      <ion-button type="reset" (click)="limpiarFormulario()" size="block" color="secondary">Limpiar</ion-button>
     </form>
   </ion-card>
-  
+
+  <!-- Lista de productos -->
   <div>
     <ion-list>
       <ion-item-sliding *ngFor="let producto of productos">
         <ion-item>
           <ion-avatar slot="start">
-            <!-- Usa la URL completa incluyendo el dominio -->
-            <img [src]="'http://localhost:8080' + producto.imagen" 
-                alt="Imagen Producto"
-                (error)="handleImageError($event, producto)" />
+            <img [src]="'http://localhost:8080' + producto.imagen"
+                 alt="Imagen Producto"
+                 (error)="handleImageError($event, producto)" />
           </ion-avatar>
           <ion-label>
-            <h2>{{producto.nombre}}</h2>
-            <p>{{producto.descripcion}}</p>
-            <p style="color: lightslategray; text-align: start;">ID: {{producto.id_producto}}</p>
+            <h2>{{ producto.nombre }}</h2>
+            <p>{{ producto.descripcion }}</p>
+            <p style="color: lightslategray; text-align: start;">ID: {{ producto.id_producto }}</p>
           </ion-label>
         </ion-item>
         <ion-item-options side="start">
