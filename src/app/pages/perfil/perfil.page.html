@@ -3,7 +3,7 @@
   <div class="ion-page" id="main-content">
     <ion-content>
 
-      <!-- Spinner mientras carga -->
+      <!-- Spinner de carga -->
       <div *ngIf="isLoading" class="ion-text-center loading-container">
         <ion-spinner name="crescent"></ion-spinner>
         <p class="loading-text">Cargando perfil...</p>
@@ -11,11 +11,8 @@
 
       <!-- Modo visualización -->
       <div *ngIf="!isLoading && !editando">
-        <!-- Foto de perfil y nombre de usuario -->
         <div class="profile-header ion-text-center">
-          <img [src]="usuario?.imagen || 'assets/images/perfil.jpg'" 
-               alt="Foto de perfil" 
-               class="profile-image" />
+          <img [src]="usuario?.imagen || 'assets/images/perfil.jpg'" class="profile-image" />
           <h1 class="profile-name">
             {{ usuario?.nombre || 'Usuario' }} 
             {{ usuario?.primer_apellido || '' }} 
@@ -24,77 +21,67 @@
           <ion-button expand="block" (click)="editarPerfil()">Editar Perfil</ion-button>
         </div>
 
-        <!-- Detalles del perfil -->
         <div class="profile-details">
           <ion-card class="profile-card">
             <ion-card-content>
               <ion-list lines="full">
-
-                <!-- Sección: Perfil -->
                 <h2 class="section-title">Perfil</h2>
 
                 <ion-item>
                   <ion-icon name="person" slot="start" class="icon-primary"></ion-icon>
                   <ion-label>
-                    Tipo de usuario: 
-                    <strong>{{ usuario?.tipo_usuario || 'No especificado' }}</strong>
+                    Tipo de usuario: <strong>{{ usuario?.tipo_usuario || 'No especificado' }}</strong>
                   </ion-label>
                 </ion-item>
 
                 <ion-item>
                   <ion-icon name="mail" slot="start" class="icon-primary"></ion-icon>
                   <ion-label>
-                    Correo: 
-                    <strong>{{ usuario?.correo || 'No especificado' }}</strong>
+                    Correo: <strong>{{ usuario?.correo || 'No especificado' }}</strong>
                   </ion-label>
                 </ion-item>
 
                 <div class="spacer"></div>
-
-                <!-- Sección: Información Personal -->
                 <h2 class="section-title">Información Personal</h2>
 
                 <ion-item>
                   <ion-icon name="call" slot="start" class="icon-primary"></ion-icon>
                   <ion-label>
-                    Teléfono: 
-                    <strong>{{ usuario?.telefono || 'No especificado' }}</strong>
+                    Teléfono: <strong>{{ usuario?.telefono || 'No especificado' }}</strong>
                   </ion-label>
                 </ion-item>
 
                 <ion-item>
                   <ion-icon name="location" slot="start" class="icon-primary"></ion-icon>
                   <ion-label>
-                    Dirección: 
-                    <strong>{{ usuario?.direccion || 'No especificado' }}</strong>
+                    Dirección: <strong>{{ usuario?.direccion || 'No especificada' }}</strong>
                   </ion-label>
                 </ion-item>
 
                 <ion-item>
                   <ion-icon name="calendar" slot="start" class="icon-primary"></ion-icon>
                   <ion-label>
-                    Fecha Nacimiento: 
-                    <strong>{{ (usuario?.fecha_nacimiento | date:'dd/MM/yyyy') || 'No especificada' }}</strong>
+                    Fecha Nacimiento:
+                    <strong>
+                      {{ usuario?.fecha_nacimiento ? (usuario.fecha_nacimiento | date: 'dd/MM/yyyy') : 'No especificada' }}
+                    </strong>
                   </ion-label>
                 </ion-item>
 
                 <ion-item>
                   <ion-icon name="business" slot="start" class="icon-primary"></ion-icon>
                   <ion-label>
-                    Sucursal: 
-                    <strong>{{ getSucursalDisplay() }}</strong>
+                    Sucursal: <strong>{{ getSucursalDisplay() }}</strong>
                   </ion-label>
                 </ion-item>
 
                 <ion-item>
                   <ion-icon name="map" slot="start" class="icon-primary"></ion-icon>
                   <ion-label>
-                    Comuna: 
-                    <strong>{{ usuario?.comuna || 'No especificada' }}</strong>
+                    Comuna: <strong>{{ usuario?.comuna || 'No especificada' }}</strong>
                   </ion-label>
                 </ion-item>
 
-                <div class="spacer"></div>
               </ion-list>
             </ion-card-content>
           </ion-card>
@@ -102,167 +89,129 @@
       </div>
 
       <!-- Modo edición -->
-        <form *ngIf="!isLoading && editando" [formGroup]="form" (ngSubmit)="guardarCambios()">
-    <div class="profile-header ion-text-center">
-      <img [src]="imagenPreview || 'assets/images/perfil.jpg'" alt="Foto de perfil" class="profile-image" />
-      <input type="file" accept="image/*" (change)="onFileChange($event)" />
-    </div>
+      <form *ngIf="!isLoading && editando" [formGroup]="form" (ngSubmit)="guardarCambios()">
+        <div class="profile-header ion-text-center">
+          <img [src]="imagenPreview || 'assets/images/perfil.jpg'" class="profile-image" />
+          <input type="file" accept="image/*" (change)="onFileChange($event)" />
+        </div>
 
-    <ion-list lines="full" class="profile-details">
+        <ion-list lines="full" class="profile-details">
+          <h2 class="section-title">Perfil</h2>
 
-      <h2 class="section-title">Perfil</h2>
+          <!-- Correo -->
+          <ion-item>
+            <ion-label position="floating">Correo</ion-label>
+            <ion-input type="email" formControlName="correo"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="form.get('correo')?.invalid && form.get('correo')?.touched">
+            Ingresa un correo válido.
+          </ion-note>
 
-      <ion-item>
-        <ion-label position="floating">Correo</ion-label>
-        <ion-input type="email" formControlName="correo"></ion-input>
-      </ion-item>
+          <div class="spacer"></div>
+          <h2 class="section-title">Información Personal</h2>
 
-      <div class="spacer"></div>
+          <!-- Nombre -->
+          <ion-item>
+            <ion-label position="floating">Nombre</ion-label>
+            <ion-input formControlName="nombre"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+            Nombre requerido.
+          </ion-note>
 
-      <h2 class="section-title">Información Personal</h2>
+          <!-- Primer Apellido -->
+          <ion-item>
+            <ion-label position="floating">Primer Apellido</ion-label>
+            <ion-input formControlName="primer_apellido"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="form.get('primer_apellido')?.invalid && form.get('primer_apellido')?.touched">
+            Primer apellido requerido.
+          </ion-note>
 
-      <ion-item>
-        <ion-label position="floating">Nombre</ion-label>
-        <ion-input formControlName="nombre"></ion-input>
-      </ion-item>
+          <!-- Segundo Apellido -->
+          <ion-item>
+            <ion-label position="floating">Segundo Apellido</ion-label>
+            <ion-input formControlName="segundo_apellido"></ion-input>
+          </ion-item>
 
-      <ion-item>
-        <ion-label position="floating">Primer Apellido</ion-label>
-        <ion-input formControlName="primer_apellido"></ion-input>
-      </ion-item>
+          <!-- Teléfono -->
+          <ion-item>
+            <ion-label position="floating">Teléfono</ion-label>
+            <ion-input type="tel" formControlName="telefono"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="form.get('telefono')?.invalid && form.get('telefono')?.touched">
+            Ingrese un teléfono válido.
+          </ion-note>
 
-      <ion-item>
-        <ion-label position="floating">Segundo Apellido</ion-label>
-        <ion-input formControlName="segundo_apellido"></ion-input>
-      </ion-item>
+          <!-- Dirección -->
+          <ion-item>
+            <ion-label position="floating">Dirección</ion-label>
+            <ion-input formControlName="direccion"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="form.get('direccion')?.invalid && form.get('direccion')?.touched">
+            Dirección requerida.
+          </ion-note>
 
-      <ion-item>
-        <ion-label position="floating">Teléfono</ion-label>
-        <ion-input type="tel" formControlName="telefono"></ion-input>
-      </ion-item>
+          <!-- Fecha Nacimiento -->
+          <ion-item>
+            <ion-label position="floating">Fecha Nacimiento</ion-label>
+            <ion-input type="date" formControlName="fecha_nacimiento"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="form.get('fecha_nacimiento')?.hasError('mayorEdad') && form.get('fecha_nacimiento')?.touched">
+            Debes ser mayor de 18 años.
+          </ion-note>
 
-      <ion-item>
-        <ion-label position="floating">Dirección</ion-label>
-        <ion-input formControlName="direccion"></ion-input>
-      </ion-item>
+          <!-- Comuna -->
+          <ion-item>
+            <ion-label position="stacked">Comuna</ion-label>
+            <ion-select formControlName="comuna" placeholder="Seleccione comuna">
+              <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.id_comuna">
+                {{ comuna.nombre_comuna }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="form.get('comuna')?.invalid && form.get('comuna')?.touched">
+            Seleccione una comuna.
+          </ion-note>
 
-      <ion-item>
-        <ion-label position="floating">Fecha Nacimiento</ion-label>
-        <ion-input type="date" formControlName="fecha_nacimiento"></ion-input>
-        <ion-note slot="error" color="danger" *ngIf="form.get('fecha_nacimiento')?.hasError('mayorEdad')">
-          Debes ser mayor de 18 años.
-        </ion-note>
-      </ion-item>
+          <div class="spacer"></div>
 
-    <ion-item class="form-item">
-      <ion-label position="stacked">Comuna</ion-label>
-      <ion-select formControlName="comuna" placeholder="Seleccione comuna">
-        <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.id_comuna">
-          {{comuna.nombre_comuna}}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
+          <!-- Cambiar contraseña -->
+          <ion-button color="danger" expand="block" type="button" (click)="cambiarContrasenia = !cambiarContrasenia">
+            {{ cambiarContrasenia ? 'Cancelar cambio de contraseña' : 'Cambiar contraseña' }}
+          </ion-button>
 
-      <div class="spacer"></div>
+          <div *ngIf="cambiarContrasenia">
+            <ion-item>
+              <ion-label position="floating">Nueva Contraseña</ion-label>
+              <ion-input [type]="mostrarNuevaContrasenia ? 'text' : 'password'" formControlName="nuevaContrasenia"></ion-input>
+              <ion-icon [name]="mostrarNuevaContrasenia ? 'eye-off' : 'eye'" slot="end" class="password-toggle-icon"
+                        (click)="mostrarNuevaContrasenia = !mostrarNuevaContrasenia">
+              </ion-icon>
+            </ion-item>
+            <ion-note color="danger" *ngIf="form.get('nuevaContrasenia')?.invalid && form.get('nuevaContrasenia')?.touched">
+              La contraseña debe tener al menos 6 caracteres.
+            </ion-note>
 
-          <!-- Botón para mostrar u ocultar inputs de cambio de contraseña -->
-    <ion-button color="danger" expand="block" type="button" (click)="cambiarContrasenia = !cambiarContrasenia">
-      {{ cambiarContrasenia ? 'Cancelar cambio de contraseña' : 'Cambiar contraseña' }}
-    </ion-button>
+            <ion-item>
+              <ion-label position="floating">Confirmar Contraseña</ion-label>
+              <ion-input [type]="mostrarConfirmarContrasenia ? 'text' : 'password'" formControlName="confirmarContrasenia"></ion-input>
+              <ion-icon [name]="mostrarConfirmarContrasenia ? 'eye-off' : 'eye'" slot="end" class="password-toggle-icon"
+                        (click)="mostrarConfirmarContrasenia = !mostrarConfirmarContrasenia">
+              </ion-icon>
+            </ion-item>
+            <ion-note color="danger" *ngIf="form.hasError('noCoincide') && form.get('confirmarContrasenia')?.touched">
+              Las contraseñas no coinciden.
+            </ion-note>
+          </div>
 
-    <div *ngIf="cambiarContrasenia">
-     <ion-item>
-      <ion-label position="floating">Nueva Contraseña</ion-label>
-      <ion-input 
-        [type]="mostrarNuevaContrasenia ? 'text' : 'password'" 
-        formControlName="nuevaContrasenia">
-      </ion-input>
-      <ion-icon 
-        [name]="mostrarNuevaContrasenia ? 'eye-off' : 'eye'" 
-        slot="end" 
-        class="password-toggle-icon"
-        (click)="mostrarNuevaContrasenia = !mostrarNuevaContrasenia">
-      </ion-icon>
-    </ion-item>
+        </ion-list>
 
-    <ion-item>
-      <ion-label position="floating">Confirmar Contraseña</ion-label>
-      <ion-input 
-        [type]="mostrarConfirmarContrasenia ? 'text' : 'password'" 
-        formControlName="confirmarContrasenia">
-      </ion-input>
-      <ion-icon 
-        [name]="mostrarConfirmarContrasenia ? 'eye-off' : 'eye'" 
-        slot="end" 
-        class="password-toggle-icon"
-        (click)="mostrarConfirmarContrasenia = !mostrarConfirmarContrasenia">
-      </ion-icon>
-    </ion-item>
-    </div>
-    </ion-list>
-
-    <ion-button expand="block" type="submit" [disabled]="form.invalid">Guardar Cambios</ion-button>
-    <ion-button expand="block" color="medium" type="button" (click)="cancelarEdicion()">Cancelar</ion-button>
-  </form>
+        <!-- Botones -->
+        <ion-button expand="block" type="submit" [disabled]="form.invalid">Guardar Cambios</ion-button>
+        <ion-button expand="block" color="medium" type="button" (click)="cancelarEdicion()">Cancelar</ion-button>
+      </form>
 
     </ion-content>
   </div>
 </ion-split-pane>
-
-<style>
-  .loading-container {
-    margin-top: 50%;
-  }
-  .loading-text {
-    margin-top: 1rem;
-    font-size: 1.1rem;
-    color: var(--ion-color-medium);
-  }
-  .profile-header {
-    margin-top: 6rem;
-    margin-bottom: 2rem;
-  }
-  .profile-image {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border: 3px solid var(--ion-color-primary);
-  }
-  .profile-name {
-    font-weight: 700;
-    font-size: 1.8rem;
-    margin-top: 1rem;
-    color: var(--ion-color-primary);
-  }
-  .profile-details {
-    padding: 0 1rem 3rem 1rem;
-  }
-  .profile-card {
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  }
-  .section-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin: 1rem 0 0.6rem 0;
-    color: var(--ion-color-primary);
-  }
-  .icon-primary {
-    color: var(--ion-color-primary);
-  }
-  .spacer {
-    height: 1rem;
-  }
-  .small-label {
-    font-size: 0.8rem;
-    color: var(--ion-color-medium);
-    margin: 0;
-  }
-  .highlight-text {
-    margin: 0;
-    font-weight: 700;
-    color: var(--ion-color-primary);
-  }
-</style>
