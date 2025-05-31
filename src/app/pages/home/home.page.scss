@@ -346,6 +346,60 @@ ion-button {
   color: #ccc;
 }
 
+/* Aseguramos que las cards tengan un tamaño fijo */
+ion-card.mini-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 380px; /* Ajusta este valor al tamaño deseado */
+  width: 100%; /* Para que ocupe todo el espacio del ion-col */
+  box-sizing: border-box;
+}
+
+/* Centramos la imagen dentro del card */
+ion-card.mini-card ion-img,
+ion-card.mini-card img {
+  max-height: 180px;  /* Tamaño máximo de la imagen */
+  object-fit: contain; /* La imagen se adapta sin deformarse */
+  display: block;
+  margin: 0 auto; /* Centra horizontalmente la imagen */
+  padding: 10px 0; /* Opcional: un poco de espacio arriba y abajo */
+}
+
+/* Ajustamos el contenido para que quede bien distribuido */
+.mini-header,
+.mini-content {
+  flex-grow: 1;
+}
+
+/* Centramos texto de título y descripción */
+.mini-title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.mini-desc {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Precio centrado y destacado */
+.mini-price {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Botón en la parte inferior con margen */
+.mini-btn {
+  margin: 0.5rem auto 1rem auto;
+  width: 90%;
+  display: block;
+}
+
 /* === ANIMACIONES VARIAS === */
 .animated-title {
   opacity: 0;

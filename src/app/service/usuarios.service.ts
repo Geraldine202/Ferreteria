@@ -122,6 +122,8 @@ crearUsuario(usuario: any) {
     'x-api-key': this.apiKey
   });
 
+  
+
   return this.http.post(this.url, usuario, { headers });
 }
 // Método para registrar pedido completo (pedido + pago + detalle)

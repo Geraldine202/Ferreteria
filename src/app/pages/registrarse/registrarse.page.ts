@@ -33,13 +33,13 @@ export class RegistrarsePage implements OnInit {
       genero: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
       direccion: ['', [Validators.required]],
-      telefono: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
-      fecha_nacimiento: ['', [Validators.required, mayorDe15Anios()]], // <-- aquí el validador de edad
+      telefono: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]], 
+      fecha_nacimiento: ['', [Validators.required]],
       comuna: [null, [Validators.required]],
       tipo_usuario: [4], // fijo
       sucursal: [null, [Validators.required]],
       imagen: [''],
-      contrasenia: ['', [Validators.required, passwordSegura()]], // <-- validador de seguridad de contraseña
+      contrasenia: ['', [Validators.required, passwordSegura()]],  // <-- aquí el validador nuevo
       confirmar_contrasenia: ['', [Validators.required]]
     }, { validators: this.passwordsMatch });
   }
@@ -109,8 +109,9 @@ export class RegistrarsePage implements OnInit {
 
     try {
       const formValue = { ...this.registroForm.value };
-      delete formValue.confirmar_contrasenia;
+      delete formValue.confirmar_contrasenia; // eliminar confirmación
 
+      // Mapear campos a lo que espera el backend
       const usuarioData = {
         rut: formValue.rut_usuario,
         nombre: formValue.nombre,
@@ -168,7 +169,7 @@ export class RegistrarsePage implements OnInit {
   }
 }
 
-// ✅ Validador personalizado para RUT chileno
+// Validador personalizado para RUT chileno (con dígito verificador)
 function rutValido(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const rut = control.value;
@@ -181,6 +182,7 @@ function rutValido(): ValidatorFn {
     }
 
     const [cuerpo, dv] = valor.split('-');
+
     let suma = 0;
     let multiplo = 2;
 
@@ -199,28 +201,14 @@ function rutValido(): ValidatorFn {
   };
 }
 
-// ✅ Validador para contraseña segura
+// Validador personalizado para contraseña segura
 function passwordSegura(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const pass = control.value;
-    if (!pass) return null;
+    if (!pass) return null; // no validar si está vacío
 
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>\/?]).{8,}$/;
 
     return regex.test(pass) ? null : { passwordInsegura: true };
-  };
-}
-
-// ✅ Validador para edad mínima de 15 años
-function mayorDe15Anios(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const fecha = control.value;
-    if (!fecha) return null;
-
-    const fechaNacimiento = new Date(fecha);
-    const hoy = new Date();
-    const edadMinima = new Date(hoy.getFullYear() - 15, hoy.getMonth(), hoy.getDate());
-
-    return fechaNacimiento <= edadMinima ? null : { menorDe15: true };
   };
 }
