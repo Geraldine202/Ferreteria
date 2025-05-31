@@ -144,9 +144,12 @@ async obtener_tipo_pagos(): Promise<Tipo_pago[]> {
 }
 
   // Obtener un producto por ID
-  async obtenerProductoPorId(id: number): Promise<Producto> { 
-    return this.handleRequest<Producto>(`/${id}`, 'GET');
+async obtenerProductoPorId(id: number): Promise<Producto> { 
+  if (id == null || isNaN(id)) {
+    throw new Error('ID de producto inválido');
   }
+  return this.handleRequest<Producto>(`/${id}`, 'GET');
+}
 
   // Agregar un nuevo producto
 async guardarProducto(producto: any) {

@@ -1,11 +1,54 @@
-
 <ion-header>
-  <ion-toolbar>
-    <ion-title></ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Pedidos Listos para Entrega</ion-title>
   </ion-toolbar>
 </ion-header>
-<br>
-<br>
-<ion-content>
-<div>Vista vendedor, donde asocia compra con cliente</div>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="recargarPedidos($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list *ngIf="pedidosListos.length > 0; else sinPedidos">
+    <ion-card *ngFor="let pedido of pedidosListos" class="pedido-card">
+      <ion-card-header>
+        <ion-card-title>Pedido #{{ pedido.id_pedido }}</ion-card-title>
+        <ion-card-subtitle>{{ pedido.fecha_pedido | date:'short' }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+        <p><strong>Descripción:</strong> {{ pedido.descripcion }}</p>
+        <p><strong>Cantidad:</strong> {{ pedido.cantidad }}</p>
+        <p><strong>Total:</strong> ${{ pedido.total_a_pagar | number:'1.0-0' }}</p>
+        <p><strong>Descuento:</strong> {{ pedido.tiene_descuento ? 'Sí' : 'No' }}</p>
+        <p><strong>Estado Pago:</strong> {{ pedido.estado_pago }}</p>
+        <p><strong>Tipo Entrega:</strong> {{ tipoEntregaMap[pedido.id_entrega] || 'Desconocido' }}</p>
+      </ion-card-content>
+
+      <ion-card-footer>
+        <!-- Botón Despachado - solo para despacho a domicilio (id_entrega 2) -->
+        <ion-button *ngIf="mostrarDespachado(pedido.id_entrega)" 
+                    expand="block" 
+                    color="tertiary" 
+                    (click)="actualizarDespachado(pedido.id_pedido)">
+          Marcar como Despachado
+        </ion-button>
+
+        <!-- Botón Entregado - para retiro en tienda (1) y delivery (3) -->
+        <ion-button *ngIf="mostrarEntregado(pedido.id_entrega)" 
+                    expand="block" 
+                    color="success" 
+                    (click)="actualizarEntregado(pedido.id_pedido)">
+          Marcar como Entregado
+        </ion-button>
+      </ion-card-footer>
+    </ion-card>
+  </ion-list>
+
+  <ng-template #sinPedidos>
+    <ion-text color="medium">
+      <p class="ion-text-center">No hay pedidos listos para entrega.</p>
+    </ion-text>
+  </ng-template>
 </ion-content>

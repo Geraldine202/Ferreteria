@@ -65,7 +65,7 @@ export class InformesPage {
         'Fecha Pago': pago.fecha_pago ? new Date(pago.fecha_pago).toLocaleDateString('es-CL') : 'N/A',
         'Tipo Pago': pago.id_tipo_pago|| 'N/A',
         'RUT Usuario': pago.rut_usuario || 'N/A',
-        'Estado': pago.estado_pago?.descripcion || 'N/A'
+        'Estado': pago.id_pedido|| 'N/A'
       }));
 
       await this.generarReporteExcel(datosFormateados, 'Informe_Pagos', 'Reporte de Pagos');

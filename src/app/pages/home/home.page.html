@@ -2,22 +2,18 @@
   <ion-split-pane contentId="main-content" style="margin-top: 40px;">
     <div class="ion-page" id="main-content">
       <ion-content>
-
-      <ion-fab-button color="primary" class="btn-carrito" (click)="irAlCarrito()">
-        <ion-icon name="cart"></ion-icon>
-        <ion-badge *ngIf="contadorCarrito > 0" color="danger" style="position: absolute; top: 5px; right: 5px;">
-          {{ contadorCarrito }}
-        </ion-badge>
-      </ion-fab-button>
-
-
-        <div class="slider-container">
-          <div class="slider" *ngFor="let imagen of imagenes; let i = index">
-            <ion-item>
-              <img [src]="imagen" [class.active]="i === imagenIndex" style="width: 100%; height: auto;" />
-            </ion-item>
-          </div>
+      <div class="slider-container">
+        <div class="slider">
+          <img
+            *ngFor="let imagen of imagenes; let i = index"
+            [src]="imagen"
+            [class.active]="i === imagenIndex"
+            class="slide-img"
+          />
         </div>
+      </div>
+
+
 
 
         <ion-button expand="full" fill="solid" color="primary" routerLink="/home">
@@ -52,31 +48,33 @@
         </ion-grid>
 
 
-        <h2 style="text-align: center;">Productos más vendidos</h2>
-        <div class="featured-slider-container">
-          <button class="slider-btn prev" (click)="moveSlider(-1)">&#10094;</button>
+      <h2 style="text-align: center;">Productos Destacados</h2>
+<div class="featured-slider-container">
+  <button class="slider-btn prev" (click)="moveSlider(-1)">&#10094;</button>
 
-          <div class="featured-slider">
-            <ion-card *ngFor="let item of getProductosVisibles(); let i = index" 
-                      class="mini-card hover-shadow"
-                      [ngClass]="{'centered': item.isCentral, 'faded': !item.isCentral}">
-              <img [src]="item.producto.imgSrc" alt="{{ item.producto.title }}" class="mini-img" />
-              <ion-card-header>
-                <ion-card-title class="mini-title">{{ item.producto.title }}</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <p class="product-description">{{ item.producto.description }}</p>
-                <p class="product-price">{{ item.priceDisplay }}</p>
-              </ion-card-content>
-              <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito(item.producto)">
-                <ion-icon name="cart-outline" slot="start"></ion-icon>
-                Añadir
-              </ion-button>
-            </ion-card>
-          </div>
-
-          <button class="slider-btn next" (click)="moveSlider(1)">&#10095;</button>
-        </div>
+  <div class="featured-slider">
+    <ion-card *ngFor="let item of getProductosVisibles(); let i = index" 
+              class="mini-card hover-shadow"
+              [ngClass]="{'centered': item.isCentral, 'faded': !item.isCentral}">
+      <!-- Corrección aquí: usar item.producto.imagen en lugar de item.imagen -->
+      <img [src]="'http://localhost:8080' + item.producto.imagen" 
+           [alt]="item.producto.nombre" 
+           class="mini-img" />
+      <ion-card-header>
+        <ion-card-title class="mini-title">{{ item.producto.nombre }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p class="product-description">{{ item.producto.descripcion }}</p>
+        <p class="product-price">{{ item.priceDisplay }}</p>
+      </ion-card-content>
+      <ion-button class="mini-btn animate-hover" size="small" fill="solid" color="primary" (click)="agregarAlCarrito(item.producto)">
+        <ion-icon name="cart-outline" slot="start"></ion-icon>
+        Añadir
+      </ion-button>
+    </ion-card>
+  </div>
+  <button class="slider-btn next" (click)="moveSlider(1)">&#10095;</button>
+</div>
         <ion-footer>
           <ion-toolbar color="dark">
             <ion-grid>

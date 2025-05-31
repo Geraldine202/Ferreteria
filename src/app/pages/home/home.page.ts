@@ -20,13 +20,23 @@ import { Subscription } from 'rxjs';
 export class HomePage {
   producto: any[] = [];
   imagenes: string[] = [
-    'assets/images/relleno1.pngz',
-    'assets/images/relleno1.png',
-    'assets/images/relleno1.png',
+    'assets/images/1.jpg',
+    'assets/images/2.jpg',
+    'assets/images/3.jpg',
+    'assets/images/4.jpg',
+    'assets/images/5.jpg',
+    'assets/images/6.jpg',
+    'assets/images/7.jpg',
+    'assets/images/8.jpg',
+    'assets/images/9.jpg',
+    'assets/images/10.jpg',
+    'assets/images/11.jpg',
   ];
   imagenIndex: number = 0;
   dolar: number = 0;
   contadorCarrito = 0;
+  contadorSubscription!: Subscription;
+  productosDestacados: any[] = [];
   private carritoSubscription!: Subscription;
   productos = [
     { imgSrc: 'assets/images/relleno1.png', title: 'Producto 1', description: 'Descripción breve del producto.', priceCLP: 19990 },
@@ -46,11 +56,12 @@ export class HomePage {
     private toastController: ToastController,
   ) {}
 
+
   ngOnInit() {
-    this.actualizarContador();
     this.cargarProductos();
     this.obtenerValorDolar();
     this.actualizarProductosVisibles();
+    
     window.addEventListener('resize', () => this.actualizarProductosVisibles());
         this.carritoSubscription = this.carritoService.contador$.subscribe(
       cantidad => {
@@ -59,6 +70,11 @@ export class HomePage {
       }
     );
   }
+  slideOpts = {
+  initialSlide: 0,
+  speed: 400
+};
+
  ngOnDestroy() {
     // Limpiar la suscripción al destruir el componente
     if (this.carritoSubscription) {
@@ -70,12 +86,26 @@ export class HomePage {
     setInterval(() => this.nextImage(), 2000);
   }
 
-  async cargarProductos() {
+async cargarProductos() {
     try {
       this.producto = await this.productosService.obtenerProductos();
+      // Filtramos los productos con id_categoria=3
+      this.filtrarProductosPorCategoria();
     } catch (error) {
       console.error('Error cargando productos:', error);
     }
+  }
+  
+  // Nueva función para filtrar productos por id_categoria=3
+  filtrarProductosPorCategoria() {
+    this.productosDestacados = this.producto.filter(prod => 
+      prod.id_categoria === 3 // Filtro estricto por id_categoria=3
+    );
+    
+    // Si no hay suficientes productos (menos de 3), podemos:
+    // 1. Mostrar menos productos
+    // 2. Completar con productos aleatorios (si lo prefieres, dime y lo implemento)
+    console.log(`Productos con id_categoria=3:`, this.productosDestacados);
   }
     irAlCarrito() {
     this.router.navigate(['/carrito']);
@@ -97,18 +127,28 @@ export class HomePage {
   }
 
   getProductosVisibles() {
+    if (this.productosDestacados.length === 0) return [];
+    
     const visibles = [];
-    for (let i = 0; i < this.productosVisibles; i++) {
-      const index = (this.productoIndex + i) % this.productos.length;
-      const item = this.productos[index];
-      const priceUSD = this.convertirAPrecioUSD(item.priceCLP).toFixed(2);
+    for (let i = 0; i < Math.min(this.productosVisibles, this.productosDestacados.length); i++) {
+      const index = (this.productoIndex + i) % this.productosDestacados.length;
+      const item = this.productosDestacados[index];
+      const priceUSD = this.convertirAPrecioUSD(item.precio).toFixed(2);
+      
       visibles.push({
         producto: item,
-        priceDisplay: `${item.priceCLP.toLocaleString('es-CL')} CLP (USD $${priceUSD})`,
-        isCentral: i === 1
+        priceDisplay: `${item.precio.toLocaleString('es-CL')} CLP (USD $${priceUSD})`,
+        isCentral: i === Math.floor(this.productosVisibles / 2)
       });
     }
     return visibles;
+  }
+
+  moveSlider(direction: number) {
+    if (this.productosDestacados.length === 0) return;
+    
+    const totalProductos = this.productosDestacados.length;
+    this.productoIndex = (this.productoIndex + direction + totalProductos) % totalProductos;
   }
 
   nextImage() {
@@ -120,20 +160,18 @@ export class HomePage {
     this.productosVisibles = anchoPantalla < 768 ? 1 : 3;
   }
 
-  moveSlider(direction: number) {
-    const totalProductos = this.productos.length;
-    this.productoIndex = (this.productoIndex + direction + totalProductos) % totalProductos;
+  agregarAlCarrito(prod: any) {
+    const id_producto = prod?.id_producto;
+    const nombre = prod?.nombre || 'Producto';
+
+    if (!id_producto) {
+      console.error('ID de producto inválido:', prod);
+      return;
+    }
+
+    this.carritoService.agregarAlCarrito(id_producto, 1);
+    this.presentToast(`${nombre} agregado al carrito`);
   }
-  actualizarContador() {
-      const carrito = this.carritoService.obtenerCarrito();
-      this.contadorCarrito = carrito.reduce((acc, item) => acc + item.cantidad, 0);
-    }
-    agregarAlCarrito(prod: any) {
-      this.carritoService.agregarAlCarrito(prod.id_producto, 1);
-      this.actualizarContador();
-      this.presentToast(`${prod.nombre} agregado al carrito`);
-      console.log('Producto añadido al carrito:', prod.id_producto); // debug
-    }
     async presentToast(mensaje: string) {
       const toast = await this.toastController.create({
         message: mensaje,

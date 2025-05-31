@@ -19,7 +19,7 @@
       <ion-card-content>
         <p><strong>Precio:</strong> ${{ producto.precio }}</p>
         <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
-        <ion-button (click)="agregarAlCarrito(producto)">Agregar al carrito</ion-button>
+        <ion-button (click)="agregarAlCarrito(producto.id_producto)">Agregar al carrito</ion-button>
       </ion-card-content>
     </ion-card>
   </div>

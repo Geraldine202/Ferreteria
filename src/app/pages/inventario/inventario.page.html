@@ -28,23 +28,15 @@
       <ion-note color="danger" *ngIf="productoForm.get('descripcion')?.touched && productoForm.get('descripcion')?.hasError('maxlength')">
         Máximo 500 caracteres.
       </ion-note>
-
       <!-- Imagen -->
       <ion-item class="form-item">
         <ion-label position="stacked">Seleccionar Imagen</ion-label>
         <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)">
       </ion-item>
-
       <ion-item class="form-item">
         <ion-label position="stacked">Ruta de la Imagen</ion-label>
         <ion-input formControlName="imagen" type="text" readonly></ion-input>
       </ion-item>
-
-      <ion-item *ngIf="productoForm.value.imagen" class="form-item">
-        <ion-label>Vista previa:</ion-label>
-        <ion-img [src]="productoForm.value.imagen" style="max-width: 100px;"></ion-img>
-      </ion-item>
-
       <!-- Precio -->
       <ion-item class="form-item">
         <ion-label position="stacked">Precio</ion-label>
@@ -108,7 +100,7 @@
           <ion-select-option [value]="1">Herramientas manuales</ion-select-option>
           <ion-select-option [value]="2">Materiales básicos</ion-select-option>
           <ion-select-option [value]="3">Equipos de seguridad</ion-select-option>
-          <ion-select-option [value]="4">Equipos de seguridad</ion-select-option>
+          <ion-select-option [value]="4">Tornillos y Anclajes</ion-select-option>
           <ion-select-option [value]="5">Fijaciones y adhesivos</ion-select-option>
           <ion-select-option [value]="6">Equipos de medición</ion-select-option>
         </ion-select>

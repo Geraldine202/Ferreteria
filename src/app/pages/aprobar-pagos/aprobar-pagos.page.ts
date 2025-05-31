@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
+import { UsuariosService } from 'src/app/service/usuarios.service';
 import { ToastController, LoadingController } from '@ionic/angular';
 
 @Component({
@@ -14,80 +14,108 @@ import { ToastController, LoadingController } from '@ionic/angular';
 })
 export class AprobarPagosPage implements OnInit {
 
-    pagos: any[] = [];
-  private apiUrl = 'https://mi-api.com/api/pagos';
+  pagosPendientes: any[] = [];
+  cargando: boolean = false;
+  pagoSeleccionado: any = null;
+  modalAbierto: boolean = false;
 
   constructor(
-    private http: HttpClient,
+    private usuariosService: UsuariosService,
     private toastController: ToastController,
     private loadingController: LoadingController
   ) { }
   
   async ngOnInit() {
-    this.pagos = [
-    { id: 1, vendedor: 'Juan Pérez', monto: 25000, estado: 'pendiente' },
-    { id: 2, vendedor: 'Ana Soto', monto: 18000, estado: 'pendiente' },
-  ];
-  this.filtrarPagos();
+    await this.cargarPagosPendientes();
   }
 
-  pago: any[] = [];
-  pagosPendientes: any[] = [];
-
-  //SÓLO PARA PRUEBAS GERAAA:)))))
-  agregarPagoDePrueba() {
-  const nuevoId = this.pagos.length + 1;
-  const nuevoPago = {
-    id: nuevoId,
-    vendedor: 'Pago Test #' + nuevoId,
-    monto: Math.floor(Math.random() * 50000) + 5000,
-    estado: 'pendiente'
-  };
-  this.pagos.push(nuevoPago);
-  this.filtrarPagos(); // actualiza la lista visible
-  this.mostrarToast('Pago de prueba agregado');
-}
-
-  filtrarPagos() {
-  this.pagosPendientes = this.pagos.filter(p => p.estado === 'pendiente');
-}
-
-  async cargarPagos() {
+  async cargarPagosPendientes() {
+    this.cargando = true;
     const loading = await this.loadingController.create({
-      message: 'Cargando pagos...',
+      message: 'Cargando pagos pendientes...',
     });
     await loading.present();
 
-    this.http.get<any[]>(`${this.apiUrl}?estado=pendiente`).subscribe(
-      async (data) => {
-        this.pagos = data;
-        await loading.dismiss();
+    this.usuariosService.obtenerPagosPendientes().subscribe({
+      next: (pagos) => {
+        this.pagosPendientes = pagos;
+        loading.dismiss();
+        this.cargando = false;
       },
-      async (error) => {
-        console.error('Error al obtener pagos:', error);
-        await loading.dismiss();
-        this.mostrarToast('Error al cargar los pagos');
+      error: async (error) => {
+        console.error('Error al obtener pagos pendientes:', error);
+        loading.dismiss();
+        this.cargando = false;
+        this.mostrarToast('Error al cargar pagos pendientes');
       }
-    );
+    });
   }
 
- aprobar(id: number) {
-  const index = this.pagos.findIndex(p => p.id === id);
-  if (index !== -1) {
-    this.pagos[index].estado = 'aprobado';
-    this.mostrarToast('Pago aprobado');
-    this.filtrarPagos();
+  verComprobante(pago: any) {
+    this.pagoSeleccionado = pago;
+    this.modalAbierto = true;
   }
-}
 
-rechazar(id: number) {
-  const index = this.pagos.findIndex(p => p.id === id);
-  if (index !== -1) {
-    this.pagos[index].estado = 'rechazado';
-    this.mostrarToast('Pago rechazado');
-    this.filtrarPagos();
+  cerrarModal() {
+    this.modalAbierto = false;
+    this.pagoSeleccionado = null;
   }
-}
+
+  descargarComprobante(url: string) {
+    if (!url) {
+      this.mostrarToast('No hay comprobante disponible');
+      return;
+    }
+    
+    // Crea un enlace temporal para descarga
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.download = `comprobante-pago-${this.pagoSeleccionado.id_pedido}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async aprobarPago(id_pedido: number) {
+    const loading = await this.loadingController.create({
+      message: 'Aprobando pago...',
+    });
+    await loading.present();
+
+    this.usuariosService.actualizarEstadoPago(id_pedido, 2).subscribe({
+      next: async () => {
+        loading.dismiss();
+        this.mostrarToast('Pago aprobado correctamente');
+        await this.cargarPagosPendientes();
+      },
+      error: async (error) => {
+        console.error('Error al aprobar pago:', error);
+        loading.dismiss();
+        this.mostrarToast('Error al aprobar el pago');
+      }
+    });
+  }
+
+  async rechazarPago(id_pedido: number) {
+    const loading = await this.loadingController.create({
+      message: 'Rechazando pago...',
+    });
+    await loading.present();
+
+    this.usuariosService.actualizarEstadoPago(id_pedido, 3).subscribe({
+      next: async () => {
+        loading.dismiss();
+        this.mostrarToast('Pago rechazado correctamente');
+        await this.cargarPagosPendientes();
+      },
+      error: async (error) => {
+        console.error('Error al rechazar pago:', error);
+        loading.dismiss();
+        this.mostrarToast('Error al rechazar el pago');
+      }
+    });
+  }
 
   async mostrarToast(mensaje: string) {
     const toast = await this.toastController.create({

@@ -10,8 +10,6 @@ import { UsuariosService } from 'src/app/service/usuarios.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
-declare const paypal: any;
-
 @Component({
   selector: 'app-carrito',
   templateUrl: './carrito.page.html',
@@ -37,6 +35,7 @@ export class CarritoPage implements OnInit {
   imagenSeleccionadaBase64: string | null = null;
   comunas: any[] = []; 
   contadorCarrito: number = 0;
+  
   private carritoSubscription!: Subscription;
   usuarioActual: any;
   errorUsuario: string = '';
@@ -58,7 +57,7 @@ export class CarritoPage implements OnInit {
       id_entrega: [null, Validators.required],
       direccion: [''],
       sucursal:[''],
-      imagen:[null]
+      imagen: [null, this.validarImagen.bind(this)]
     });
   }
 
@@ -74,8 +73,40 @@ export class CarritoPage implements OnInit {
     this.convertirImagenABase64('assets/images/logo.png').then((base64) => {
       this.logoBase64 = base64;
     });
-    
+  this.carritoSubscription = this.carritoService.carrito$.subscribe(async (carrito) => {
+    this.carritoDetalles = await Promise.all(
+      carrito.map(async (item) => {
+        if (!item.id_producto) {
+          console.warn('Producto con ID inválido en carrito:', item);
+          return null;
+        }
+        const producto = await this.productosService.obtenerProductoPorId(item.id_producto);
+        return {
+          ...producto,
+          cantidad: item.cantidad,
+          subtotal: producto.precio * item.cantidad
+        };
+      })
+    );
+
+  // Filtrar productos nulos
+  this.carritoDetalles = this.carritoDetalles.filter(p => p !== null);
+});
+}
+
+validarImagen(control: any) {
+  if (this.pagoForm?.get('id_tipo_pago')?.value === 2 && !control.value) {
+    return { required: true };
   }
+  return null;
+}
+    ngOnDestroy() {
+    // Evitar memory leaks
+    this.carritoSubscription.unsubscribe();
+  }
+  irAComprar() {
+  this.router.navigate(['/home']); // Ajusta la ruta según tu app
+}
 selectedFile: File | null = null;
 onFileSelected(event: any) {
   const file: File = event.target.files[0];
@@ -111,7 +142,11 @@ onFileSelected(event: any) {
 }
 async subirImagenYConfirmar(event: Event) {
   event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-
+  this.pagoForm.markAllAsTouched();
+    if (this.pagoForm.value.id_tipo_pago === 2 && !this.imagenSeleccionadaBase64) {
+    await this.mostrarError('Debes subir el comprobante de transferencia');
+    return;
+  }
   // Validación adicional para imagen si es requerida
   if (this.mostrarCampoImagen && !this.selectedFile) {
     await this.mostrarError('Debes seleccionar un comprobante de transferencia');
@@ -230,18 +265,27 @@ private async mostrarExito(mensaje: string): Promise<void> {
 }
 
 private async cargarCarrito() {
-    const carrito = this.carritoService.obtenerCarrito();
-    this.carritoDetalles = await Promise.all(
-      carrito.map(async (item) => {
-        const producto = await this.productosService.obtenerProductoPorId(item.id_producto);
-        return {
-          ...producto,
-          cantidad: item.cantidad,
-          subtotal: producto.precio * item.cantidad
-        };
-      })
-    );
-  }
+  const carrito = this.carritoService.obtenerCarrito();
+
+  this.carritoDetalles = await Promise.all(
+    carrito.map(async (item) => {
+      if (!item.id_producto) {
+        console.warn('Producto con ID inválido en carrito:', item);
+        return null;
+      }
+      const producto = await this.productosService.obtenerProductoPorId(item.id_producto);
+      return {
+        ...producto,
+        cantidad: item.cantidad,
+        subtotal: producto.precio * item.cantidad
+      };
+    })
+  );
+
+  // Filtrar productos nulos
+  this.carritoDetalles = this.carritoDetalles.filter(p => p !== null);
+}
+
 
   async cambiarCantidad(index: number, event: any) {
     const nuevaCantidad = parseInt(event.detail.value, 10);
@@ -273,100 +317,6 @@ private async cargarCarrito() {
 
 async confirmarPago() {
   if (this.pagoForm.invalid) {
-    // Mostrar mensaje de error
-    const alert = await this.alertCtrl.create({
-      header: 'Formulario Incompleto',
-      message: 'Por favor, completa todos los campos obligatorios.',
-      buttons: ['Aceptar']
-    });
-    await alert.present();
-    return;
-  }
-  if (this.carritoDetalles.length === 0) {
-    await this.mostrarError('No hay productos en el carrito.');
-    return;
-  }
-
-  const tipoPagoSeleccionado = this.pagoForm.value.id_tipo_pago;
-
-  // 1 y 3: Tarjeta débito/crédito vía PayPal
-  const esPayPal = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 3;
-  const esTransferencia = tipoPagoSeleccionado === 2;
-
-  if (esTransferencia && !this.imagenSeleccionadaBase64) {
-    const alert = await this.alertCtrl.create({
-      header: 'Comprobante faltante',
-      message: 'Por favor, sube una imagen del comprobante de transferencia.',
-      buttons: ['Aceptar']
-    });
-    await alert.present();
-    return;
-  }
-
-  const pedidoParaGuardar = this.generarPedidoCompleto();
-
-  if (esPayPal) {
-    // Mostrar botón PayPal dinámicamente en contenedor
-    const paypalContainer = document.getElementById('paypal-button-container');
-    if (paypalContainer) {
-      paypalContainer.innerHTML = ''; // Limpiar si ya hay un botón renderizado
-
-      paypal.Buttons({
-        createOrder: (data:any, actions:any) => {
-          return actions.order.create({
-            purchase_units: [{
-              amount: {
-                value: (pedidoParaGuardar.total_a_pagar / 1000).toFixed(2) // ajusta según tu moneda
-              }
-            }]
-          });
-        },
-        onApprove: async (data:any, actions:any) => {
-          const details = await actions.order.capture();
-          console.log('Pago aprobado por PayPal:', details);
-
-          // Cambiar estado a pagado
-          pedidoParaGuardar.id_estado_pago = 1;
-
-          this.usuarioService.registrarPedidoCompleto(pedidoParaGuardar).subscribe({
-            next: async () => {
-              await this.mostrarExito('Pedido pagado y guardado con éxito');
-              this.carritoService.limpiarCarrito();
-              this.router.navigate(['/home']);
-            },
-            error: async (err) => {
-              console.error('Error al guardar el pedido:', err);
-              await this.mostrarError('El pago fue exitoso, pero no se pudo guardar el pedido. Contáctanos.');
-            }
-          });
-        },
-        onError: async (err:any) => {
-          console.error('Error en PayPal:', err);
-          await this.mostrarError('Error al procesar el pago con PayPal.');
-        }
-      }).render('#paypal-button-container');
-    } else {
-      console.error('No se encontró el contenedor PayPal.');
-      await this.mostrarError('No se pudo inicializar el pago con PayPal.');
-    }
-
-    return; // salir del flujo para esperar PayPal
-  }
-
-  // Transferencia u otro método
-  this.usuarioService.registrarPedidoCompleto(pedidoParaGuardar).subscribe({
-    next: async () => {
-      await this.mostrarExito('Pedido guardado con éxito');
-      this.carritoService.limpiarCarrito();
-      this.router.navigate(['/home']);
-    },
-    error: async (err) => {
-      console.error('Error al guardar el pedido:', err);
-      await this.mostrarError('No se pudo guardar el pedido. Intenta nuevamente.');
-    }
-  });
-}async confirmarPago1() {
-  if (this.pagoForm.invalid) {
     const alert = await this.alertCtrl.create({
       header: 'Formulario Incompleto',
       message: 'Por favor, completa todos los campos correctamente.',
@@ -381,7 +331,8 @@ async confirmarPago() {
   const cantidadProductos = this.carritoDetalles.reduce((acc, item) => acc + item.cantidad, 0);
   const productosIds = this.carritoDetalles.map(item => item.id_producto);
 
-  // Generar un id único para pedido y pago (timestamp por simplicidad)
+  const esTransferencia = datosFormulario.id_tipo_pago === 2; 
+  const id_estado_pago = esTransferencia ? 1 : 2;
   const idPedido = Date.now();  // Puedes usar otro método para generar ID único
   const idPago = Date.now() + 1; // Solo para que no coincida con idPedido
 
@@ -393,7 +344,7 @@ async confirmarPago() {
     tiene_descuento: "N",
     fecha_pedido: new Date().toISOString().split('T')[0],
     id_sucursal: this.sucursalSeleccionada?.id_sucursal || 1,
-    id_estado_pago: 2,
+    id_estado_pago: id_estado_pago,
     id_estado_pedido: 1,
     id_entrega: datosFormulario.id_entrega,
     rut_usuario: datosFormulario.rut,
@@ -409,6 +360,7 @@ async confirmarPago() {
 
   this.usuarioService.registrarPedidoCompleto(pedidoParaGuardar).subscribe({
     next: async (response) => {
+      this.carritoService.limpiarCarrito();
       await this.mostrarExito('Pedido guardado con éxito');
       this.carritoService.limpiarCarrito();
       this.router.navigate(['/home']);
@@ -424,7 +376,6 @@ generarIdUnico(): number {
   return Date.now(); // O cualquier lógica que quieras para generar IDs únicos
 }
 
-
 private generarPedidoCompleto() {
   const fechaActual = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
   const idPedido = this.generarIdUnico(); // puedes usar Date.now() o lógica personalizada
@@ -432,8 +383,8 @@ private generarPedidoCompleto() {
 
   const tipoPagoSeleccionado = this.pagoForm.value.id_tipo_pago;
   const tipoEntregaSeleccionado = this.pagoForm.value.id_entrega;
-  const esTransferencia = tipoPagoSeleccionado === 2; // supongamos que 3 = transferencia
-  const esDebitoCredito = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 3;
+  const esTransferencia = tipoPagoSeleccionado === 3; // supongamos que 3 = transferencia
+  const esDebitoCredito = tipoPagoSeleccionado === 1 || tipoPagoSeleccionado === 2;
 
   const pedido = {
     id_pedido: idPedido,
@@ -466,68 +417,57 @@ onCambioTipoEntrega(event: any) {
     this.mostrarCampoDireccion = true;
     this.mostrarSeleccionSucursal = false;
     this.pagoForm.get('direccion')?.setValidators([Validators.required]);
-    this.pagoForm.get('id_sucursal')?.clearValidators();
-    this.pagoForm.get('id_sucursal')?.setValue(null); // limpiar valor
-  } else { // retiro en sucursal
+    this.pagoForm.get('sucursal')?.clearValidators();
+  } else {
     this.mostrarCampoDireccion = false;
     this.mostrarSeleccionSucursal = true;
-
     this.pagoForm.get('direccion')?.clearValidators();
-    this.pagoForm.get('direccion')?.setValue('');
-    this.pagoForm.get('direccion')?.updateValueAndValidity();
-
-    this.pagoForm.get('id_sucursal')?.setValidators([Validators.required]);
-    this.pagoForm.get('id_sucursal')?.updateValueAndValidity();
+    this.pagoForm.get('sucursal')?.setValidators([Validators.required]);
   }
+
+  this.pagoForm.get('direccion')?.updateValueAndValidity();
+  this.pagoForm.get('sucursal')?.updateValueAndValidity();
 }
+
 
 onSucursalSeleccionada(event: any) {
   const id = event.detail.value;
   this.sucursalSeleccionada = this.sucursales.find(s => s.id_sucursal === id);
-  this.pagoForm.get('id_sucursal')?.setValue(id);
 }
-
 onDireccionEscrita(event: any) {
-  const direccion = event.detail.value;
-  this.direccionTemporal = direccion;
-  this.pagoForm.get('direccion')?.setValue(direccion);
+  this.direccionTemporal = event.detail.value;
 }
-
-esPayPal = false; // inicial
-mostrarCampoImagen1 = false;
-
+mostrarPaypal: boolean = false;
 onCambioTipoPago(event: any) {
-  const tipoPago = event.detail.value;
-  this.mostrarCampoImagen1 = tipoPago === 2;
-
-  // Controlar si se debe usar PayPal
-  this.esPayPal = (tipoPago === 1 || tipoPago === 3);
-
-  if (this.esPayPal) {
-    this.renderizarBotonPayPal();
+  const tipoPago = Number(event.detail.value);
+  this.mostrarCampoImagen = tipoPago === 2; // 2 = Transferencia
+  
+  // Mostrar mensaje adicional para transferencias
+  if (tipoPago === 2) {
+    this.mostrarAdvertencia('Con transferencia, el pedido quedará como PENDIENTE hasta confirmar el pago');
   }
+
+  // Actualizar validadores
+  const imagenControl = this.pagoForm.get('imagen');
+  if (tipoPago === 2) {
+    imagenControl?.setValidators([Validators.required]);
+  } else {
+    imagenControl?.clearValidators();
+    this.imagenSeleccionadaBase64 = null;
+    this.selectedFile = null;
+    imagenControl?.setValue(null);
+  }
+  imagenControl?.updateValueAndValidity();
 }
 
-renderizarBotonPayPal() {
-  paypal.Buttons({
-    createOrder: (data: any, actions: any) => {
-      return actions.order.create({
-        purchase_units: [{
-          amount: {
-            value: this.calcularTotal().toString()
-          }
-        }]
-      });
-    },
-    onApprove: async (data: any, actions: any) => {
-      const details = await actions.order.capture();
-      console.log('Pago aprobado:', details);
-      // Tu lógica después del pago exitoso
-    },
-    onError: async (err: any) => {
-      console.error('Error PayPal:', err);
-    }
-  }).render('#paypal-button-container');
+async mostrarAdvertencia(mensaje: string) {
+  const toast = await this.toastController.create({
+    message: mensaje,
+    duration: 4000,
+    color: 'warning',
+    position: 'top'
+  });
+  await toast.present();
 }
 
 mostrarCampoDireccion = false;

@@ -1,63 +1,183 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Aprobar Pedidos</ion-title>
-  </ion-toolbar>
-</ion-header>
+<header>
+</header>
+<br><br>
+<ion-content >
 
-<ion-content class="ion-padding">
+  <!-- Pedidos por Preparar -->
+  <ion-card *ngIf="pedidosPagados.length > 0" class="mb-20" >
+    <ion-card-header>
+      <ion-card-title class="ion-text-center ion-text-uppercase ion-text-bold" color="primary">
+        Pedidos por Preparar
+      </ion-card-title>
+    </ion-card-header>
 
-  <ion-button expand="block" color="medium" (click)="agregarPedidoDePrueba()">
-    Agregar pedido de prueba
-  </ion-button>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ng-container *ngFor="let pedido of pedidosPagados">
+          <ion-item class="ion-margin-bottom ion-align-items-start" detail="false">
 
-  <!-- Lista pedidos pendientes -->
-  <ion-list *ngIf="pedidosPendientes.length > 0">
-    <ion-item *ngFor="let pedido of pedidosPendientes">
-      <ion-label>
-        <h2>{{ pedido.cliente }}</h2>
-        <p>{{ pedido.producto }} - Cantidad: {{ pedido.cantidad }}</p>
+            <ion-label>
+              <h2>Pedido #{{ pedido['id_pedido'] }}</h2>
+              <p>Cliente: <strong>{{ pedido['rut_usuario'] || pedido['nombre_cliente'] || 'Desconocido' }}</strong></p>
+              <p>Total a pagar: <strong>${{ pedido['total_a_pagar'] || pedido['total_pedido'] }}</strong></p>
+              <p>Fecha: {{ pedido['fecha_pedido'] | date:'medium' }}</p>
+            </ion-label>
+
+            <ion-button fill="outline" color="primary" size="small" (click)="toggleDetalle(pedido['id_pedido'])" style="margin-left: 8px;">
+              {{ detalleVisible === pedido['id_pedido'] ? 'Ocultar Detalles' : 'Ver Detalles' }}
+            </ion-button>
+
+            <ion-button fill="solid" color="success" size="small" (click)="iniciarPreparacion(pedido)" style="margin-left: 8px;">
+              Preparar
+            </ion-button>
+
+          </ion-item>
+
+          <!-- Detalle expandido - Versión simplificada sin imágenes -->
+          <ion-item *ngIf="detalleVisible === pedido.id_pedido" lines="none" class="detalle-expandido ion-padding ion-margin-bottom">
+            <div class="detalle-container">
+              <div class="detalle-header">
+                <ion-icon name="receipt-outline" class="header-icon"></ion-icon>
+                <h3 class="ion-text-center">Detalle Pedido #{{ pedido.id_pedido }}</h3>
+              </div>
+
+              <div *ngIf="pedidoDetalle; else loading" class="detalle-content">
+                <!-- Sección de descripción -->
+                <ion-card class="descripcion-card">
+                  <ion-card-header>
+                    <ion-card-title class="card-title">
+                      <ion-icon name="information-circle-outline"></ion-icon>
+                      Descripción
+                    </ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content>
+                    {{ pedidoDetalle.descripcion }}
+                  </ion-card-content>
+                </ion-card>
+
+                            <!-- Sección de productos simplificada -->
+<ion-card class="productos-card">
+  <ion-card-header>
+    <ion-card-title>
+      <ion-icon name="basket-outline"></ion-icon>
+      Productos (Total: {{ pedidoDetalle.pedido.CANTIDAD || 1 }} unidades)
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-list lines="none">
+      <ion-item *ngFor="let det of pedidoDetalle.detalles">
+        <ion-label>
+          <h3>{{ det.NOMBRE }}</h3>
+          <p>ID: {{ det.ID_PRODUCTO }}</p>
+          <p *ngIf="det.PRECIO_UNITARIO">Precio unitario: ${{ det.PRECIO_UNITARIO | number }}</p>
+        </ion-label>
+        <ion-badge slot="end" color="medium">
+          {{ det.CANTIDAD || 1 }} ud
+          <span *ngIf="det.CANTIDAD && det.PRECIO_UNITARIO" class="subtotal">
+            (${{ (det.CANTIDAD * det.PRECIO_UNITARIO) | number }})
+          </span>
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+    <ion-item lines="none">
+      <ion-label color="primary">
+        <strong>Total general: ${{ pedidoDetalle.pedido.TOTAL_A_PAGAR | number }}</strong>
       </ion-label>
-      <ion-buttons slot="end">
-        <ion-button color="success" (click)="aprobar(pedido.id)">
-          <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button color="danger" (click)="rechazar(pedido.id)">
-          <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
     </ion-item>
-  </ion-list>
+  </ion-card-content>
+</ion-card>
 
-  <ion-text *ngIf="pedidosPendientes.length === 0">
-    <p class="texto-centrado">No hay pedidos pendientes.</p>
-  </ion-text>
+                <!-- Sección de pago -->
+<ion-card *ngIf="pedidoDetalle.pago" class="pago-card">
+  <ion-card-header>
+    <ion-card-title class="card-title">
+      <ion-icon name="card-outline"></ion-icon>
+      Información de Pago
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-item lines="none">
+            <ion-label><strong>ID Pago:</strong></ion-label>
+            <ion-text>{{ pedidoDetalle.pago.ID_PAGO }}</ion-text>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6">
+          <ion-item lines="none">
+            <ion-label><strong>Total:</strong></ion-label>
+            <ion-text color="success">${{ pedidoDetalle.pago.MONTO_TOTAL | number }}</ion-text>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">
+          <ion-item lines="none">
+            <ion-label><strong>Fecha:</strong></ion-label>
+            <ion-text>{{ pedidoDetalle.pago.FECHA_PAGO | date:'medium' }}</ion-text>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6">
+          <ion-item lines="none">
+            <ion-label><strong>Método:</strong></ion-label>
+            <ion-text>
+              <ion-badge [color]="getColorTipoPago(pedidoDetalle.pago.TIPO_PAGO)">
+                {{ pedidoDetalle.pago.TIPO_PAGO }}
+              </ion-badge>
+            </ion-text>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>
+              </div>
 
-  <hr><hr/>
+              <ng-template #loading>
+                <div class="loading-container">
+                  <ion-spinner name="crescent" color="primary"></ion-spinner>
+                  <p class="loading-text">Cargando detalles del pedido...</p>
+                </div>
+              </ng-template>
+            </div>
+          </ion-item>
+        </ng-container>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 
-  <ion-text>
-    <h2 class="ion-padding-top">Historial de Pedidos</h2>
-  </ion-text>
+  <!-- Pedidos en preparación -->
+  <ion-card *ngIf="pedidosEnPreparacion.length > 0">
+    <ion-card-header>
+      <ion-card-title class="ion-text-center ion-text-uppercase ion-text-bold" color="dark">
+        En Preparación
+      </ion-card-title>
+    </ion-card-header>
 
-  <ion-list *ngIf="pedidos.length > 0">
-    <ion-item *ngFor="let pedido of pedidos">
-      <ion-label>
-        <h3>{{ pedido.cliente }}</h3>
-        <p>{{ pedido.producto }} - Cantidad: {{ pedido.cantidad }}</p>
-      </ion-label>
-      <ion-badge
-        [color]="
-          pedido.estado === 'aprobado' ? 'success' :
-          pedido.estado === 'rechazado' ? 'danger' :
-          'medium'
-        "
-      >
-        {{ pedido.estado | titlecase }}
-      </ion-badge>
-    </ion-item>
-  </ion-list>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item *ngFor="let pedido of pedidosEnPreparacion" class="ion-margin-bottom ion-align-items-center">
+          <ion-label>
+            <h2>Pedido #{{ pedido['id_pedido'] }}</h2>
+            <p class="ion-text-wrap">Cliente: {{ pedido['cliente'] || pedido['nombre_cliente'] || 'Desconocido' }}</p>
+            <p><strong>Estado:</strong> En preparación</p>
+            <p>Total: ${{ pedido['total_a_pagar'] || pedido['total_pedido'] }}</p>
+            <p>Fecha: {{ pedido['fecha_pedido'] | date:'medium' }}</p>
+          </ion-label>
+          <ion-icon name="timer-outline" slot="end" color="warning" style="font-size: 24px;"></ion-icon>
+          <ion-button fill="solid" color="tertiary" size="small" (click)="marcarListoParaEntrega(pedido['id_pedido'])" style="margin-left: 8px;">
+            Entregar al Vendedor
+        </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 
-  <ion-text *ngIf="pedidos.length === 0">
-    <p class="texto-centrado">No hay pedidos registrados.</p>
-  </ion-text>
+  <!-- Mensaje si no hay pedidos -->
+  <div *ngIf="pedidosPagados.length === 0 && pedidosEnPreparacion.length === 0" class="ion-text-center ion-padding-top ion-padding-bottom">
+    <ion-icon name="checkmark-done-circle-outline" size="large" color="success"></ion-icon>
+    <p>No hay pedidos para mostrar</p>
+  </div>
 
 </ion-content>

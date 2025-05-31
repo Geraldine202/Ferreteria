@@ -1,6 +1,11 @@
 <ion-app>
   <ion-split-pane contentId="main-content">
-
+      <ion-fab-button *ngIf="mostrarCarrito" color="primary" class="btn-carrito" (click)="irAlCarrito()">
+      <ion-icon name="cart"></ion-icon>
+      <ion-badge *ngIf="contadorCarrito > 0" color="danger" style="position: absolute; top: 5px; right: 5px;">
+        {{ contadorCarrito }}
+      </ion-badge>
+    </ion-fab-button>
     <!-- Menú lateral -->
     <ion-menu menu-id="main-menu" contentId="main-content" side="start" class="menuu" *ngIf="!isLoginPage">
       <ion-header>
@@ -12,7 +17,8 @@
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-item routerLink="/home" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 1 ||usuarioActual?.tipoUsuario === 4" routerLink="/home" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="home" slot="start"></ion-icon>
             <ion-label>Inicio</ion-label>
           </ion-item>
@@ -20,15 +26,15 @@
             <ion-icon name="person-circle-sharp" slot="start"></ion-icon>
             <ion-label>Ver perfil</ion-label>
           </ion-item>
-          <ion-item routerLink="/trabajadores" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 1" routerLink="/trabajadores" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
             <ion-label>Administrar Trabajadores</ion-label>
           </ion-item>
-          <ion-item routerLink="/inventario" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 1" routerLink="/inventario" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="file-tray-full-sharp" slot="start"></ion-icon>
             <ion-label>Administrar Inventario</ion-label>
           </ion-item>
-          <ion-item button (click)="mostrarSubcategorias = !mostrarSubcategorias">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 4" button (click)="mostrarSubcategorias = !mostrarSubcategorias">
             <ion-icon name="apps" slot="start"></ion-icon>
             <ion-label>Categoría</ion-label>
             <ion-icon name="chevron-down-outline" slot="end" [class.rotated]="mostrarSubcategorias"></ion-icon>
@@ -44,15 +50,15 @@
             <ion-label>{{ sub }}</ion-label>
           </ion-item>
         </ion-list>
-          <ion-item routerLink="/aprobar-pagos" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 3" routerLink="/aprobar-pagos" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
             <ion-label>Administrar Pagos</ion-label>
           </ion-item>
-          <ion-item routerLink="/aprobar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 2"routerLink="/aprobar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
             <ion-label>Administrar Pedidos</ion-label>
           </ion-item>
-          <ion-item routerLink="/generar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 5"routerLink="/generar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
             <ion-label>Generar Pedido</ion-label>
           </ion-item>
@@ -60,11 +66,11 @@
             <ion-icon name="people-sharp" slot="start"></ion-icon>
             <ion-label>Realizar pago (temporal)</ion-label>
           </ion-item>
-          <ion-item routerLink="/carrito" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 1 ||usuarioActual?.tipoUsuario === 4"routerLink="/carrito" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="cart" slot="start"></ion-icon>
             <ion-label>Ver carrito</ion-label>
           </ion-item>
-          <ion-item routerLink="/informes" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 1" routerLink="/informes" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
             <ion-label>Generar Informes</ion-label>
           </ion-item>
@@ -72,7 +78,7 @@
             <ion-icon name="call" slot="start"></ion-icon>
             <ion-label>Contacto</ion-label>
           </ion-item>
-          <ion-item (click)="logout()" routerDirection="root">
+          <ion-item *ngIf="usuarioLogueado" (click)="logout()" routerDirection="root">
             <ion-icon name="log-out" slot="start"></ion-icon>
             <ion-label>Cerrar sesión</ion-label>
           </ion-item>
@@ -82,17 +88,34 @@
 
     <!-- Contenido principal -->
     <div class="ion-page" id="main-content" >
-      <ion-header *ngIf="!isLoginPage">
-        <ion-toolbar style="background: linear-gradient(135deg, #5c4033, #3b2a1a); color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-          <!-- Mostrar el botón del menú solo si el usuario está logueado -->
-          <ion-buttons slot="start" >
-            <ion-menu-button  menu="main-menu" class="animated-menu-button"></ion-menu-button>
-          </ion-buttons>
-          <ion-title class="animated-title" style="text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 1.5px; text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; gap: 8px;">
-            Los Clavitos de Pablito 🛠️
-          </ion-title>
-        </ion-toolbar>
-      </ion-header>
+<ion-header *ngIf="!isLoginPage">
+  <ion-toolbar style="background: linear-gradient(135deg, #5c4033, #3b2a1a); color: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+
+    <!-- Botón del menú (izquierda) -->
+    <ion-buttons slot="start">
+      <ion-menu-button menu="main-menu" class="animated-menu-button"></ion-menu-button>
+    </ion-buttons>
+
+    <!-- Título (centrado) -->
+    <ion-title class="animated-title" style="text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 1.5px; text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; gap: 8px;">
+      Los Clavitos de Pablito 🛠️
+    </ion-title>
+
+    <!-- Ícono de usuario (derecha) -->
+    <ion-buttons slot="end">
+      <!-- Si no está logueado -->
+      <ion-button routerLink="/login" *ngIf="!usuarioLogueado" fill="clear" color="light">
+        <ion-icon name="person-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <!-- Si está logueado -->
+      <ion-button routerLink="/perfil" *ngIf="usuarioLogueado" fill="clear" color="light">
+        <ion-icon name="person-circle-sharp" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
       <style>
         .animated-title {
           opacity: 0;

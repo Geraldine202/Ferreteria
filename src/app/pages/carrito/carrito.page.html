@@ -69,13 +69,61 @@
     </ion-select>
   </ion-item>
   <!-- Imagen comprobante, solo si es transferencia -->
-  <ion-item *ngIf="mostrarCampoImagen1">
-    <ion-label position="stacked">Comprobante Transferencia</ion-label>
-    <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-  </ion-item>
-  <div *ngIf="imagenSeleccionadaBase64" class="image-preview">
-    <img [src]="imagenSeleccionadaBase64" alt="Previsualización del comprobante">
-  </div>
+  <ion-item *ngIf="mostrarCampoImagen">
+  <ion-label position="stacked">Comprobante de transferencia <span class="required">*</span></ion-label>
+  <input 
+    type="file" 
+    accept="image/*" 
+    (change)="onFileSelected($event)"
+    required
+  >
+  <img *ngIf="imagenSeleccionadaBase64" [src]="imagenSeleccionadaBase64" style="max-width: 100px; max-height: 100px;">
+  
+  <!-- Mensaje de error -->
+  <ion-note *ngIf="pagoForm.get('imagen')?.invalid && pagoForm.get('imagen')?.touched" color="danger" slot="error">
+    El comprobante de transferencia es obligatorio
+  </ion-note>
+</ion-item>
+  <!-- Mostrar solo cuando sea transferencia -->
+<div *ngIf="mostrarCampoImagen" class="datos-transferencia">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>📌 Datos para Transferencia</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label><strong>Banco:</strong></ion-label>
+          <ion-text>Banco de Chile</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Tipo:</strong></ion-label>
+          <ion-text>Cuenta Corriente</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>N° Cuenta:</strong></ion-label>
+          <ion-text>123-45678-9</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Titular:</strong></ion-label>
+          <ion-text>Ferretería Los Clavitos</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>RUT:</strong></ion-label>
+          <ion-text>12.345.678-9</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label><strong>Monto:</strong></ion-label>
+          <ion-text color="primary">{{ calcularTotal() | currency:'CLP':'$':'1.0-0' }}</ion-text>
+        </ion-item>
+      </ion-list>
+      
+      <ion-note color="medium" class="ion-margin-top">
+        Por favor envía el comprobante de transferencia una vez realizado el pago.
+      </ion-note>
+    </ion-card-content>
+  </ion-card>
+</div>
   <ion-item>
     <ion-label position="stacked">Tipo de Entrega</ion-label>
     <ion-select formControlName="id_entrega" placeholder="Seleccione Tipo de Entrega" (ionChange)="onCambioTipoEntrega($event)">
@@ -102,9 +150,8 @@
 </ion-item>
 
   <ion-button expand="block" color="primary" type="submit" class="ion-margin-top" [disabled]="pagoForm.invalid">
-    Confirmar 
+    Confirmar y Generar Boleta
   </ion-button>
-  <div *ngIf="esPayPal" id="paypal-button-container" class="ion-margin-top"></div>
 
 </form>
 
@@ -131,11 +178,14 @@
 
   </div>
 
-  <ng-template #carritoVacio>
-    <div style="text-align: center; margin-top: 200px; color: #999;">
-      <ion-icon name="cart-outline" size="large"></ion-icon>
-      <p style="margin-top: 10px; font-size: 18px;">Tu carrito está vacío.</p>
-    </div>
-  </ng-template>
+<ng-template #carritoVacio>
+  <div style="text-align: center; margin-top: 200px; color: #999;">
+    <ion-icon name="cart-outline" size="large"></ion-icon>
+    <p style="margin-top: 10px; font-size: 18px;">Tu carrito está vacío.</p>
+    <ion-button expand="block" color="primary" (click)="irAComprar()" style="margin-top: 20px;">
+      Ir a comprar
+    </ion-button>
+  </div>
+</ng-template>
 
 </ion-content>

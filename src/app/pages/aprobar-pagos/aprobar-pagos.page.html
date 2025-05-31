@@ -1,66 +1,89 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>Aprobar Pagos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cargarPagosPendientes()">
+        <ion-icon slot="icon-only" name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-
-  <!-- Botón para agregar pagos de prueba -->
-  <ion-button expand="block" color="medium" (click)="agregarPagoDePrueba()">
-    Agregar pago de prueba
-  </ion-button>
-
   <!-- Lista de pagos pendientes -->
   <ion-list *ngIf="pagosPendientes.length > 0">
-    <ion-item *ngFor="let pago of pagosPendientes">
-      <ion-label>
-        <h2>{{ pago.vendedor }}</h2>
-        <p>Monto: ${{ pago.monto | number:'1.0-0' }}</p>
-      </ion-label>
-      <ion-buttons slot="end">
-        <ion-button color="success" (click)="aprobar(pago.id)">
-          <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button color="danger" (click)="rechazar(pago.id)">
-          <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-item>
+    <ion-item-sliding *ngFor="let pago of pagosPendientes">
+      <ion-item>
+        <ion-label>
+          <h2>Pedido #{{ pago.id_pedido }}</h2>
+          <p>Cliente: {{ pago.nombre_cliente }} ({{ pago.rut_cliente }})</p>
+          <p>Monto: ${{ pago.monto_total | number:'1.0-0' }}</p>
+          <p>Forma de Pago: {{ pago.tipo_pago }}</p>
+          <p>Fecha: {{ pago.fecha_pago | date:'dd/MM/yyyy HH:mm' }}</p>
+        </ion-label>
+        
+        <ion-buttons slot="end">
+          <ion-button fill="clear" (click)="verComprobante(pago)" *ngIf="pago.imagen_comprobante">
+            <ion-icon name="document-attach-outline" slot="start"></ion-icon>
+            Ver Comprobante
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+      
+      <ion-item-options side="end">
+        <ion-item-option color="success" (click)="aprobarPago(pago.id_pedido)">
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+          Aprobar
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="rechazarPago(pago.id_pedido)">
+          <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+          Rechazar
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 
-  <ion-text *ngIf="pagosPendientes.length === 0">
-    <p class="texto-centrado">No hay pagos pendientes.</p>
+  <ion-text *ngIf="pagosPendientes.length === 0 && !cargando">
+    <p class="texto-centrado">No hay pagos pendientes de aprobación.</p>
   </ion-text>
 
-  <!-- Divisor para separar secciones -->
-  <hr><hr/>
+  <!-- Loading spinner -->
+  <ion-spinner *ngIf="cargando" name="crescent" class="spinner-centrado"></ion-spinner>
 
-  <!-- Sección historial de pagos -->
-  <ion-text>
-    <h2 class="ion-padding-top">Historial de Pagos</h2>
-  </ion-text>
-
-  <ion-list *ngIf="pagos.length > 0">
-    <ion-item *ngFor="let pago of pagos">
-      <ion-label>
-        <h3>{{ pago.vendedor }}</h3>
-        <p>Monto: ${{ pago.monto | number:'1.0-0' }}</p>
-      </ion-label>
-      <ion-badge
-        [color]="
-          pago.estado === 'aprobado' ? 'success' :
-          pago.estado === 'rechazado' ? 'danger' :
-          'medium'
-        "
-      >
-        {{ pago.estado | titlecase }}
-      </ion-badge>
-    </ion-item>
-  </ion-list>
-
-  <ion-text *ngIf="pagos.length === 0">
-    <p class="texto-centrado">No hay pagos registrados.</p>
-  </ion-text>
-
+  <!-- Modal para ver comprobante -->
+  <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Comprobante Pedido #{{ pagoSeleccionado?.id_pedido }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModal()">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="comprobante-container">
+          <img *ngIf="pagoSeleccionado?.imagen_comprobante" 
+               [src]="pagoSeleccionado.imagen_comprobante" 
+               alt="Comprobante de pago"
+               class="comprobante-imagen">
+          
+          <div *ngIf="!pagoSeleccionado?.imagen_comprobante" class="sin-comprobante">
+            <ion-icon name="document-outline" size="large"></ion-icon>
+            <p>No hay comprobante disponible</p>
+          </div>
+          
+          <ion-button expand="block" 
+                     color="primary" 
+                     (click)="descargarComprobante(pagoSeleccionado?.imagen_comprobante)"
+                     *ngIf="pagoSeleccionado?.imagen_comprobante">
+            <ion-icon name="download-outline" slot="start"></ion-icon>
+            Visualizar
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

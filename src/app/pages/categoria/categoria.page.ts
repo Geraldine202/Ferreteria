@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { UsuariosService } from 'src/app/service/usuarios.service';
+import { CarritoService } from 'src/app/service/carrito.service';
+import { ProductosService } from 'src/app/service/productos.service';
 
 @Component({
   selector: 'app-categoria',
@@ -11,55 +16,100 @@ import { IonicModule } from '@ionic/angular';
   standalone: true
 })
 export class CategoriaPage implements OnInit {
-  categoria: string | null = null;  // Permite que 'categoria' sea de tipo string o null
+  categoria: string | null = null;
   productosFiltrados: any[] = [];
+  isLoading = true;
+  errorMessage = '';
 
-  private productos = [
-    { nombre: 'Martillo', categoria: 'Herramientas Manuales', precio: 5000, descripcion: 'Martillo de acero forjado' },
-    { nombre: 'Destornillador', categoria: 'Herramientas Manuales', precio: 2500, descripcion: 'Destornillador de precisión' },
-    { nombre: 'Pintura blanca', categoria: 'Materiales Básicos', precio: 4000, descripcion: 'Pintura látex 1 galón' },
-    { nombre: 'Casco de seguridad', categoria: 'Equipos de seguridad', precio: 9000, descripcion: 'Casco certificado ANSI' },
-    { nombre: 'Tornillos para madera', categoria: 'Tornillos y Anclajes', precio: 1200, descripcion: 'Caja de 50 tornillos' },
-    { nombre: 'Silicona selladora', categoria: 'Fijaciones y Adhesivos', precio: 1500, descripcion: 'Tubo de silicona multiuso' },
-    { nombre: 'Equipos de Medición', categoria: 'Equipos de Medición', precio: 2000, descripcion: 'Equipo para mediciones precisas' }
+  // Mapeo de nombres de categoría a id_categoria
+  private categoriaMap: {[key: string]: string} = {
+    'herramientas manuales': 'Herramientas Manuales',
+    'equipos de seguridad': 'Equipos de seguridad',
+    'materiales basicos': 'Materiales Basicos',
+    'tornillos y anclajes': 'Tornillos y Anclajes',
+    'fijaciones y adhesivos': 'Fijaciones y Adhesivos',
+    'equipos de medicion': 'Equipos de Medicion'
+  };
 
-  ];
+  constructor(
+    private route: ActivatedRoute,
+    private usuariosService: UsuariosService,
+    private carritoService: CarritoService,
+    private toastController: ToastController,
+    private productosService: ProductosService
+  ) { }
 
-  constructor(private route: ActivatedRoute) { }
-
-ngOnInit() {
-  this.route.paramMap.subscribe(params => {
-    // Reemplazamos todos los guiones por espacios
-    this.categoria = params.get('nombre')?.replace(/-/g, ' ') ?? '';  // Reemplaza todos los guiones por espacios
-    console.log('Categoría recibida de la URL:', this.categoria);  // Verifica la categoría recibida
-    this.filtrarProductos();
-  });
-}
-
-
-
-
-filtrarProductos() {
-  const categoriaFiltrada = this.categoria ?? '';  // Si 'this.categoria' es null, se asigna un string vacío
-  console.log('Filtrando productos para la categoría:', categoriaFiltrada);
-
-  this.productosFiltrados = this.productos.filter(
-    producto => producto.categoria.toLowerCase() === categoriaFiltrada.toLowerCase()
-  );
-  
-  console.log('Productos filtrados:', this.productosFiltrados);  // Verifica los productos filtrados
-
-  if (this.productosFiltrados.length === 0) {
-    console.warn('No se encontraron productos para esta categoría:', this.categoria);
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      this.categoria = params.get('nombre')?.replace(/-/g, ' ') ?? '';
+      this.cargarProductosReales();
+    });
   }
-}
 
+  cargarProductosReales() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    
+    this.usuariosService.obtenerTodosLosProductos().pipe(
+      map(productos => {
+        return productos.map(p => ({
+          ...p,
+          categoriaNormalizada: p.id_categoria?.toLowerCase().trim()
+        }));
+      }),
+      catchError(error => {
+        console.error('Error al obtener productos:', error);
+        this.errorMessage = 'Error al cargar los productos.';
+        return throwError(() => error);
+      }),
+      finalize(() => this.isLoading = false)
+    ).subscribe((productos: any[]) => {
+      this.filtrarProductosReales(productos);
+    });
+  }
 
+  filtrarProductosReales(productos: any[]) {
+    if (!this.categoria) {
+      this.productosFiltrados = [];
+      return;
+    }
 
+    const categoriaBuscada = this.categoria.toLowerCase().trim();
+    const idCategoriaBuscada = this.categoriaMap[categoriaBuscada];
 
+    this.productosFiltrados = productos.filter(producto => {
+      return producto.id_categoria === idCategoriaBuscada || 
+             producto.categoriaNormalizada === categoriaBuscada;
+    });
 
-  agregarAlCarrito(producto: any) {
-    console.log('Producto agregado al carrito:', producto);
-    // Aquí en el futuro puedes usar un servicio para agregar al carrito real
+    if (this.productosFiltrados.length === 0) {
+      this.errorMessage = `No se encontraron productos en la categoría "${this.categoria}".`;
+    }
+  }
+
+  async agregarAlCarrito(idProducto: number) {
+    // Obtener el producto completo para mostrar en el toast
+    const producto = this.productosFiltrados.find(p => p.id_producto === idProducto);
+    
+    if (producto) {
+      // Agregar solo el ID al carrito
+      this.carritoService.agregarAlCarrito(idProducto);
+      
+      const toast = await this.toastController.create({
+        message: `${producto.nombre} agregado al carrito`,
+        duration: 1500,
+        position: 'bottom',
+        color: 'success'
+      });
+      toast.present();
+    } else {
+      console.error('Producto no encontrado para ID:', idProducto);
+    }
+  }
+
+  // Método para obtener los detalles del producto cuando se necesiten (para el carrito)
+  obtenerDetallesProducto(idProducto: number): any | undefined {
+    return this.productosFiltrados.find(p => p.id_producto === idProducto) || 
+           this.productosService.obtenerProductoPorId(idProducto);
   }
 }

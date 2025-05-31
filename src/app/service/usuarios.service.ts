@@ -11,16 +11,23 @@ export class UsuariosService {
   private url = 'http://localhost:3000/usuarios';
   private log = 'http://localhost:3000/login';
   private pedidos = 'http://localhost:3000/pedidos';
+  private pedidoss = 'http://localhost:3000/pedidoss';
   private pagos = 'http://localhost:3000/pagos';
   private productos = 'http://localhost:3000/productos_inventario';
   private comuna = 'http://localhost:3000/comuna';
   private sucursal = 'http://localhost:3000/sucursal';
+  private estado = 'http://localhost:3000/estado';
+  private pedido_completo = 'http://localhost:3000/pedido-completo';
   private apiKey = environment.apiKey;
   usuarios: any[] = [];
  private loggedIn = new BehaviorSubject<boolean>(false);
   private requiereCambioClave = new BehaviorSubject<boolean>(false);
-
-  constructor(private http: HttpClient) {  this.checkToken();} 
+    private usuarioActualSubject = new BehaviorSubject<any>(null);
+    usuarioActual$ = this.usuarioActualSubject.asObservable();
+  constructor(private http: HttpClient) {  this.checkToken();
+      const usuarioGuardado = this.obtenerUsuarioActual();
+    this.usuarioActualSubject.next(usuarioGuardado);
+  } 
   
   private get headers(): HttpHeaders {
     return new HttpHeaders({
@@ -46,6 +53,10 @@ export class UsuariosService {
     const headers = new HttpHeaders().set('x-api-key', this.apiKey);
     return this.http.get(this.url, { headers });
   }
+   obtenerPedidos() {
+    const headers = new HttpHeaders().set('x-api-key', this.apiKey);
+    return this.http.get(this.pedidoss, { headers });
+  }
   obtenerComuna() {
     const headers = new HttpHeaders().set('x-api-key', this.apiKey);
     return this.http.get(this.comuna, { headers });
@@ -63,6 +74,34 @@ obtenerTodosLosPagos(): Observable<any[]> {
       return throwError(() => this.manejarErrorPagos(error));
     })
   );
+} 
+
+obtenerPagosPendientes(): Observable<any[]> {
+  const headers = this.headers;
+  return this.http.get<any[]>('http://localhost:3000/pagos_pendientes', { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener pagos pendientes:', error);
+      return throwError(() => new Error('Error al cargar pagos pendientes'));
+    })
+  );
+}
+actualizarEstadoPago(id_pedido: number, nuevo_estado: number): Observable<any> {
+  const headers = this.headers;
+  // La URL debe coincidir exactamente con tu endpoint en el backend
+  return this.http.patch(
+    `http://localhost:3000/pedidos/${id_pedido}`, // Eliminado /estado-pago
+    { nuevo_estado }, // Asegúrate que el backend espera este formato exacto
+    { headers }
+  ).pipe(
+    catchError(error => {
+      console.error('Error en la petición PATCH:', {
+        url: `http://localhost:3000/pedidos/${id_pedido}`,
+        status: error.status,
+        error: error.error
+      });
+      return throwError(() => new Error(error.error?.message || 'Error al actualizar estado del pago'));
+    })
+  );
 }
 obtenerTodosLosProductos(): Observable<any[]> {
   const headers = this.headers;
@@ -74,6 +113,133 @@ obtenerTodosLosProductos(): Observable<any[]> {
     })
   );
 }
+// Obtener pedidos pagados (estado_pago = 2)
+obtenerPedidosPagados(): Observable<any[]> {
+  const headers = this.headers;
+  return this.http.get<any[]>('http://localhost:3000/pedidos-pagados', { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener pedidos pagados:', error);
+      return throwError(() => new Error('Error al cargar pedidos pagados'));
+    })
+  );
+}
+// Obtener pedidos con estado_pedido = 2
+obtenerPedidosEstado2(): Observable<any[]> {
+  const headers = this.headers;
+  return this.http.get<any[]>('http://localhost:3000/pedidos-estado-2', { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener pedidos con estado 2:', error);
+      return throwError(() => new Error('Error al cargar pedidos con estado 2'));
+    })
+  );
+}
+obtenerPedidosEstado5(): Observable<any[]> {
+  const headers = this.headers;
+  return this.http.get<any[]>('http://localhost:3000/pedidos-listos', { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener pedidos con estado 5:', error);
+      return throwError(() => new Error('Error al cargar pedidos con estado 5'));
+    })
+  );
+}
+
+obtenerPedidoCompleto(id: number): Observable<any> {
+  const headers = this.headers;
+  return this.http.get<any>(`${this.pedido_completo}/${id}`, { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener el pedido completo:', error);
+      return throwError(() => new Error('Error al cargar el pedido completo'));
+    })
+  );
+}
+
+actualizarEstadoPedido(idPedido: number, nuevoEstado: number): Observable<any> {
+  return this.http.patch(
+    `${this.estado}/${idPedido}`,
+    { estado_pedido: nuevoEstado }, // Nombre del parámetro que espera el backend
+    { headers: this.headers }
+  ).pipe(
+    catchError(error => {
+      console.error('Error detallado:', error);
+      const errorMessage = error.error?.error || 
+                         error.error?.message || 
+                         'Error al actualizar estado';
+      return throwError(() => new Error(errorMessage));
+    })
+  );
+}
+actualizarPedidoAEstadoPreparacion(idPedido: number): Observable<any> {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'x-api-key': this.apiKey
+  });
+
+  return this.http.patch(
+    `${this.pedidos}/${idPedido}/preparacion`,
+    {},
+    { headers }
+  ).pipe(
+    catchError(error => {
+      console.error('Error al actualizar pedido a preparación:', error);
+      return throwError(() => new Error('No se pudo actualizar el pedido.'));
+    })
+  );
+}
+actualizarPedidoAListoParaEntrega(idPedido: number): Observable<any> {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'x-api-key': this.apiKey
+  });
+
+  return this.http.patch(
+    `${this.pedidos}/${idPedido}/listo-para-entrega`,
+    {},
+    { headers }
+  ).pipe(
+    catchError(error => {
+      console.error('Error al actualizar pedido a listo para entrega:', error);
+      return throwError(() => new Error('No se pudo actualizar el pedido.'));
+    })
+  );
+}
+actualizarPedidoADespachado(idPedido: number): Observable<any> {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'x-api-key': this.apiKey
+  });
+
+  return this.http.patch(
+    `${this.pedidos}/${idPedido}/despachar`,
+    {},
+    { headers }
+  ).pipe(
+    catchError(error => {
+      console.error('Error al actualizar pedido a despachado:', error);
+      return throwError(() => new Error('No se pudo actualizar el pedido.'));
+    })
+  );
+}
+
+actualizarPedidoAEntregado(idPedido: number): Observable<any> {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'x-api-key': this.apiKey
+  });
+
+  return this.http.patch(
+    `${this.pedidos}/${idPedido}/entregar`,
+    {},
+    { headers }
+  ).pipe(
+    catchError(error => {
+      console.error('Error al actualizar pedido a entregado:', error);
+      return throwError(() => new Error('No se pudo actualizar el pedido.'));
+    })
+  );
+}
+
+
+
 
 obtenerTodosLosPedidos(): Observable<any[]> {
   const headers = this.headers;
@@ -223,6 +389,9 @@ registrarPedidoCompleto(pedidoData: any): Observable<any> {
     return this.http.get<{ tieneRelaciones: boolean }>(`${this.url}/${rut}/relaciones`);
   }
   // Método para autenticación
+  private usuarioSubject = new BehaviorSubject<any | null>(null);
+  usuario$ = this.usuarioSubject.asObservable();
+
  login(email: string, password: string): Observable<any> {
     // Adaptamos los nombres de campos al backend
     const body = {
@@ -241,6 +410,7 @@ registrarPedidoCompleto(pedidoData: any): Observable<any> {
           localStorage.setItem('usuario', JSON.stringify(response.usuario));
           this.loggedIn.next(true);
           this.requiereCambioClave.next(response.usuario.cambioClaveObligatorio);
+          this.usuarioSubject.next(response.usuario);
         }
         return response;
       }),
@@ -269,13 +439,36 @@ registrarPedidoCompleto(pedidoData: any): Observable<any> {
       })
     );
   }
+  private usuarioActual = new BehaviorSubject<any>(null);
 
+  setUsuario(usuario: any) {
+    this.usuarioActual.next(usuario);
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+  }
+// Método para obtener los datos del usuario actual desde localStorage
+obtenerUsuarioActual(): any {
+  const usuarioString = localStorage.getItem('usuario');
+  if (usuarioString) {
+    return JSON.parse(usuarioString);
+  }
+  return null;
+}
+
+  getUsuario(): Observable<any> {
+    return this.usuarioActual.asObservable();
+  }
+
+  getTipoUsuario(): number | null {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+    return usuario ? usuario.tipoUsuario : null;
+  }
 
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     this.loggedIn.next(false);
     this.requiereCambioClave.next(false);
+    this.usuarioSubject.next(null); 
   }
   
 getUsuarioActual(): Observable<any> {
