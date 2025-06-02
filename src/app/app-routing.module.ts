@@ -94,13 +94,20 @@ const routes: Routes = [
   },
   {
     path: 'pedidos-cliente',
-    loadChildren: () => import('./pages/pedidos-cliente/pedidos-cliente.module').then( m => m.PedidosClientePageModule)
+    loadChildren: () => import('./pages/pedidos-cliente/pedidos-cliente.module').then( m => m.PedidosClientePageModule),
+    canActivate: [authGuard] 
   },
-
+  {
+    path: 'bodega',
+    loadChildren: () => import('./pages/bodega/bodega.module').then( m => m.BodegaPageModule),
+    canActivate: [authGuard] 
+    
+  },
   {
     path: '**',
     redirectTo: 'login'
   },
+
 
 
 

@@ -1,0 +1,31 @@
+<ion-content class="ion-padding contenido-productos" color="light">
+  <br><br>
+  <ion-list>
+    <ng-container *ngIf="productos && productos.length > 0; else noHayProductos">
+      <ion-item-sliding *ngFor="let producto of productos">
+        <ion-item lines="none" class="producto-item">
+          <ion-avatar slot="start">
+            <img [src]="'http://localhost:8080' + producto.imagen"
+                 alt="Imagen Producto"
+                 (error)="handleImageError($event, producto)" />
+          </ion-avatar>
+          <ion-label>
+            <h2 class="nombre">{{ producto.nombre }}</h2>
+            <p class="descripcion">{{ producto.descripcion }}</p>
+            <div class="info-extra">
+              <span class="id">ID: {{ producto.id_producto }}</span>
+              <span class="stock">Stock: {{ producto.stock }}</span>
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-item-sliding>
+    </ng-container>
+  </ion-list>
+
+  <ng-template #noHayProductos>
+    <div class="no-productos">
+      <img src="../../../assets/images/logo.png" alt="No hay productos registrados" />
+      <p>No hay productos registrados</p>
+    </div>
+  </ng-template>
+</ion-content>

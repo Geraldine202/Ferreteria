@@ -374,18 +374,23 @@ private async mostrarConversionCLPaUSD() {
     const descuentoUSD = this.redondearADosDecimales(this.convertirCLPaUSD(descuentoCLP));
     const totalUSD = this.redondearADosDecimales(this.convertirCLPaUSD(totalCLP));
 
+    const mensaje = `Tasa de cambio actual: 1 USD = $${this.tasaCambioUSD.toLocaleString('es-CL')}CLP
+        Subtotal:$${subtotalCLP.toLocaleString('es-CL')} CLP$${subtotalUSD.toFixed(2)} USD
+        ${descuentoCLP > 0 ? `<p>Descuento: <strong>-$${descuentoCLP.toLocaleString('es-CL')} CLP</strong> ≈ <strong>-$${descuentoUSD.toFixed(2)} USD</strong></p>` : ''}
+       Total a pagar: $${totalCLP.toLocaleString('es-CL')} CLP ≈ $${totalUSD.toFixed(2)} USD
+          El pago se procesará en dólares estadounidenses (USD) a través de PayPal.
+    `;
+
     const alert = await this.alertCtrl.create({
       header: 'Conversión a USD',
-      message: `
-        <p>Tasa de cambio actual: <strong>1 USD = $${this.tasaCambioUSD} CLP</strong></p>
-        <p>Subtotal: $${subtotalCLP.toLocaleString('es-CL')} CLP ≈ $${subtotalUSD.toFixed(2)} USD</p>
-        ${descuentoCLP > 0 ? `
-        <p>Descuento: -$${descuentoCLP.toLocaleString('es-CL')} CLP ≈ -$${descuentoUSD.toFixed(2)} USD</p>
-        ` : ''}
-        <p><strong>Total a pagar: $${totalCLP.toLocaleString('es-CL')} CLP ≈ $${totalUSD.toFixed(2)} USD</strong></p>
-        <p class="ion-text-wrap">El pago se procesará en dólares estadounidenses (USD) a través de PayPal.</p>
-      `,
-      buttons: ['Entendido']
+      message: mensaje,
+      buttons: [
+        {
+          text: 'Entendido',
+          role: 'cancel',
+          cssClass: 'alert-button-confirm'
+        }
+      ]
     });
 
     await alert.present();
@@ -393,6 +398,7 @@ private async mostrarConversionCLPaUSD() {
     console.error('Error al mostrar conversión:', error);
   }
 }
+
 resetearFormulario() {
   // Resetear el formulario reactivo
   this.pagoForm.reset();

@@ -59,8 +59,12 @@
             <ion-label>Administrar Pagos</ion-label>
           </ion-item>
           <ion-item *ngIf="usuarioActual?.tipoUsuario === 2"routerLink="/aprobar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
-            <ion-icon name="people-sharp" slot="start"></ion-icon>
+            <ion-icon name="clipboard-outline" slot="start"></ion-icon>
             <ion-label>Ver Pedidos</ion-label>
+          </ion-item>
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 2"routerLink="/bodega" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+            <ion-icon name="cube-outline" slot="start"></ion-icon>
+            <ion-label>Ver Stock</ion-label>
           </ion-item>
           <ion-item *ngIf="usuarioActual?.tipoUsuario === 5"routerLink="/generar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
