@@ -146,6 +146,18 @@ GRANT ALL PRIVILEGES TO bd_clavitos;
 
 ---
 
+## 💳 Cuentas de PayPal para Simulación de Pagos
+
+Estas cuentas son utilizadas únicamente con fines de **pruebas** y **simulación de pagos** dentro del entorno de desarrollo.
+
+| Correo electrónico                    | Contraseña     |
+|--------------------------------------|----------------|
+| cliente123@personal.example.com      | SoyCliente$    |
+| cliente77@personal.example.com       | SoyCliente$    |
+| cliente88@personal.example.com       | SoyCliente$    |
+
+---
+
 ## 📈 Conclusión
 
 **"Los Clavitos de Pablito"** representa una solución completa de transformación digital para una empresa Ferretera. El proyecto no solo mejora la experiencia del cliente, sino que también optimiza los procesos internos, incrementa la eficiencia operativa y abre nuevas oportunidades de expansión comercial. La integración de tecnologías modernas y APIs externas proporciona una base sólida para el crecimiento futuro del negocio.
