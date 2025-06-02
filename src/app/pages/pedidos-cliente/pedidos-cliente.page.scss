@@ -1,0 +1,179 @@
+/* Estilos generales */
+ion-content {
+  --background: #faf9f8;
+}
+
+/* Cards de pedido */
+.pedido-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0;
+}
+
+.pedido-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  ion-icon {
+    font-size: 1.4rem;
+  }
+}
+
+.estado-badge {
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+/* Metadatos del pedido */
+.pedido-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  color: var(--ion-color-medium);
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
+    
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+/* Secciones */
+.seccion {
+  margin-bottom: 16px;
+}
+
+.seccion-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  color: var(--ion-color-dark);
+  margin-bottom: 8px;
+  
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+}
+
+/* Lista de productos */
+.productos-list {
+  border-radius: 8px;
+  background: white;
+  padding: 8px 0;
+}
+
+.producto-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--ion-color-light);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.producto-nombre {
+  font-size: 0.95rem;
+}
+
+.producto-cantidad {
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
+}
+
+/* Grid de detalles */
+.detalles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.detalle-item {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    color: var(--ion-color-dark);
+    
+    ion-icon {
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.sucursal-info {
+  color: var(--ion-color-medium);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* Estados de carga y vacío */
+.loading-container,
+.error-container,
+.empty-state {
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.loading-content,
+.error-content,
+.empty-content {
+  max-width: 300px;
+  width: 100%;
+  padding: 20px;
+  
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin-top: 0;
+    color: var(--ion-color-dark);
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+  }
+}
+
+.error-content ion-icon {
+  color: var(--ion-color-danger);
+}

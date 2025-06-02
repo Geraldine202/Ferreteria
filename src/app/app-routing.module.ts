@@ -93,9 +93,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/cambio-contrasenia-forzado/cambio-contrasenia-forzado.module').then( m => m.CambioContraseniaForzadoPageModule)
   },
   {
+    path: 'pedidos-cliente',
+    loadChildren: () => import('./pages/pedidos-cliente/pedidos-cliente.module').then( m => m.PedidosClientePageModule)
+  },
+
+  {
     path: '**',
     redirectTo: 'login'
   },
+
 
 
 ];

@@ -26,6 +26,10 @@
             <ion-icon name="person-circle-sharp" slot="start"></ion-icon>
             <ion-label>Ver perfil</ion-label>
           </ion-item>
+          <ion-item *ngIf="usuarioActual?.tipoUsuario === 4" routerLink="/pedidos-cliente" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
+            <ion-icon name="person-circle-sharp" slot="start"></ion-icon>
+            <ion-label>Ver mis Compras</ion-label>
+          </ion-item>
           <ion-item *ngIf="usuarioActual?.tipoUsuario === 1" routerLink="/trabajadores" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
             <ion-label>Administrar Trabajadores</ion-label>
@@ -56,15 +60,11 @@
           </ion-item>
           <ion-item *ngIf="usuarioActual?.tipoUsuario === 2"routerLink="/aprobar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
-            <ion-label>Administrar Pedidos</ion-label>
+            <ion-label>Ver Pedidos</ion-label>
           </ion-item>
           <ion-item *ngIf="usuarioActual?.tipoUsuario === 5"routerLink="/generar-pedido" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="people-sharp" slot="start"></ion-icon>
-            <ion-label>Generar Pedido</ion-label>
-          </ion-item>
-          <ion-item routerLink="/realizar-pago" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
-            <ion-icon name="people-sharp" slot="start"></ion-icon>
-            <ion-label>Realizar pago (temporal)</ion-label>
+            <ion-label>Ver Pedido</ion-label>
           </ion-item>
           <ion-item *ngIf="usuarioActual?.tipoUsuario === 1 ||usuarioActual?.tipoUsuario === 4"routerLink="/carrito" routerDirection="root" (click)="cerrarMenuSiEsNecesario()">
             <ion-icon name="cart" slot="start"></ion-icon>

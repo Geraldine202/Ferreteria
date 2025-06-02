@@ -5,9 +5,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
   <div *ngIf="carritoDetalles.length > 0; else carritoVacio">
-
     <ion-list>
       <ion-item *ngFor="let item of carritoDetalles; let i = index" lines="none" style="margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
         <ion-thumbnail slot="start" style="border-radius: 10px; overflow: hidden; width: 80px; height: 80px;">
@@ -39,153 +37,175 @@
       </ion-item>
     </ion-list>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Total a Pagar</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <h2>{{ calcularTotal() | number:'1.0-0' }} CLP</h2>
-      </ion-card-content>
-    </ion-card>
-
-<form [formGroup]="pagoForm" (submit)="subirImagenYConfirmar($event)">
-
-  <ion-item>
-    <ion-label position="floating">Nombre completo</ion-label>
-    <ion-input formControlName="nombre" required></ion-input>
-  </ion-item>
-
-  <ion-item>
-    <ion-label position="floating">RUT</ion-label>
-    <ion-input formControlName="rut" required></ion-input>
-  </ion-item>
-
-  <ion-item>
-    <ion-label position="stacked">Tipo de Pago</ion-label>
-    <ion-select formControlName="id_tipo_pago" placeholder="Seleccione Tipo de Pago" (ionChange)="onCambioTipoPago($event)">
-      <ion-select-option *ngFor="let pago of tipo_pagos" [value]="pago.id_tipo_pago">
-        {{ pago.descripcion }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-  <!-- Imagen comprobante, solo si es transferencia -->
-  <ion-item *ngIf="mostrarCampoImagen">
-  <ion-label position="stacked">Comprobante de transferencia <span class="required">*</span></ion-label>
-  <input 
-    type="file" 
-    accept="image/*" 
-    (change)="onFileSelected($event)"
-    required
-  >
-  <img *ngIf="imagenSeleccionadaBase64" [src]="imagenSeleccionadaBase64" style="max-width: 100px; max-height: 100px;">
-  
-  <!-- Mensaje de error -->
-  <ion-note *ngIf="pagoForm.get('imagen')?.invalid && pagoForm.get('imagen')?.touched" color="danger" slot="error">
-    El comprobante de transferencia es obligatorio
-  </ion-note>
-</ion-item>
-  <!-- Mostrar solo cuando sea transferencia -->
-<div *ngIf="mostrarCampoImagen" class="datos-transferencia">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>📌 Datos para Transferencia</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list lines="none">
-        <ion-item>
-          <ion-label><strong>Banco:</strong></ion-label>
-          <ion-text>Banco de Chile</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Tipo:</strong></ion-label>
-          <ion-text>Cuenta Corriente</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>N° Cuenta:</strong></ion-label>
-          <ion-text>123-45678-9</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Titular:</strong></ion-label>
-          <ion-text>Ferretería Los Clavitos</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>RUT:</strong></ion-label>
-          <ion-text>12.345.678-9</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label><strong>Monto:</strong></ion-label>
-          <ion-text color="primary">{{ calcularTotal() | currency:'CLP':'$':'1.0-0' }}</ion-text>
-        </ion-item>
-      </ion-list>
-      
-      <ion-note color="medium" class="ion-margin-top">
-        Por favor envía el comprobante de transferencia una vez realizado el pago.
-      </ion-note>
-    </ion-card-content>
-  </ion-card>
-</div>
-  <ion-item>
-    <ion-label position="stacked">Tipo de Entrega</ion-label>
-    <ion-select formControlName="id_entrega" placeholder="Seleccione Tipo de Entrega" (ionChange)="onCambioTipoEntrega($event)">
-      <ion-select-option *ngFor="let e of entregas" [value]="e.id_entrega">
-        {{ e.descripcion }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-
-  <!-- Selección de sucursal solo si es retiro en tienda -->
-<ion-item *ngIf="mostrarSeleccionSucursal">
-  <ion-label position="stacked">Sucursal</ion-label>
-  <ion-select formControlName="sucursal" placeholder="Seleccione Sucursal" (ionChange)="onSucursalSeleccionada($event)">
-    <ion-select-option *ngFor="let s of sucursales" [value]="s.id_sucursal">
-      {{ s.nombre_sucursal }} ({{getNombreComuna(s.id_comuna)}})
-    </ion-select-option>
-  </ion-select>
-</ion-item>
-
-  <!-- Campo para ingresar dirección solo si es despacho a domicilio (id_entrega === 2) -->
-<ion-item *ngIf="mostrarCampoDireccion">
-  <ion-label position="floating">Dirección de despacho</ion-label>
-  <ion-input type="text" formControlName="direccion"  placeholder="Ingrese su dirección" (ionChange)="onDireccionEscrita($event)"></ion-input>
-</ion-item>
-
-  <ion-button expand="block" color="primary" type="submit" class="ion-margin-top" [disabled]="pagoForm.invalid">
-    Confirmar y Generar Boleta
-  </ion-button>
-
-</form>
-
-
-<ion-card *ngIf="boletaGenerada" class="ion-margin-top">
+<ion-card>
   <ion-card-header>
-    <ion-card-title>Boleta Electrónica</ion-card-title>
+    <ion-card-title>Total a Pagar</ion-card-title>
+    <h2>{{ calcularTotal() | number:'1.0-0' }} CLP</h2>
+    <ion-note *ngIf="tasaCambioCargada">
+      (Tasa de cambio: 1 USD = {{ tasaCambioUSD | number:'1.0-0' }} CLP)
+    </ion-note>
   </ion-card-header>
   <ion-card-content>
-    <p><strong>Cliente:</strong> {{ datosBoleta.nombre }}</p>
-    <p><strong>RUT:</strong> {{ datosBoleta.rut }}</p>
-    <p><strong>Tipo de Pago:</strong> {{ datosBoleta.tipoPago }}</p>
-    <p><strong>Tipo de Entrega:</strong> {{ datosBoleta.tipoEntrega }}</p>
-    <ng-container *ngIf="datosBoleta.tipoEntrega === 'Retiro en Tienda'">
-      <p><strong>Sucursal:</strong> {{ datosBoleta.sucursal }}</p>
-    </ng-container>
-    <ng-container *ngIf="datosBoleta.tipoEntrega === 'Despacho a Domicilio'">
-      <p><strong>Dirección:</strong> {{ datosBoleta.direccion }}</p>
-    </ng-container>
-    <p><strong>Total:</strong> ${{ datosBoleta.total | number }}</p>
+    <div *ngIf="getDescuentoAplicado() > 0" class="descuento-aplicado">
+      <ion-text color="light">¡Descuento del 10% aplicado!</ion-text>
+    </div>
+    <ion-item lines="none">
+      <ion-label>Subtotal</ion-label>
+      <ion-text slot="end">{{ calcularSubtotal() | number:'1.0-0' }} CLP</ion-text>
+    </ion-item>
+    <ion-item *ngIf="getDescuentoAplicado() > 0" lines="none">
+      <ion-label>Descuento</ion-label>
+      <ion-text slot="end" color="success">- {{ getDescuentoAplicado() | number:'1.0-0' }} CLP</ion-text>
+    </ion-item>
   </ion-card-content>
 </ion-card>
 
+    <form [formGroup]="pagoForm" (submit)="subirImagenYConfirmar($event)">
+      <!-- Campos del formulario existentes... -->
+      <ion-item>
+        <ion-label position="floating">Nombre completo</ion-label>
+        <ion-input formControlName="nombre" required></ion-input>
+      </ion-item>
 
+      <ion-item>
+        <ion-label position="floating">RUT</ion-label>
+        <ion-input formControlName="rut" required></ion-input>
+      </ion-item>
+
+      <!-- Selección de tipo de pago -->
+      <ion-item>
+        <ion-label position="stacked">Tipo de Pago</ion-label>
+        <ion-select formControlName="id_tipo_pago" placeholder="Seleccione Tipo de Pago" (ionChange)="onCambioTipoPago($event)">
+          <ion-select-option [value]="TIPO_PAGO.CREDITO">Tarjeta de Crédito</ion-select-option>
+          <ion-select-option [value]="TIPO_PAGO.TRANSFERENCIA">Transferencia Bancaria</ion-select-option>
+          <ion-select-option [value]="TIPO_PAGO.DEBITO">Tarjeta de Débito</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Resto de tu formulario... -->
+      <!-- Imagen comprobante, solo si es transferencia -->
+      <ion-item *ngIf="mostrarCampoImagen">
+        <ion-label position="stacked">Comprobante de transferencia <span class="required">*</span></ion-label>
+        <input 
+          type="file" 
+          accept="image/*" 
+          (change)="onFileSelected($event)"
+          required
+        >
+        <img *ngIf="imagenSeleccionadaBase64" [src]="imagenSeleccionadaBase64" style="max-width: 100px; max-height: 100px;">
+      </ion-item>
+
+      <!-- Datos transferencia -->
+      <div *ngIf="mostrarCampoImagen" class="datos-transferencia">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>📌 Datos para Transferencia</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-label><strong>Banco:</strong></ion-label>
+                <ion-text>Banco de Chile</ion-text>
+              </ion-item>
+              <ion-item>
+                <ion-label><strong>Tipo:</strong></ion-label>
+                <ion-text>Cuenta Corriente</ion-text>
+              </ion-item>
+              <ion-item>
+                <ion-label><strong>N° Cuenta:</strong></ion-label>
+                <ion-text>123-45678-9</ion-text>
+              </ion-item>
+              <ion-item>
+                <ion-label><strong>Titular:</strong></ion-label>
+                <ion-text>Ferretería Los Clavitos</ion-text>
+              </ion-item>
+              <ion-item>
+                <ion-label><strong>RUT:</strong></ion-label>
+                <ion-text>12.345.678-9</ion-text>
+              </ion-item>
+              <ion-item>
+                <ion-label><strong>Monto:</strong></ion-label>
+                <ion-text color="primary">{{ calcularTotal() | currency:'CLP':'$':'1.0-0' }}</ion-text>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Tipo de entrega -->
+      <ion-item>
+        <ion-label position="stacked">Tipo de Entrega</ion-label>
+        <ion-select formControlName="id_entrega" placeholder="Seleccione Tipo de Entrega" (ionChange)="onCambioTipoEntrega($event)">
+          <ion-select-option *ngFor="let e of entregas" [value]="e.id_entrega">
+            {{ e.descripcion }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Dirección o sucursal según selección -->
+      <ion-item *ngIf="mostrarCampoDireccion">
+        <ion-label position="floating">Dirección de despacho</ion-label>
+        <ion-input type="text" formControlName="direccion" placeholder="Ingrese su dirección"></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="mostrarSeleccionSucursal">
+        <ion-label position="stacked">Sucursal</ion-label>
+        <ion-select formControlName="sucursal" placeholder="Seleccione Sucursal">
+          <ion-select-option *ngFor="let s of sucursales" [value]="s.id_sucursal">
+            {{ s.nombre_sucursal }} ({{getNombreComuna(s.id_comuna)}})
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Botones de confirmación -->
+      <ion-button 
+        expand="block" 
+        color="primary" 
+        type="submit" 
+        class="ion-margin-top" 
+        [disabled]="pagoForm.invalid"
+        *ngIf="pagoForm.value.id_tipo_pago === TIPO_PAGO.TRANSFERENCIA">
+        Confirmar
+      </ion-button>
+
+      <!-- PayPal -->
+      <div *ngIf="mostrarPaypal" class="paypal-container">
+        <div id="paypal-button-container"></div>
+        <ion-note color="medium" class="ion-text-center ion-margin-top">
+          Serás redirigido a PayPal para completar tu pago con {{pagoForm.value.id_tipo_pago === TIPO_PAGO.CREDITO ? 'Crédito' : 'Débito'}}
+        </ion-note>
+      </div>
+    </form>
+
+    <!-- Boleta generada -->
+    <ion-card *ngIf="boletaGenerada" class="ion-margin-top">
+      <ion-card-header>
+        <ion-card-title>Boleta Electrónica</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Cliente:</strong> {{ datosBoleta.nombre }}</p>
+        <p><strong>RUT:</strong> {{ datosBoleta.rut }}</p>
+        <p><strong>Tipo de Pago:</strong> {{ datosBoleta.tipoPago }}</p>
+        <p><strong>Tipo de Entrega:</strong> {{ datosBoleta.tipoEntrega }}</p>
+        <ng-container *ngIf="datosBoleta.tipoEntrega === 'Retiro en Tienda'">
+          <p><strong>Sucursal:</strong> {{ datosBoleta.sucursal }}</p>
+        </ng-container>
+        <ng-container *ngIf="datosBoleta.tipoEntrega === 'Despacho a Domicilio'">
+          <p><strong>Dirección:</strong> {{ datosBoleta.direccion }}</p>
+        </ng-container>
+        <p *ngIf="datosBoleta.descuento > 0"><strong>Descuento:</strong> -{{ datosBoleta.descuento | number:'1.0-0' }} CLP</p>
+        <p><strong>Total:</strong> {{ datosBoleta.total | number:'1.0-0' }} CLP</p>
+      </ion-card-content>
+    </ion-card>
   </div>
 
-<ng-template #carritoVacio>
-  <div style="text-align: center; margin-top: 200px; color: #999;">
-    <ion-icon name="cart-outline" size="large"></ion-icon>
-    <p style="margin-top: 10px; font-size: 18px;">Tu carrito está vacío.</p>
-    <ion-button expand="block" color="primary" (click)="irAComprar()" style="margin-top: 20px;">
-      Ir a comprar
-    </ion-button>
-  </div>
-</ng-template>
-
+  <ng-template #carritoVacio>
+    <div style="text-align: center; margin-top: 200px; color: #999;">
+      <ion-icon name="cart-outline" size="large"></ion-icon>
+      <p style="margin-top: 10px; font-size: 18px;">Tu carrito está vacío.</p>
+      <ion-button expand="block" color="primary" (click)="irAComprar()" style="margin-top: 20px;">
+        Ir a comprar
+      </ion-button>
+    </div>
+  </ng-template>
 </ion-content>

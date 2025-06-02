@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Pedidos del Cliente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Mensaje de carga -->
+  <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+
+  <!-- Mensaje de error -->
+  <ion-text color="danger" *ngIf="!loading && errorMessage">
+    {{ errorMessage }}
+  </ion-text>
+
+  <!-- Lista de pedidos -->
+  <ion-list *ngIf="!loading && pedidosUsuario && pedidosUsuario.length > 0">
+    <ion-item *ngFor="let pedido of pedidosUsuario">
+      <ion-label>
+        <h2>Pedido #{{ pedido.pedido.ID_PEDIDO }}</h2>
+        <p><strong>Descripción:</strong> {{ pedido.pedido.DESCRIPCION }}</p>
+        <p><strong>Fecha:</strong> {{ pedido.pedido.FECHA_PEDIDO }}</p>
+        <p><strong>Total a pagar:</strong> ${{ pedido.pedido.TOTAL_A_PAGAR }}</p>
+        <p><strong>Tipo Pago:</strong> {{ getTipoPagoTexto(pedido.pago?.ID_TIPO_PAGO) }}</p>
+        <p><strong>Estado del Pedido:</strong> {{ getEstadoPedidoTexto(pedido.pedido.ID_ESTADO_PEDIDO) }}</p>
+
+        <ion-button *ngIf="pedido.pago?.IMAGEN" size="small" (click)="verComprobante(pedido.pago.IMAGEN)">
+          Ver Comprobante
+        </ion-button>
+
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mensaje cuando no hay pedidos -->
+  <ion-text *ngIf="!loading && pedidosUsuario && pedidosUsuario.length === 0">
+    No se encontraron pedidos para este usuario.
+  </ion-text>
+
+  <!-- Detalle del pedido seleccionado -->
+  <div *ngIf="pedidoDetalle" class="pedido-detalle">
+    <h3>Detalle del Pedido #{{ pedidoDetalle.pedido.ID_PEDIDO }}</h3>
+    <p><strong>Descripción:</strong> {{ pedidoDetalle.descripcion }}</p>
+    <p><strong>Productos:</strong></p>
+    <ion-list>
+      <ion-item *ngFor="let producto of pedidoDetalle.detalles">
+        <ion-label>
+          {{ producto.NOMBRE }} — Cantidad: {{ producto.CANTIDAD }} — Subtotal: ${{ producto.SUBTOTAL }}
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <div *ngIf="pedidoDetalle.pago">
+      <p><strong>Monto Total:</strong> ${{ pedidoDetalle.pago.MONTO_TOTAL }}</p>
+      <p><strong>Fecha de Pago:</strong> {{ pedidoDetalle.pago.FECHA_PAGO | date:'short' }}</p>
+      <p><strong>Tipo de Pago:</strong> {{ pedidoDetalle.pago.TIPO_PAGO }}</p>
+    </div>
+  </div>
+  <!-- Agrega esto al final de tu ion-content -->
+
+</ion-content>

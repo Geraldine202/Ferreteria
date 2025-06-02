@@ -18,6 +18,7 @@ export class CarritoService {
     this.cargarCarritoDesdeStorage();
     this.emitirCarrito();
     this.actualizarContador();
+    
   }
 
 private cargarCarritoDesdeStorage() {
@@ -27,7 +28,10 @@ private cargarCarritoDesdeStorage() {
       this.actualizarContador();
     }
   }
-
+  getCantidadPorProducto(idProducto: number): number {
+    const item = this.carrito.find(item => item.id_producto === idProducto);
+    return item ? item.cantidad : 1; // Retorna 1 si no encuentra el producto
+  }
   // Emitir carrito actualizado
   private emitirCarrito() {
     this.carritoSubject.next([...this.carrito]);

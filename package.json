@@ -27,6 +27,8 @@
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@ionic/angular": "^8.5.7",
+    "@paypal/checkout-components": "^5.0.347",
+    "@paypal/paypal-js": "^8.2.0",
     "buffer": "^6.0.3",
     "events": "^3.3.0",
     "exceljs": "^4.4.0",

@@ -10,7 +10,70 @@
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
+/* Contenedor del botón PayPal */
+.paypal-container {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+.descuento-aplicado {
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: #f6c75a;
+  border-radius: 5px;
+  text-align: center;
+}
+/* Botón PayPal personalizado */
+#paypal-button-container {
+  margin: 0 auto;
+  max-width: 700px;
+}
 
+/* Estilo cuando el botón está hover (PayPal lo permite con su API) */
+#paypal-button-container:hover {
+  opacity: 0.9;
+}
+
+/* Mensaje bajo el botón */
+.paypal-container ion-note {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Efecto de carga (opcional) */
+.paypal-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+}
+
+/* Adaptación para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .paypal-container {
+    background: #2a2a2a;
+    border-color: #444;
+  }
+  
+  .paypal-container ion-note {
+    color: #aaa;
+  }
+}
+
+.required {
+  color: var(--ion-color-danger);
+}
+
+.datos-transferencia {
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
 .label-carrito h2 {
   font-weight: 700;
   margin-bottom: 4px;

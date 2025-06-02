@@ -18,6 +18,8 @@ export class UsuariosService {
   private sucursal = 'http://localhost:3000/sucursal';
   private estado = 'http://localhost:3000/estado';
   private pedido_completo = 'http://localhost:3000/pedido-completo';
+  private pedido_usuario = 'http://localhost:3000/pedido-usuario';
+
   private apiKey = environment.apiKey;
   usuarios: any[] = [];
  private loggedIn = new BehaviorSubject<boolean>(false);
@@ -124,15 +126,15 @@ obtenerPedidosPagados(): Observable<any[]> {
   );
 }
 // Obtener pedidos con estado_pedido = 2
-obtenerPedidosEstado2(): Observable<any[]> {
-  const headers = this.headers;
-  return this.http.get<any[]>('http://localhost:3000/pedidos-estado-2', { headers }).pipe(
-    catchError(error => {
-      console.error('Error al obtener pedidos con estado 2:', error);
-      return throwError(() => new Error('Error al cargar pedidos con estado 2'));
-    })
-  );
-}
+  obtenerPedidosEstado2(): Observable<any[]> {
+    const headers = this.headers;
+    return this.http.get<any[]>('http://localhost:3000/pedidos-estado-2', { headers }).pipe(
+      catchError(error => {
+        console.error('Error al obtener pedidos con estado 2:', error);
+        return throwError(() => new Error('Error al cargar pedidos con estado 2'));
+      })
+    );
+  }
 obtenerPedidosEstado5(): Observable<any[]> {
   const headers = this.headers;
   return this.http.get<any[]>('http://localhost:3000/pedidos-listos', { headers }).pipe(
@@ -146,6 +148,16 @@ obtenerPedidosEstado5(): Observable<any[]> {
 obtenerPedidoCompleto(id: number): Observable<any> {
   const headers = this.headers;
   return this.http.get<any>(`${this.pedido_completo}/${id}`, { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener el pedido completo:', error);
+      return throwError(() => new Error('Error al cargar el pedido completo'));
+    })
+  );
+}
+
+obtenerPedidoUsuario(rut: string): Observable<any> {
+  const headers = this.headers;
+  return this.http.get<any>(`${this.pedido_usuario}/${rut}`, { headers }).pipe(
     catchError(error => {
       console.error('Error al obtener el pedido completo:', error);
       return throwError(() => new Error('Error al cargar el pedido completo'));
@@ -202,6 +214,7 @@ actualizarPedidoAListoParaEntrega(idPedido: number): Observable<any> {
     })
   );
 }
+
 actualizarPedidoADespachado(idPedido: number): Observable<any> {
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
