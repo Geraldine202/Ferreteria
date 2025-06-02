@@ -138,7 +138,7 @@ GRANT ALL PRIVILEGES TO bd_clavitos;
 ### 📂 2. Cargar el script con los datos iniciales
 
 1. Descarga el archivo SQL desde el siguiente enlace:  
-   📥 [Descargar BD Actualizada Validada.docx](https://docs.google.com/document/d/1PNXwfGHzRZ73OzGCgYb0aNT1u_F7BjyX/edit?usp=sharing&ouid=115950102634333539993&rtpof=true&sd=true)
+   📥 [Descargar BD Actualizada Validada.docx](https://docs.google.com/document/d/1PRPTEllvTUkR-D6_UziwlUi_--e27zCx/edit?usp=sharing&ouid=116132109601032771186&rtpof=true&sd=true)
 2. Abre Oracle SQL Developer y conéctate con el usuario `bd_clavitos`.
 3. Crea un nuevo archivo `.sql`, pega el contenido del documento y ejecútalo con.
 
