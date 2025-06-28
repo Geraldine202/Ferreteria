@@ -160,25 +160,51 @@ async cargarProductos() {
     this.productosVisibles = anchoPantalla < 768 ? 1 : 3;
   }
 
-  agregarAlCarrito(prod: any) {
-    const id_producto = prod?.id_producto;
-    const nombre = prod?.nombre || 'Producto';
+agregarAlCarrito(prod: any) {
+  console.log('DEBUG - Producto completo:', prod); // Verifica toda la estructura
+  console.log('DEBUG - Stock value:', prod.stock); // Verifica específicamente el stock
+  console.log('DEBUG - Tipo de stock:', typeof prod.stock); // Verifica si es number, string, etc.
 
-    if (!id_producto) {
-      console.error('ID de producto inválido:', prod);
-      return;
-    }
+  const id_producto = prod?.id_producto;
+  const nombre = prod?.nombre || 'Producto';
 
-    this.carritoService.agregarAlCarrito(id_producto, 1);
-    this.presentToast(`${nombre} agregado al carrito`);
+  if (!id_producto) {
+    console.error('ID de producto inválido:', prod);
+    return;
   }
-    async presentToast(mensaje: string) {
-      const toast = await this.toastController.create({
-        message: mensaje,
-        duration: 1500,
-        position: 'bottom',
-        color: 'success',
-      });
-      toast.present();
-    }
+
+  // Conversión explícita a número por si acaso
+  const stockActual = Number(prod.stock);
+  
+  if (stockActual > 0) {
+    this.carritoService.agregarAlCarrito(prod.id_producto, 1, stockActual);
+    this.presentToast(`${nombre} agregado al carrito`, 'success');
+  } else {
+    console.log('DEBUG - No hay stock, valor:', stockActual);
+    this.presentToast(`Lo sentimos, ${nombre} no tiene stock disponible`, 'danger');
+  }
+}
+
+
+async presentToast(mensaje: string, color: 'success' | 'danger' | 'warning') {
+  console.log(`Intentando mostrar toast: ${mensaje}`); // Verifica que se llame esta función
+  try {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 2000, // Aumenté la duración
+      position: 'top', // Cambié a 'top' para mayor visibilidad
+      color: color,
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel'
+        }
+      ]
+    });
+    await toast.present();
+  } catch (error) {
+    console.error('Error mostrando toast:', error);
+  }
+}
+
 }

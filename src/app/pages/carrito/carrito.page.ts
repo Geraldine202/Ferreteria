@@ -56,6 +56,7 @@ export class CarritoPage implements OnInit {
   usuarioActual: any;
   errorUsuario: string = '';
   constructor(
+    private alertController: AlertController,
     private tasaCambioService: TasaCambioService,
     private carritoService: CarritoService,
     private toastController: ToastController,
@@ -615,18 +616,48 @@ private async cargarCarrito() {
 }
 
 
-  async cambiarCantidad(index: number, event: any) {
-    const nuevaCantidad = parseInt(event.detail.value, 10);
-    if (nuevaCantidad > 0) {
-      this.carritoDetalles[index].cantidad = nuevaCantidad;
-      this.carritoDetalles[index].subtotal = this.carritoDetalles[index].precio * nuevaCantidad;
+async cambiarCantidad(index: number, event: any) {
+  const nuevaCantidad = parseInt(event.detail.value, 10);
+  const producto = this.carritoDetalles[index];
+  
+  if (nuevaCantidad > 0) {
+    if (nuevaCantidad <= producto.stock) {
+      // Si hay stock suficiente, actualiza cantidad y subtotal
+      producto.cantidad = nuevaCantidad;
+      producto.subtotal = producto.precio * nuevaCantidad;
+
       const carritoActual = this.carritoService.obtenerCarrito();
       carritoActual[index].cantidad = nuevaCantidad;
       this.carritoService.actualizarCarrito(carritoActual);
     } else {
-      this.eliminarProducto(index);
+      // Si no hay suficiente stock, mostrar un mensaje o ajustar cantidad al stock disponible
+      // Aquí te dejo un ejemplo mostrando un alert:
+     await this.presentarAlerta(`No hay suficiente stock. Solo quedan ${producto.stock} unidades disponibles.`);
+      
+      // Opcional: ajustar cantidad al stock máximo
+      producto.cantidad = producto.stock;
+      producto.subtotal = producto.precio * producto.stock;
+
+      const carritoActual = this.carritoService.obtenerCarrito();
+      carritoActual[index].cantidad = producto.stock;
+      this.carritoService.actualizarCarrito(carritoActual);
+
+      // También puedes actualizar el valor en el input para que refleje la cantidad máxima permitida,
+      // pero para eso necesitaría ver el template HTML.
     }
+  } else {
+    this.eliminarProducto(index);
   }
+}
+async presentarAlerta(mensaje: string) {
+  const alert = await this.alertController.create({
+    header: '¡Atención!',
+    message: mensaje,
+    buttons: ['OK']
+  });
+
+  await alert.present();
+}
   getNombreComuna(idComuna: number): string {
     if (!this.comunas || !idComuna) return 'Sin comuna';
     const comuna = this.comunas.find(c => c.id_comuna === idComuna);

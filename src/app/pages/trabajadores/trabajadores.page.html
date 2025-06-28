@@ -13,18 +13,30 @@
         <ion-label position="stacked">Nombre</ion-label>
         <ion-input formControlName="nombre" type="text"></ion-input>
       </ion-item>
+      <ion-text color="danger" *ngIf="persona.get('nombre')?.hasError('minlength') && persona.get('nombre')?.touched">
+        El nombre debe tener al menos 4 letras.
+      </ion-text>
       <ion-item class="form-item">
         <ion-label position="stacked">Primer Apellido</ion-label>
         <ion-input formControlName="primer_apellido" type="text"></ion-input>
       </ion-item>
+      <ion-text color="danger" *ngIf="persona.get('primer_apellido')?.hasError('minlength') && persona.get('primer_apellido')?.touched">
+      El primer apellido debe tener al menos 4 letras.
+      </ion-text>
       <ion-item class="form-item">
         <ion-label position="stacked">Segundo Apellido</ion-label>
         <ion-input formControlName="segundo_apellido" type="text"></ion-input>
       </ion-item>
+      <ion-text color="danger" *ngIf="persona.get('segundo_apellido')?.hasError('minlength') && persona.get('segundo_apellido')?.touched">
+        El segundo apellido debe tener al menos 4 letras.
+      </ion-text>
       <ion-item class="form-item">
         <ion-label position="stacked">Contraseña Temporal</ion-label>
         <ion-input formControlName="contrasenia" type="text" ></ion-input>
       </ion-item>
+      <ion-text color="danger" *ngIf="persona.get('contrasenia')?.hasError('pattern') && persona.get('contrasenia')?.touched">
+      La contraseña debe tener mínimo 8 caracteres, una mayúscula y un carácter especial.
+    </ion-text>
       <ion-item class="form-item">
         <ion-label position="stacked">Seleccionar Imagen</ion-label>
         <input type="file" accept="image/*" (change)="onFileSelected($event)">
@@ -54,6 +66,9 @@
         <ion-label position="stacked">Telefono</ion-label>
         <ion-input formControlName="telefono" type="number"></ion-input>
       </ion-item>
+      <ion-text color="danger" *ngIf="persona.get('telefono')?.hasError('pattern') && persona.get('telefono')?.touched">
+      El teléfono debe comenzar con 9 y contener 9 dígitos.
+    </ion-text>
       <ion-item class="form-item">
         <ion-label position="stacked">Fecha Nacimiento</ion-label>
         <ion-input formControlName="fecha_nacimiento" type="date"></ion-input>

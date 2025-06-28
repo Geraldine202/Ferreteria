@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule } from '@ionic/angular';
 import { UsuariosService } from 'src/app/service/usuarios.service';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -82,6 +82,7 @@ export class AprobarPedidoPage implements OnInit {
   detalleVisible: number | null = null;
 
   constructor(
+    private alertCtrl: AlertController,
     private usuariosService: UsuariosService,
     private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
@@ -142,13 +143,24 @@ export class AprobarPedidoPage implements OnInit {
       }
     } catch (error: unknown) {
       console.error('Error al preparar pedido:', error);
-      await this.mostrarToast(this.getErrorMessage(error), 'danger');
+       const detalle = this.getErrorMessage(error);
+      await this.mostrarAlerta(
+      'No hay stock suficiente para preparar el pedido.',
+      detalle
+    );
       await this.cargarPedidos(); // Recargar para mantener consistencia
     } finally {
       loading.dismiss();
     }
   }
-
+  private async mostrarAlerta(titulo: string, mensaje: string) {
+    const alerta = await this.alertCtrl.create({
+      header: titulo,
+      message: mensaje.replace(/\n/g, '<br>'),
+      buttons: ['Aceptar']
+    });
+    await alerta.present();
+  }
   // Resto de métodos se mantienen igual...
   verDetallePedido(id: number) {
     this.usuariosService.obtenerPedidoCompleto(id).subscribe({

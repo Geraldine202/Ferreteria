@@ -30,19 +30,45 @@ export class CambioContraseniaForzadoPage {
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
-
+  esContraseniaSegura(contra: string): boolean {
+    const tieneLongitudMinima = contra.length >= 8;
+    const tieneMayuscula = /[A-Z]/.test(contra);
+    const tieneEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(contra);
+    return tieneLongitudMinima && tieneMayuscula && tieneEspecial;
+  }
+  
 
   toggleConfirmPassword() {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   onSubmit() {
+
+        // Validar campos vacíos
+  if (!this.nuevaContrasenia || !this.confirmarContrasenia) {
+      this.mostrarAlerta('Error', 'Debes completar ambos campos');
+      return;
+  }
+
+    // Validar longitud y complejidad
+  if (!this.esContraseniaSegura(this.nuevaContrasenia)) {
+    this.mostrarAlerta(
+        'Error',
+        'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial'
+      );
+      return;
+  }
   if (this.nuevaContrasenia !== this.confirmarContrasenia) {
     this.mostrarAlerta('Error', 'Las contraseñas no coinciden');
     return;
   }
-
-  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    // Validar que no sea igual a la anterior (si tienes la contraseña temporal)
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    // Ejemplo si guardas la contraseña temporal (ajusta según cómo la manejes)
+    if (this.nuevaContrasenia === usuario?.contrasenia) {
+      this.mostrarAlerta('Error', 'La nueva contraseña no puede ser igual a la anterior');
+      return;
+    }
   const rut = usuario?.rut_usuario || usuario?.rut;
 
   this.usuariosService.cambiarContraseniaPatch(rut, this.nuevaContrasenia).subscribe({

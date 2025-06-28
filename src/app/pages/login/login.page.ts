@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginPage {
   loginForm: FormGroup;
-
+  mensajeError: string = ''; // ✅ Mensaje visible en HTML
   constructor(
     private usuariosService: UsuariosService,
     private router: Router,
@@ -29,7 +29,9 @@ export class LoginPage {
   }
 
   async login() {
+    this.mensajeError = ''; 
     if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
       this.mostrarAlerta('Error', 'Por favor completa todos los campos correctamente');
       return;
     }
@@ -57,7 +59,9 @@ export class LoginPage {
     },
       error: async (error) => {
         await loading.dismiss();
-        this.mostrarAlerta('Error', error.error?.message || 'Error al iniciar sesión');
+        const msg = error.error?.error || 'Correo o Contraseña Incorrectos, Por favor Intentelo Nuevamente';
+        this.mensajeError = msg;
+        this.mostrarAlerta('Error', msg);
       }
     });
   }

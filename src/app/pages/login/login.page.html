@@ -23,7 +23,11 @@
           placeholder="ejemplo@gmail.com"
           class="input-field">
         </ion-input>
-        
+        <!-- Mensaje de error: email requerido o con formato incorrecto -->
+        <ion-text color="danger" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+          <p *ngIf="loginForm.get('email')?.errors?.['required']">El correo es requerido.</p>
+          <p *ngIf="loginForm.get('email')?.errors?.['email']">Formato de correo inválido.</p>
+        </ion-text>
         <br>
 
         <!-- Campo de contraseña -->
@@ -36,7 +40,13 @@
           class="input-field">
           <ion-input-password-toggle slot="end"></ion-input-password-toggle>
         </ion-input>
-
+        <!-- Mensaje de error: contraseña requerida -->
+        <ion-text color="danger" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+          <p *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es requerida.</p>
+        </ion-text>
+        <ion-text color="danger" *ngIf="mensajeError">
+          <p>{{ mensajeError }}</p>
+        </ion-text>
         <ion-text class="ion-text-right">
           <p><a (click)="goToRecuperar()" class="link">¿Olvidaste la contraseña?</a></p>
         </ion-text>
@@ -50,8 +60,7 @@
           color="primary" 
           shape="round" 
           id="signinbutton" 
-          class="signin-button"
-          [disabled]="loginForm.invalid">
+          class="signin-button">
           INGRESAR
         </ion-button>
         

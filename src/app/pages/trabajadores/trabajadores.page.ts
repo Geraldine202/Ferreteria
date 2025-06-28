@@ -26,15 +26,15 @@ export class TrabajadoresPage implements OnInit {
   ) {
     this.persona = this.fb.group({
       rut: ['',[Validators.minLength(9), Validators.maxLength(10), Validators.required, Validators.pattern("[0-9]{7,8}-[0-9kK]{1}")]],
-      nombre: ['', [Validators.required, Validators.maxLength(20), Validators.pattern("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")]],
-      primer_apellido: ['', [Validators.required, Validators.maxLength(20), Validators.pattern("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")]],
-      segundo_apellido: ['', [Validators.required, Validators.maxLength(20), Validators.pattern("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")]],
-      contrasenia: ['', [Validators.required, Validators.pattern("^(?=.*[-!#$%&/()?¡_.])(?=.*[A-Za-z])(?=.*[a-z]).{8,}$")]],
+      nombre: ['', [Validators.required,Validators.minLength(4), Validators.maxLength(20), Validators.pattern("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")]],
+      primer_apellido: ['', [Validators.required,Validators.minLength(4),Validators.maxLength(20), Validators.pattern("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")]],
+      segundo_apellido: ['', [Validators.required,Validators.minLength(4),Validators.maxLength(20), Validators.pattern("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")]],
+      contrasenia: ['', [Validators.required, Validators.pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/)]],
       imagen: [''],
       genero: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       direccion: ['', Validators.required],
-      telefono: ['',[Validators.required, Validators.pattern(/^\d{9}$/)]],
+      telefono: ['',[Validators.required, Validators.pattern(/^9\d{8}$/)]],
       fecha_nacimiento: ['',  [Validators.required, mayorDeEdadValidator(18)]],
       tipo_usuario: [null, Validators.required],
       sucursal: [null, Validators.required],
@@ -170,6 +170,26 @@ async cargarSucursales() {
 
   async onSubmit() {
     if (this.persona.invalid) {
+      if (this.persona.get('nombre')?.hasError('minlength')) {
+      await this.mostrarError('El nombre debe tener al menos 4 letras.');
+      return;
+    }
+    if (this.persona.get('primer_apellido')?.hasError('minlength')) {
+      await this.mostrarError('El primer apellido debe tener al menos 4 letras.');
+      return;
+    }
+    if (this.persona.get('segundo_apellido')?.hasError('minlength')) {
+      await this.mostrarError('El segundo apellido debe tener al menos 4 letras.');
+      return;
+    }
+    if (this.persona.get('telefono')?.hasError('pattern')) {
+      await this.mostrarError('El teléfono debe comenzar con 9 y contener 9 dígitos.');
+      return;
+    }
+    if (this.persona.get('contrasenia')?.hasError('pattern')) {
+      await this.mostrarError('La contraseña debe tener mínimo 8 caracteres, una mayúscula y un carácter especial.');
+      return;
+    }
       await this.mostrarError('Por favor complete todos los campos requeridos');
       return;
     }

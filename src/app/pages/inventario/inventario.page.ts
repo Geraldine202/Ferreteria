@@ -33,8 +33,8 @@ export class InventarioPage implements OnInit {
   ) {
     this.productoForm = this.fb.group({
       id: [''],
-      nombre: ['', [Validators.required, Validators.maxLength(100), Validators.pattern(/\S+/)]],
-      descripcion: ['', [Validators.maxLength(500)]],
+      nombre: ['', [Validators.required, Validators.minLength(4),Validators.maxLength(100), Validators.pattern(/\S+/)]],
+      descripcion: ['', [Validators.required,Validators.minLength(4),Validators.maxLength(500)]],
       imagen: [''],
       precio: [0, [Validators.required, Validators.min(1), Validators.max(100000)]],
       stock: [0, [Validators.required, Validators.min(0), Validators.max(10000)]],

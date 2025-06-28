@@ -10,6 +10,9 @@
         <ion-label position="stacked">Nombre</ion-label>
         <ion-input formControlName="nombre" type="text"></ion-input>
       </ion-item>
+        <ion-note color="danger" *ngIf="productoForm.get('nombre')?.touched && productoForm.get('nombre')?.hasError('minlength')">
+        El nombre debe tener al menos 4 letras.
+      </ion-note>
       <ion-note color="danger" *ngIf="productoForm.get('nombre')?.touched && productoForm.get('nombre')?.hasError('required')">
         El nombre es obligatorio.
       </ion-note>
@@ -25,6 +28,9 @@
         <ion-label position="stacked">Descripción</ion-label>
         <ion-input formControlName="descripcion" type="text"></ion-input>
       </ion-item>
+      <ion-note color="danger" *ngIf="productoForm.get('descripcion')?.touched && productoForm.get('descripcion')?.hasError('minlength')">
+        El nombre debe tener al menos 4 letras.
+      </ion-note>
       <ion-note color="danger" *ngIf="productoForm.get('descripcion')?.touched && productoForm.get('descripcion')?.hasError('maxlength')">
         Máximo 500 caracteres.
       </ion-note>

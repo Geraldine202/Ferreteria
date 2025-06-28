@@ -41,22 +41,31 @@ private cargarCarritoDesdeStorage() {
     this.contadorSubject.next(total);
   }
 
- agregarAlCarrito(id_producto: number, cantidad: number = 1) {
-    if (id_producto === undefined || id_producto === null) {
-      console.error('Intento de agregar producto con id_producto inválido:', id_producto);
-      return;  // Evitamos agregar producto con id inválido
-    }
-
-    const existente = this.carrito.find(p => p.id_producto === id_producto);
-    if (existente) {
-      existente.cantidad += cantidad;
-    } else {
-      this.carrito.push({ id_producto, cantidad });
-    }
-    this.guardarCarritoEnLocalStorage();
-    this.emitirCarrito();      // Emitir carrito actualizado
-    this.actualizarContador();
+agregarAlCarrito(id_producto: number, cantidad: number = 1, stockDisponible: number = 0) {
+  if (id_producto === undefined || id_producto === null) {
+    console.error('Intento de agregar producto con id_producto inválido:', id_producto);
+    return;  
   }
+
+  if (stockDisponible <= 0) {
+    console.warn('No hay stock disponible para el producto', id_producto);
+    return;  // No agrega si no hay stock
+  }
+
+  const existente = this.carrito.find(p => p.id_producto === id_producto);
+  if (existente) {
+    // Si la suma supera el stock, limitar a stock
+    const nuevaCantidad = existente.cantidad + cantidad;
+    existente.cantidad = nuevaCantidad > stockDisponible ? stockDisponible : nuevaCantidad;
+  } else {
+    const cantidadAgregar = cantidad > stockDisponible ? stockDisponible : cantidad;
+    this.carrito.push({ id_producto, cantidad: cantidadAgregar });
+  }
+  this.guardarCarritoEnLocalStorage();
+  this.emitirCarrito();
+  this.actualizarContador();
+}
+
 
   actualizarCarrito(nuevoCarrito: { id_producto: number; cantidad: number }[]) {
     this.carrito = nuevoCarrito;
